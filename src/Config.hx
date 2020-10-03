@@ -12,9 +12,6 @@ class Config {
     public static final boardHeight = 1080;
 
     public static final uiColor = 0x065e91;
-
-    public static final dirgaFont = Res.font.dirga.toFont();
-    public static final stripeFont = Res.font.editundoline.toFont();
     
     public static final cardList: Array<CardData> = 
     [

@@ -8,12 +8,14 @@ import scenes.ComponentManager;
 import Config;
 import h2d.Text;
 import hxd.Res;
+import h2d.Font;
 
 class UIManager implements ComponentManager{
 
     private var uiMama: Object;
     private var programBox: Bitmap;
     private var cardBox: Bitmap;
+    private var dirgaFont: Font;
 
     public function new() {
         this.uiMama = new Object();
@@ -25,12 +27,16 @@ class UIManager implements ComponentManager{
         var tempTile2 = h2d.Tile.fromColor(Config.uiColor, 500, 800);
         this.cardBox = new Bitmap(tempTile2, uiMama);
         cardBox.x = Config.boardWidth - tempTile2.width;
+
+        this.dirgaFont = Res.font.dirga.toFont();
     }
 
     public function showCardChoices(choices: Array<Int>) {
         var i = 0;
+    
+
         for (choice in choices) {
-            var cardName = new Text(Config.dirgaFont, cardBox);
+            var cardName = new Text(dirgaFont, cardBox);
             // set cardName.y to incremental heights in cardBox
             cardName.y = (cardBox.getBounds().height / choices.length) * i + 150;
             cardName.text = Config.cardList[choice].name;
