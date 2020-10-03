@@ -23,6 +23,8 @@ class GameLevel implements Level {
         this.uiManager = new UIManager();
         scene.addChild(this.uiManager.build());
 
+        uiManager.showCardChoices([1,0,1]);
+
         this.ws = new WebSocket("wss://echo.websocket.org/");
 
         var signup = {
