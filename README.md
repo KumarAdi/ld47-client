@@ -1,2 +1,2 @@
-# ld46
-Entry for Ludum Dare 46
+# ld47
+Entry for Ludum Dare 47
