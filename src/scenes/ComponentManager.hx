@@ -2,7 +2,7 @@ package scenes;
 
 import h2d.Object;
 
-interface UIManager {
+interface ComponentManager {
     public function build(): Object;
     public function update(dt:Float, rootObj: Object): Void;
 }
