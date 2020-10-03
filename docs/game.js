@@ -59768,30 +59768,128 @@ scenes_BoardManager.prototype = {
 		this.boardRoot = new h2d_Object();
 		var this1 = hxd_Res.get_loader();
 		var tileImage = this1.loadCache("art/tile.png",hxd_res_Image).toTile();
+		var subBoard = new h2d_Object(this.boardRoot);
+		subBoard.posChanged = true;
+		subBoard.x = Config.boardWidth * 0;
+		subBoard.posChanged = true;
+		subBoard.y = Config.boardHeight * 0;
 		var _g = 0;
-		var _g1 = 1920 / tileImage.width | 0;
+		var _g1 = Config.boardWidth / tileImage.width | 0;
 		while(_g < _g1) {
 			var i = _g++;
 			var _g2 = 0;
-			var _g11 = 1080 / tileImage.height | 0;
+			var _g11 = Config.boardHeight / tileImage.height | 0;
 			while(_g2 < _g11) {
 				var j = _g2++;
-				var tileSprite = new h2d_Bitmap(tileImage,this.boardRoot);
+				var tileSprite = new h2d_Bitmap(tileImage,subBoard);
 				tileSprite.posChanged = true;
 				tileSprite.x = i * tileImage.width;
 				tileSprite.posChanged = true;
 				tileSprite.y = j * tileImage.height;
+				var font = hxd_res_DefaultFont.get();
+				var coord = new h2d_Text(font,tileSprite);
+				coord.set_textColor(0);
+				coord.set_text("" + i + ", " + j);
+				var _g3 = coord;
+				_g3.posChanged = true;
+				_g3.scaleX *= 2;
+				var _g4 = coord;
+				_g4.posChanged = true;
+				_g4.scaleY *= 2;
+			}
+		}
+		var subBoard1 = new h2d_Object(this.boardRoot);
+		subBoard1.posChanged = true;
+		subBoard1.x = Config.boardWidth * 0;
+		subBoard1.posChanged = true;
+		subBoard1.y = Config.boardHeight;
+		var _g5 = 0;
+		var _g12 = Config.boardWidth / tileImage.width | 0;
+		while(_g5 < _g12) {
+			var i1 = _g5++;
+			var _g6 = 0;
+			var _g13 = Config.boardHeight / tileImage.height | 0;
+			while(_g6 < _g13) {
+				var j1 = _g6++;
+				var tileSprite1 = new h2d_Bitmap(tileImage,subBoard1);
+				tileSprite1.posChanged = true;
+				tileSprite1.x = i1 * tileImage.width;
+				tileSprite1.posChanged = true;
+				tileSprite1.y = j1 * tileImage.height;
+				var font1 = hxd_res_DefaultFont.get();
+				var coord1 = new h2d_Text(font1,tileSprite1);
+				coord1.set_textColor(0);
+				coord1.set_text("" + i1 + ", " + j1);
+				var _g7 = coord1;
+				_g7.posChanged = true;
+				_g7.scaleX *= 2;
+				var _g8 = coord1;
+				_g8.posChanged = true;
+				_g8.scaleY *= 2;
+			}
+		}
+		var subBoard2 = new h2d_Object(this.boardRoot);
+		subBoard2.posChanged = true;
+		subBoard2.x = Config.boardWidth;
+		subBoard2.posChanged = true;
+		subBoard2.y = Config.boardHeight * 0;
+		var _g9 = 0;
+		var _g14 = Config.boardWidth / tileImage.width | 0;
+		while(_g9 < _g14) {
+			var i2 = _g9++;
+			var _g10 = 0;
+			var _g15 = Config.boardHeight / tileImage.height | 0;
+			while(_g10 < _g15) {
+				var j2 = _g10++;
+				var tileSprite2 = new h2d_Bitmap(tileImage,subBoard2);
+				tileSprite2.posChanged = true;
+				tileSprite2.x = i2 * tileImage.width;
+				tileSprite2.posChanged = true;
+				tileSprite2.y = j2 * tileImage.height;
+				var font2 = hxd_res_DefaultFont.get();
+				var coord2 = new h2d_Text(font2,tileSprite2);
+				coord2.set_textColor(0);
+				coord2.set_text("" + i2 + ", " + j2);
+				var _g16 = coord2;
+				_g16.posChanged = true;
+				_g16.scaleX *= 2;
+				var _g17 = coord2;
+				_g17.posChanged = true;
+				_g17.scaleY *= 2;
+			}
+		}
+		var subBoard3 = new h2d_Object(this.boardRoot);
+		subBoard3.posChanged = true;
+		subBoard3.x = Config.boardWidth;
+		subBoard3.posChanged = true;
+		subBoard3.y = Config.boardHeight;
+		var _g18 = 0;
+		var _g19 = Config.boardWidth / tileImage.width | 0;
+		while(_g18 < _g19) {
+			var i3 = _g18++;
+			var _g20 = 0;
+			var _g110 = Config.boardHeight / tileImage.height | 0;
+			while(_g20 < _g110) {
+				var j3 = _g20++;
+				var tileSprite3 = new h2d_Bitmap(tileImage,subBoard3);
+				tileSprite3.posChanged = true;
+				tileSprite3.x = i3 * tileImage.width;
+				tileSprite3.posChanged = true;
+				tileSprite3.y = j3 * tileImage.height;
+				var font3 = hxd_res_DefaultFont.get();
+				var coord3 = new h2d_Text(font3,tileSprite3);
+				coord3.set_textColor(0);
+				coord3.set_text("" + i3 + ", " + j3);
+				var _g21 = coord3;
+				_g21.posChanged = true;
+				_g21.scaleX *= 2;
+				var _g22 = coord3;
+				_g22.posChanged = true;
+				_g22.scaleY *= 2;
 			}
 		}
 		var boardSize = this.boardRoot.getBounds();
 		var dragBoard = new h2d_Interactive(boardSize.xMax - boardSize.xMin,boardSize.yMax - boardSize.yMin,this.boardRoot);
-		var _this = this.boardRoot;
-		var _g3 = _this;
-		_g3.posChanged = true;
-		_g3.scaleX *= 0.5;
-		var _g4 = _this;
-		_g4.posChanged = true;
-		_g4.scaleY *= 0.5;
 		dragBoard.enableRightButton = true;
 		dragBoard.onPush = function(e) {
 			if(e.button != 1) {
@@ -59801,14 +59899,26 @@ scenes_BoardManager.prototype = {
 			var x = e.relX;
 			var y = e.relY;
 			dragBoard.startDrag(function(e1) {
-				var _g21 = _gthis.boardRoot;
-				var v = _g21.x + (e1.relX - x) * _gthis.boardRoot.scaleX;
-				_g21.posChanged = true;
-				_g21.x = v;
-				var _g22 = _gthis.boardRoot;
-				var v1 = _g22.y + (e1.relY - y) * _gthis.boardRoot.scaleY;
-				_g22.posChanged = true;
-				_g22.y = v1;
+				var _g23 = _gthis.boardRoot;
+				var v = _g23.x + (e1.relX - x) * _gthis.boardRoot.scaleX;
+				_g23.posChanged = true;
+				_g23.x = v;
+				var _g24 = _gthis.boardRoot;
+				var v1 = _g24.y + (e1.relY - y) * _gthis.boardRoot.scaleY;
+				_g24.posChanged = true;
+				_g24.y = v1;
+				while(_gthis.boardRoot.x < -1 * Config.boardWidth * _gthis.boardRoot.scaleX || _gthis.boardRoot.x > 0) {
+					var _g25 = _gthis.boardRoot;
+					var v2 = _g25.x - Config.boardWidth * _gthis.boardRoot.x / Math.abs(_gthis.boardRoot.x);
+					_g25.posChanged = true;
+					_g25.x = v2;
+				}
+				while(_gthis.boardRoot.y < -1 * Config.boardHeight * _gthis.boardRoot.scaleY || _gthis.boardRoot.y > 0) {
+					var _g26 = _gthis.boardRoot;
+					var v3 = _g26.y - Config.boardHeight * _gthis.boardRoot.y / Math.abs(_gthis.boardRoot.y);
+					_g26.posChanged = true;
+					_g26.y = v3;
+				}
 			});
 		};
 		dragBoard.onRelease = function(e2) {
@@ -59817,6 +59927,16 @@ scenes_BoardManager.prototype = {
 			}
 			dragBoard.stopDrag();
 		};
+		hxd_Window.getInstance().addEventTarget(function(evt) {
+			if(evt.kind._hx_index == 5) {
+				var _this = _gthis.boardRoot;
+				var v4 = Math.max(1.0,_gthis.boardRoot.scaleX + evt.wheelDelta);
+				_this.posChanged = true;
+				_this.scaleX = v4;
+				_this.posChanged = true;
+				_this.scaleY = v4;
+			}
+		});
 		return this.boardRoot;
 	}
 	,update: function(dt) {
