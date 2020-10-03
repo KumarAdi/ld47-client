@@ -2,13 +2,14 @@ package scenes;
 
 import h2d.Scene;
 import h2d.Text;
+import Config;
 
 class Menu implements Level {
     public var scene: Scene;
 
     public function new() {
         this.scene = new Scene();
-        scene.scaleMode = LetterBox(1920, 1080);
+        scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
 
         // Init map view button
         var font = hxd.res.DefaultFont.get();
