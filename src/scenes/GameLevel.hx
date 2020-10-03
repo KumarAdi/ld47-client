@@ -1,10 +1,13 @@
 package scenes;
 
+import h2d.Object;
 import h2d.Scene;
 import h2d.Text;
 
 class GameLevel implements Level {
     public var scene: Scene;
+    private var uiParent: Object;
+    private var boardParent: Object;
 
     public function new() {
         this.scene = new Scene();
