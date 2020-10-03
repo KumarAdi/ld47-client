@@ -7,6 +7,9 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
+var Config = function() { };
+$hxClasses["Config"] = Config;
+Config.__name__ = "Config";
 var EReg = function(r,opt) {
 	this.r = new RegExp(r,opt.split("u").join(""));
 };
@@ -298,7 +301,7 @@ Main.main = function() {
 Main.__super__ = hxd_App;
 Main.prototype = $extend(hxd_App.prototype,{
 	init: function() {
-		hxd_Res.set_loader(new hxd_res_Loader(new hxd_fs_EmbedFileSystem(haxe_Unserializer.run("oy3:artoy13:test-tile.pngtgg"))));
+		hxd_Res.set_loader(new hxd_res_Loader(new hxd_fs_EmbedFileSystem(haxe_Unserializer.run("oy3:artoy8:tile.pngtgg"))));
 		this.curLevel = new scenes_Menu();
 		this.curLevel.init();
 	}
@@ -59761,16 +59764,59 @@ scenes_BoardManager.__name__ = "scenes.BoardManager";
 scenes_BoardManager.__interfaces__ = [scenes_ComponentManager];
 scenes_BoardManager.prototype = {
 	build: function() {
+		var _gthis = this;
 		this.boardRoot = new h2d_Object();
-		var font = hxd_res_DefaultFont.get();
-		var title = new h2d_Text(font,this.boardRoot);
-		title.set_text("Board");
-		var _g = title;
-		_g.posChanged = true;
-		_g.scaleX *= 10;
-		var _g1 = title;
-		_g1.posChanged = true;
-		_g1.scaleY *= 10;
+		var this1 = hxd_Res.get_loader();
+		var tileImage = this1.loadCache("art/tile.png",hxd_res_Image).toTile();
+		var _g = 0;
+		var _g1 = 1920 / tileImage.width | 0;
+		while(_g < _g1) {
+			var i = _g++;
+			var _g2 = 0;
+			var _g11 = 1080 / tileImage.height | 0;
+			while(_g2 < _g11) {
+				var j = _g2++;
+				var tileSprite = new h2d_Bitmap(tileImage,this.boardRoot);
+				tileSprite.posChanged = true;
+				tileSprite.x = i * tileImage.width;
+				tileSprite.posChanged = true;
+				tileSprite.y = j * tileImage.height;
+			}
+		}
+		var boardSize = this.boardRoot.getBounds();
+		var dragBoard = new h2d_Interactive(boardSize.xMax - boardSize.xMin,boardSize.yMax - boardSize.yMin,this.boardRoot);
+		var _this = this.boardRoot;
+		var _g3 = _this;
+		_g3.posChanged = true;
+		_g3.scaleX *= 0.5;
+		var _g4 = _this;
+		_g4.posChanged = true;
+		_g4.scaleY *= 0.5;
+		dragBoard.enableRightButton = true;
+		dragBoard.onPush = function(e) {
+			if(e.button != 1) {
+				e.cancel = true;
+				return;
+			}
+			var x = e.relX;
+			var y = e.relY;
+			dragBoard.startDrag(function(e1) {
+				var _g21 = _gthis.boardRoot;
+				var v = _g21.x + (e1.relX - x) * _gthis.boardRoot.scaleX;
+				_g21.posChanged = true;
+				_g21.x = v;
+				var _g22 = _gthis.boardRoot;
+				var v1 = _g22.y + (e1.relY - y) * _gthis.boardRoot.scaleY;
+				_g22.posChanged = true;
+				_g22.y = v1;
+			});
+		};
+		dragBoard.onRelease = function(e2) {
+			if(e2.button != 1) {
+				return;
+			}
+			dragBoard.stopDrag();
+		};
 		return this.boardRoot;
 	}
 	,update: function(dt) {
@@ -59787,18 +59833,20 @@ scenes_Level.prototype = {
 var scenes_GameLevel = function() {
 	var _gthis = this;
 	this.scene = new h2d_Scene();
-	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(1920,1080));
+	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
 	this.boardManager = new scenes_BoardManager();
 	this.scene.addChild(this.boardManager.build());
+	this.uiManager = new scenes_UIManager();
+	this.scene.addChild(this.uiManager.build());
 	this.ws = new WebSocket("wss://echo.websocket.org/");
 	var signup = { type : "signup", username : "Adi", color : "green"};
 	this.ws.onopen = function() {
-		haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 28, className : "scenes.GameLevel", methodName : "new"});
+		haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 35, className : "scenes.GameLevel", methodName : "new"});
 		_gthis.ws.send(JSON.stringify(signup));
 	};
 	this.ws.onmessage = function(message) {
 		var resp = JSON.parse(message.data);
-		haxe_Log.trace(resp.username,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 34, className : "scenes.GameLevel", methodName : "new"});
+		haxe_Log.trace(resp.username,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 41, className : "scenes.GameLevel", methodName : "new"});
 	};
 };
 $hxClasses["scenes.GameLevel"] = scenes_GameLevel;
@@ -59809,13 +59857,14 @@ scenes_GameLevel.prototype = {
 	}
 	,update: function(dt) {
 		this.boardManager.update(dt);
+		this.uiManager.update(dt);
 		return null;
 	}
 	,__class__: scenes_GameLevel
 };
 var scenes_Menu = function() {
 	this.scene = new h2d_Scene();
-	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(1920,1080));
+	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
 	var font = hxd_res_DefaultFont.get();
 	var title = new h2d_Text(font,this.scene);
 	title.set_text("Title");
@@ -59842,6 +59891,28 @@ scenes_Menu.prototype = {
 	}
 	,__class__: scenes_Menu
 };
+var scenes_UIManager = function() {
+	this.uiMama = new h2d_Object();
+	var tempTile = h2d_Tile.fromColor(16711680,Config.boardWidth,200);
+	var programBox = new h2d_Bitmap(tempTile,this.uiMama);
+	programBox.posChanged = true;
+	programBox.y = Config.boardHeight - tempTile.height;
+	var tempTile2 = h2d_Tile.fromColor(16711680,400,800);
+	var cardBox = new h2d_Bitmap(tempTile2,this.uiMama);
+	cardBox.posChanged = true;
+	cardBox.x = Config.boardWidth - tempTile2.width;
+};
+$hxClasses["scenes.UIManager"] = scenes_UIManager;
+scenes_UIManager.__name__ = "scenes.UIManager";
+scenes_UIManager.__interfaces__ = [scenes_ComponentManager];
+scenes_UIManager.prototype = {
+	build: function() {
+		return this.uiMama;
+	}
+	,update: function(dt) {
+	}
+	,__class__: scenes_UIManager
+};
 function $getIterator(o) { if( o instanceof Array ) return HxOverrides.iter(o); else return o.iterator(); }
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
 $global.$haxeUID |= 0;
@@ -59859,7 +59930,7 @@ var Float = Number;
 var Bool = Boolean;
 var Class = { };
 var Enum = { };
-haxe_Resource.content = [{ name : "R_art_test_tile_png", data : "iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAEISURBVHhe7dAxAQAADMOg+TfdueAKEriFKBopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopGikaKRopmtgeV/chGVsMC9AAAAAASUVORK5CYII"}];
+haxe_Resource.content = [{ name : "R_art_tile_png", data : "iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAFBSURBVHhe7dbBCcQwDABBOf337CTcfQJpIMsMCPu/CLRmZl9D1PF/iRI4TuA4geNej6y93V1ftNad88kGxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECxwkcJ3CcwHECx61r9u9LkQ2OEzhO4DiB02ZOCbEG6xX/HV4AAAAASUVORK5CYII"}];
 haxe_ds_ObjectMap.count = 0;
 var __map_reserved = {};
 haxe_MainLoop.add(hxd_System.updateCursor,-1);
@@ -59888,6 +59959,8 @@ Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function()
 if(ArrayBuffer.prototype.slice == null) {
 	ArrayBuffer.prototype.slice = js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
 }
+Config.boardWidth = 1920;
+Config.boardHeight = 1080;
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
