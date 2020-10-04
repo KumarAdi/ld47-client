@@ -1,5 +1,8 @@
 package scenes;
 
+import haxe.ds.IntMap;
+import h2d.Anim;
+import haxe.ds.Map;
 import hxd.Key;
 import hxd.Event;
 import h2d.TextInput;
@@ -19,6 +22,12 @@ class GameLevel implements Level {
 	private var ws:WebSocket;
 	private var uiManager:UIManager;
 
+	private var gameID: Int;
+	private var userID: Int;
+	private var pk: String;
+	private var charType: Int;
+	private var userName: String;
+
 	public function new() {
 		this.scene = new Scene();
 		scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
@@ -28,11 +37,11 @@ class GameLevel implements Level {
 
 		this.uiManager = new UIManager();
 		scene.addChild(this.uiManager.build());
-    
-    uiManager.showCardChoices([1,0,1]);
 
 		this.ws = new WebSocket("wss://echo.websocket.org/");
+	}
 
+	public function init() {
 		var splash = new Bitmap(Tile.fromColor(0x000000, Std.int(Config.boardWidth * 2 / 3), Std.int(Config.boardHeight * 2 / 3)), scene);
 		splash.setPosition(Config.boardWidth / 4, Config.boardHeight / 4);
 		var font = hxd.res.DefaultFont.get();
@@ -68,10 +77,26 @@ class GameLevel implements Level {
 
 		this.ws.onmessage = function(message) {
 			trace(message.data);
+			var data = Json.parse(message.data);
+			switch (data.type) {
+				case "Player":
+					this.userID = data.id;
+					this.gameID = data.game_id;
+					this.charType = data.character_type;
+					this.userName = data.username;
+					this.pk = data.private_key;
+				case "PlayerJoin":
+					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
+				case "CardChoices":
+					uiManager.showCardChoices(data.card_choices);
+				default:
+			}
 		};
-	}
 
-	public function init() {}
+		for (i in 0... 10) {
+			boardManager.addCharacter(i, "A", Std.int(Math.random() * Config.boardWidth / 120), Std.int(Math.random() * Config.boardWidth / 120), 0, 0);
+		}
+	}
 
 	public function update(dt:Float):Null<Level> {
 		boardManager.update(dt);
