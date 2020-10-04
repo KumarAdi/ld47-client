@@ -71,7 +71,7 @@ class BoardManager implements ComponentManager {
 		Window.getInstance().addEventTarget(function(evt:Event) {
 			switch (evt.kind) {
 				case EWheel:
-					boardRoot.setScale(Math.max(1.0, boardRoot.scaleX + evt.wheelDelta));
+					boardRoot.setScale(Math.max(1.0, boardRoot.scaleX - evt.wheelDelta));
 				case _:
 			}
 		});
