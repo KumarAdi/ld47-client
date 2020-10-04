@@ -57,6 +57,7 @@ class GameLevel implements Level {
 						username: nameEntry.text,
 						character_type: 0
 					}));
+					scene.removeChild(splash);
 				}
 			}
 
