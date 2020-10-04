@@ -84,14 +84,14 @@ class UIManager implements ComponentManager{
             var optionHeight = optionSpacing * i + 200;
             var tileSize = Math.floor(3 * optionSpacing / 4);
             var tilePadding = Math.floor(tileSize / 3);
-            var cardTile = h2d.Tile.fromColor(Config.uiSecondary, tileSize, tileSize);
+            var cardTile = Config.genCardList()[choice].img;
             var cardIcon = new Bitmap(cardTile, cardBox);
             cardIcon.setPosition(tilePadding, optionHeight);
             choicesIcons.push(cardIcon);
 
             var cardName = new Text(dirgaFont, cardBox);
             cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
-            cardName.text = Config.cardList[choice].name;
+            cardName.text = Config.genCardList()[choice].name;
             cardName.maxWidth = cardBox.tile.width - 45;
 
             // figure out spacing
