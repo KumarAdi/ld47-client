@@ -3842,7 +3842,7 @@ format_tools_BitsInput.prototype = {
 		}
 		var k1 = this.i.readByte();
 		if(this.nbits >= 24) {
-			if(n >= 31) {
+			if(n > 31) {
 				throw new js__$Boot_HaxeError("Bits error");
 			}
 			var c1 = 8 + this.nbits - n;
@@ -3950,11 +3950,50 @@ format_wav_Reader.prototype = {
 			throw new js__$Boot_HaxeError("expected data subchunk");
 		}
 		var datalen = this.i.readInt32();
-		var data = this.i.readAll();
-		if(data.length > datalen) {
-			data = data.sub(0,datalen);
+		var data;
+		try {
+			data = this.i.read(datalen);
+		} catch( e ) {
+			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
+			if(((e1) instanceof haxe_io_Eof)) {
+				var e2 = e1;
+				throw new js__$Boot_HaxeError("Invalid chunk data length");
+			} else {
+				throw e;
+			}
 		}
-		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data};
+		var cuePoints = [];
+		try {
+			while(true) {
+				var nextChunk1 = this.i.readString(4);
+				if(nextChunk1 == "cue ") {
+					this.i.readInt32();
+					var nbCuePoints = this.i.readInt32();
+					var _g1 = 0;
+					var _g2 = nbCuePoints;
+					while(_g1 < _g2) {
+						var _ = _g1++;
+						var cueId = this.i.readInt32();
+						this.i.readInt32();
+						this.i.readString(4);
+						this.i.readInt32();
+						this.i.readInt32();
+						var cueSampleOffset = this.i.readInt32();
+						cuePoints.push({ id : cueId, sampleOffset : cueSampleOffset});
+					}
+				} else {
+					this.i.read(this.i.readInt32());
+				}
+			}
+		} catch( e3 ) {
+			var e4 = ((e3) instanceof js__$Boot_HaxeError) ? e3.val : e3;
+			if(((e4) instanceof haxe_io_Eof)) {
+				var e5 = e4;
+			} else {
+				throw e3;
+			}
+		}
+		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data, cuePoints : cuePoints};
 	}
 	,__class__: format_wav_Reader
 };
@@ -36781,12 +36820,6 @@ haxe_io_Bytes.prototype = {
 			this.b[pos++] = value;
 		}
 	}
-	,sub: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		}
-		return new haxe_io_Bytes(this.b.buffer.slice(pos + this.b.byteOffset,pos + this.b.byteOffset + len));
-	}
 	,getFloat: function(pos) {
 		if(this.data == null) {
 			this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -37807,30 +37840,6 @@ haxe_io_Input.prototype = {
 	,set_bigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
-	}
-	,readAll: function(bufsize) {
-		if(bufsize == null) {
-			bufsize = 16384;
-		}
-		var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
-		var total = new haxe_io_BytesBuffer();
-		try {
-			while(true) {
-				var len = this.readBytes(buf,0,bufsize);
-				if(len == 0) {
-					throw new js__$Boot_HaxeError(haxe_io_Error.Blocked);
-				}
-				total.addBytes(buf,0,len);
-			}
-		} catch( e ) {
-			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
-			if(((e1) instanceof haxe_io_Eof)) {
-				var e2 = e1;
-			} else {
-				throw e;
-			}
-		}
-		return total.getBytes();
 	}
 	,readFullBytes: function(s,pos,len) {
 		while(len > 0) {
@@ -60300,15 +60309,6 @@ js_html__$CanvasElement_CanvasUtil.getContextWebGL = function(canvas,attribs) {
 	}
 	return null;
 };
-var js_lib__$ArrayBuffer_ArrayBufferCompat = function() { };
-$hxClasses["js.lib._ArrayBuffer.ArrayBufferCompat"] = js_lib__$ArrayBuffer_ArrayBufferCompat;
-js_lib__$ArrayBuffer_ArrayBufferCompat.__name__ = "js.lib._ArrayBuffer.ArrayBufferCompat";
-js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
-	var u = new Uint8Array(this,begin,end == null ? null : end - begin);
-	var resultArray = new Uint8Array(u.byteLength);
-	resultArray.set(u);
-	return resultArray.buffer;
-};
 var scenes_ComponentManager = function() { };
 $hxClasses["scenes.ComponentManager"] = scenes_ComponentManager;
 scenes_ComponentManager.__name__ = "scenes.ComponentManager";
@@ -60610,7 +60610,6 @@ var scenes_GameLevel = function() {
 	this.scene.addChild(this.boardManager.build());
 	this.uiManager = new scenes_UIManager(this.ws);
 	this.scene.addChild(this.uiManager.build());
-	this.uiManager.showCardChoices([1,0,1]);
 };
 $hxClasses["scenes.GameLevel"] = scenes_GameLevel;
 scenes_GameLevel.__name__ = "scenes.GameLevel";
@@ -60628,7 +60627,7 @@ scenes_GameLevel.prototype = {
 		var splashText = new h2d_Text(font,splash);
 		splashText.set_text("Connecting...");
 		this.ws.onopen = function() {
-			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 57, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 50, className : "scenes.GameLevel", methodName : "init"});
 			splashText.set_text("Enter your username:");
 			var nameEntry = new h2d_TextInput(font,splash);
 			nameEntry.canEdit = true;
@@ -60649,11 +60648,11 @@ scenes_GameLevel.prototype = {
 			subtext.set_text("Press Enter to submit");
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 82, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 75, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
 			case "CardChoices":
-				_gthis.uiManager.showCardChoices(data.card_choices);
+				_gthis.uiManager.showCardChoices(data.turn_id,data.card_choices);
 				break;
 			case "Mutation":
 				_gthis.boardManager.updateProgram(data.user_id,data.card_type,data.card_location);
@@ -60664,6 +60663,7 @@ scenes_GameLevel.prototype = {
 				_gthis.charType = data.character_type;
 				_gthis.userName = data.username;
 				_gthis.pk = data.private_key;
+				_gthis.uiManager.receiveGameInfo(_gthis.userID,_gthis.pk);
 				break;
 			case "PlayerJoin":
 				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.character_type);
@@ -60750,13 +60750,20 @@ var scenes_UIManager = function(ws) {
 	_this2.posChanged = true;
 	_this2.x = _this3.xMax - _this3.xMin + 50;
 	this.program = [];
+	this.currentChoices = [];
+	this.user_id = null;
+	this.pk = null;
+	this.turn_id = null;
 };
 $hxClasses["scenes.UIManager"] = scenes_UIManager;
 scenes_UIManager.__name__ = "scenes.UIManager";
 scenes_UIManager.__interfaces__ = [scenes_ComponentManager];
 scenes_UIManager.prototype = {
-	showCardChoices: function(choices) {
+	showCardChoices: function(turn_id,choices) {
 		var _gthis = this;
+		this.turn_id = turn_id;
+		this.currentChoices = choices;
+		this.choicesIcons = [];
 		var i = 0;
 		var _this = this.cardBox.getBounds();
 		var optionSpacing = (_this.yMax - _this.yMin - 200) / choices.length;
@@ -60773,6 +60780,7 @@ scenes_UIManager.prototype = {
 			cardIcon[0].x = tilePadding;
 			cardIcon[0].posChanged = true;
 			cardIcon[0].y = optionHeight;
+			this.choicesIcons.push(cardIcon[0]);
 			var cardName = new h2d_Text(this.dirgaFont,this.cardBox);
 			var cardIcon1 = cardIcon[0].x;
 			var _this1 = cardIcon[0].getBounds();
@@ -60781,56 +60789,32 @@ scenes_UIManager.prototype = {
 			cardName.posChanged = true;
 			cardName.y = optionHeight + tilePadding;
 			cardName.set_text(Config.cardList[choice].name);
-			++i;
-			var programAreaWidth = [this.programBox.tile.width - this.programArea.x];
-			var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth[0] / (this.program.length + 1)) - 20;
+			cardName.set_maxWidth(this.cardBox.tile.width - 45);
+			var programAreaWidth = this.programBox.tile.width - this.programArea.x;
+			var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (this.program.length + 1)) - 20;
 			var singleCardSizeBasedOnHeight = this.programBox.tile.height - 80;
-			var singleCardSize = [Math.floor(Math.min(singleCardSizeBasedOnHeight,singleCardSizeBasedOnWidth))];
+			var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight,singleCardSizeBasedOnWidth));
 			var cardListen = [new h2d_Interactive(cardIcon[0].tile.width,cardIcon[0].tile.height,cardIcon[0])];
-			cardListen[0].onPush = (function(cardListen1,singleCardSize1,programAreaWidth1,cardIcon2) {
+			cardListen[0].onClick = (function(cardListen1,cardIcon2) {
 				return function(e) {
-					if(e.button != 0) {
-						e.cancel = true;
-						return;
-					}
-					var x = e.relX;
-					var y = e.relY;
-					var tmp = (function(singleCardSize2,programAreaWidth2,cardIcon3) {
-						return function(e1) {
-							var _g1 = cardIcon3[0];
-							var v = _g1.x + (e1.relX - x);
-							_g1.posChanged = true;
-							_g1.x = v;
-							var _g2 = cardIcon3[0];
-							var v1 = _g2.y + (e1.relY - y);
-							_g2.posChanged = true;
-							_g2.y = v1;
-							if(cardIcon3[0].y > _gthis.programBox.y) {
-								var insertCardSmall = h2d_Tile.fromColor(Config.uiSecondary,2,2);
-								var insertCardNormal = h2d_Tile.fromColor(Config.uiSecondary,singleCardSize2[0],singleCardSize2[0]);
-								var insertCardAnimation = new h2d_Anim([insertCardSmall,insertCardNormal],15,_gthis.programArea);
-								insertCardAnimation.loop = false;
-								if(cardIcon3[0].x < _gthis.program[0].x) {
-									insertCardAnimation.posChanged = true;
-									insertCardAnimation.x = programAreaWidth2[0] + 10;
-									insertCardAnimation.posChanged = true;
-									insertCardAnimation.y = 40;
-								}
-							}
-						};
-					})(singleCardSize1,programAreaWidth1,cardIcon2);
-					cardListen1[0].startDrag(tmp);
+					var choiceId = _gthis.choicesIcons.indexOf(cardIcon2[0]);
+					haxe_Log.trace(choiceId,{ fileName : "src/scenes/UIManager.hx", lineNumber : 107, className : "scenes.UIManager", methodName : "showCardChoices"});
+					var _this2 = cardListen1[0].parent;
+					_this2.posChanged = true;
+					_this2.scaleX = 0.9;
+					var _this3 = cardListen1[0].parent;
+					_this3.posChanged = true;
+					_this3.scaleY = 0.9;
+					_gthis.selectedChoice = choiceId;
+					_gthis.ws.send(JSON.stringify({ type : "ChooseCard", card_number : _gthis.selectedChoice, location : _gthis.program.length, user_id : _gthis.user_id, pk : _gthis.pk}));
 				};
-			})(cardListen,singleCardSize,programAreaWidth,cardIcon);
-			cardListen[0].onRelease = (function(cardListen2) {
-				return function(e2) {
-					if(e2.button != 0) {
-						return;
-					}
-					cardListen2[0].stopDrag();
-				};
-			})(cardListen);
+			})(cardListen,cardIcon);
+			++i;
 		}
+	}
+	,receiveGameInfo: function(user_id,pk) {
+		this.user_id = user_id;
+		this.pk = pk;
 	}
 	,build: function() {
 		return this.uiMama;
@@ -60882,9 +60866,6 @@ js_Boot.__toStr = ({ }).toString;
 Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function() {
 	return String(this.val);
 }});
-if(ArrayBuffer.prototype.slice == null) {
-	ArrayBuffer.prototype.slice = js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
-}
 Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
