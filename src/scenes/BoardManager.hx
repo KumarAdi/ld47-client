@@ -1,5 +1,6 @@
 package scenes;
 
+import haxe.Timer;
 import js.lib.Set;
 import h2d.Layers;
 import hxd.Res;
@@ -13,7 +14,7 @@ import h2d.Bitmap;
 import h2d.Text;
 import h2d.Object;
 
-typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>}; 
+typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>, orientation: Int}; 
 
 class BoardManager implements ComponentManager {
 	var boardRoot: Layers;
@@ -119,7 +120,7 @@ class BoardManager implements ComponentManager {
 		}
 		if (mutationsSeen.size == this.numUsers) {
 			this.mutationsSeen = new Set<Int>();
-			ExecutionEngine.run(this.users);
+			this.playAnimations(ExecutionEngine.run(this.users));
 		}
 	}
 
@@ -133,7 +134,8 @@ class BoardManager implements ComponentManager {
 		this.users.set(userId, {
 			username: username,
 			program: [],
-			sprites: sprites
+			sprites: sprites,
+			orientation: dir
 		});
 		numUsers = Lambda.count(users);
 	}
@@ -144,6 +146,37 @@ class BoardManager implements ComponentManager {
 		ret.y = -120;
 		ret.x = -60;
 		return ret;
+	}
+
+	private function playAnimations(animations: Array<Array<{userId: Int, action: Int}>>) {
+		playTic(animations, 0);
+	}
+
+	private function playTic(animations: Array<Array<{userId: Int, action: Int}>>, tic: Int): Void {
+		var actionList = Config.genActionList();
+		var steps = animations[tic];
+		for (step in steps) {
+			var actionData = actionList[step.action];
+			var user = users.get(step.userId);
+			var sprites = user.sprites;
+			for (sprite in sprites) {
+				sprite.loop = false;
+				sprite.play(actionData.anim);
+			}
+
+			for (baseSprite in sprites.keys()) {
+				switch (user.orientation) {
+					case 0: baseSprite.x += 120;
+					case 1: baseSprite.x -= 120;
+					case 2: baseSprite.y += 120;
+					case 3: baseSprite.y -= 120;
+				}
+			}
+		}
+		
+		if (tic < animations.length - 1) {
+			Timer.delay(function() { playTic(animations, tic + 1); }, 1000);
+		}
 	}
 
 	public function update(dt:Float) {}
