@@ -14,6 +14,7 @@ import hxd.Key;
 import hxd.Event;
 import js.html.WebSocket;
 import haxe.Json;
+import h2d.Tile;
 
 class UIManager implements ComponentManager{
 
@@ -84,14 +85,14 @@ class UIManager implements ComponentManager{
             var optionHeight = optionSpacing * i + 200;
             var tileSize = Math.floor(3 * optionSpacing / 4);
             var tilePadding = Math.floor(tileSize / 3);
-            var cardTile = Config.genCardList()[choice].img;
+            var cardTile = this.getCardImage(Config.cardList[choice].name);
             var cardIcon = new Bitmap(cardTile, cardBox);
             cardIcon.setPosition(tilePadding, optionHeight);
             choicesIcons.push(cardIcon);
 
             var cardName = new Text(dirgaFont, cardBox);
             cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
-            cardName.text = Config.genCardList()[choice].name;
+            cardName.text = Config.cardList[choice].name;
             cardName.maxWidth = cardBox.tile.width - 45;
 
             // figure out spacing
@@ -119,7 +120,6 @@ class UIManager implements ComponentManager{
             }
 
             i++;
-
 
             // ---- CARD DRAG UI, To be continued -----
 
@@ -152,6 +152,16 @@ class UIManager implements ComponentManager{
             //     cardListen.stopDrag();
             // };
         }
+    }
+
+    private function getCardImage(cardName: String):Tile {
+        var cardImg = Res.art.cards.move1; // default case
+        switch (cardName) {
+            case "Move 1":
+                cardImg = Res.art.cards.move1;
+            default:
+        }
+        return cardImg.toTile();
     }
 
     public function receiveGameInfo(user_id: Int, pk: String): Void {

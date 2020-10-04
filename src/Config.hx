@@ -24,7 +24,6 @@ class Config {
 	public static final uiSecondary = 0x063c5c;
 
     public static var actionList:Null<Array<ActionData>>;
-    public static var cardList:Null<Array<CardData>>;
 
 	public static function genActionList(): Array<ActionData> {
 		if (Config.actionList == null) {
@@ -34,62 +33,57 @@ class Config {
 		return Config.actionList;
 	}
 
-    public static function genCardList(): Array<CardData> {
-        if (Config.cardList == null) {
-            Config.cardList = [
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]},
-                {name: "Move 1", img: Res.art.cards.move1.toTile(), disorient: false, dmg: 0, action: [0]}
-            ];
-        }
-        return Config.cardList;
-    }
+    public static final cardList = [
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [0]}
+    ];
 }
