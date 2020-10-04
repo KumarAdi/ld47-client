@@ -20,7 +20,7 @@ typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, 
 class BoardManager implements ComponentManager {
 	var boardRoot: Layers;
 	private var users: Map<Int, UserInfo>;
-	private var charRoots: Array<Object>;
+	private var charRoots: Array<Layers>;
 	private var mutationsSeen: Set<Int>;
 	private var numUsers: Int;
 
@@ -28,7 +28,7 @@ class BoardManager implements ComponentManager {
 	public function new() {
 		this.boardRoot = new Layers();
 		this.users = new IntMap<UserInfo>();
-		this.charRoots = [for (_ in 0...4) new Object()];
+		this.charRoots = [for (_ in 0...4) new Layers()];
 		this.mutationsSeen = new Set<Int>();
 		this.numUsers = 0;
 	}
@@ -127,7 +127,12 @@ class BoardManager implements ComponentManager {
 	}
 
 	public function addCharacter(userId: Int, username: String, x: Int, y: Int, dir: Int, charType: Int) {
-		var baseSprites = [for (root in charRoots) new Object(root)];
+		var baseSprites = [];
+		for (root in charRoots) {
+			var sprite = new Object();
+			root.add(sprite, 0);
+			baseSprites.push(sprite);
+		}
 		for (sprite in baseSprites) {
 			sprite.x = x * 120;
 			sprite.y = y * 120;
@@ -147,6 +152,8 @@ class BoardManager implements ComponentManager {
 			orientation: dir,
 			charType: charType
 		});
+
+		for (charRoot in charRoots) charRoot.ysort(0);
 		numUsers = Lambda.count(users);
 	}
 

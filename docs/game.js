@@ -60342,10 +60342,10 @@ var scenes_BoardManager = function() {
 	this.boardRoot = new h2d_Layers();
 	this.users = new haxe_ds_IntMap();
 	var _g = [];
-	_g.push(new h2d_Object());
-	_g.push(new h2d_Object());
-	_g.push(new h2d_Object());
-	_g.push(new h2d_Object());
+	_g.push(new h2d_Layers());
+	_g.push(new h2d_Layers());
+	_g.push(new h2d_Layers());
+	_g.push(new h2d_Layers());
 	this.charRoots = _g;
 	this.mutationsSeen = new Set();
 	this.numUsers = 0;
@@ -60568,38 +60568,39 @@ scenes_BoardManager.prototype = {
 		}
 	}
 	,addCharacter: function(userId,username,x,y,dir,charType) {
-		var _g = [];
-		var _g1 = 0;
-		var _g2 = this.charRoots;
-		while(_g1 < _g2.length) {
-			var root = _g2[_g1];
-			++_g1;
-			_g.push(new h2d_Object(root));
+		var baseSprites = [];
+		var _g = 0;
+		var _g1 = this.charRoots;
+		while(_g < _g1.length) {
+			var root = _g1[_g];
+			++_g;
+			var sprite = new h2d_Object();
+			root.addChildAt(sprite,0);
+			baseSprites.push(sprite);
 		}
-		var baseSprites = _g;
-		var _g3 = 0;
-		while(_g3 < baseSprites.length) {
-			var sprite = baseSprites[_g3];
-			++_g3;
-			sprite.posChanged = true;
-			sprite.x = x * 120;
-			sprite.posChanged = true;
-			sprite.y = y * 120;
+		var _g2 = 0;
+		while(_g2 < baseSprites.length) {
+			var sprite1 = baseSprites[_g2];
+			++_g2;
+			sprite1.posChanged = true;
+			sprite1.x = x * 120;
+			sprite1.posChanged = true;
+			sprite1.y = y * 120;
 		}
-		var _g4 = new haxe_ds_ObjectMap();
+		var _g3 = new haxe_ds_ObjectMap();
+		var _g4 = 0;
+		while(_g4 < baseSprites.length) {
+			var sprite2 = baseSprites[_g4];
+			++_g4;
+			_g3.set(sprite2,this.charInfoToAnim(charType,dir,sprite2));
+		}
+		var sprites = _g3;
 		var _g5 = 0;
 		while(_g5 < baseSprites.length) {
-			var sprite1 = baseSprites[_g5];
+			var sprite3 = baseSprites[_g5];
 			++_g5;
-			_g4.set(sprite1,this.charInfoToAnim(charType,dir,sprite1));
-		}
-		var sprites = _g4;
-		var _g6 = 0;
-		while(_g6 < baseSprites.length) {
-			var sprite2 = baseSprites[_g6];
-			++_g6;
 			var this1 = hxd_Res.get_loader();
-			var nameBox = new h2d_Text(this1.loadCache("font/dirga.fnt",hxd_res_BitmapFont).toFont(),sprite2);
+			var nameBox = new h2d_Text(this1.loadCache("font/dirga.fnt",hxd_res_BitmapFont).toFont(),sprite3);
 			nameBox.color = new h3d_Vector(0,0,0);
 			nameBox.set_text(username);
 			nameBox.posChanged = true;
@@ -60609,6 +60610,13 @@ scenes_BoardManager.prototype = {
 			nameBox.y = v;
 		}
 		this.users.h[userId] = { username : username, program : [], sprites : sprites, orientation : dir, charType : charType};
+		var _g6 = 0;
+		var _g7 = this.charRoots;
+		while(_g6 < _g7.length) {
+			var charRoot = _g7[_g6];
+			++_g6;
+			charRoot.ysort(0);
+		}
 		this.numUsers = Lambda.count(this.users);
 	}
 	,charInfoToAnim: function(charType,rotation,parent) {
