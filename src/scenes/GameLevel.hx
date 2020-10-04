@@ -77,11 +77,11 @@ class GameLevel implements Level {
 				ws.send(Json.stringify({
 					type: "PlayerJoin",
 					user_id: i,
-					username: "A",
-					x: Std.int(Math.random() * Config.boardWidth / 120),
-					y: Std.int(Math.random() * Config.boardWidth / 120),
+					username: "AAAAAAAAAAAAAA",
+					x: Std.int(Math.random() * 16),
+					y: Std.int(Math.random() * 9),
 					start_orientation: 0,
-					character_type: 0
+					character_type: i % 3
 				}));
 			}
 

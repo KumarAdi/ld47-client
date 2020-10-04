@@ -1,5 +1,6 @@
 package scenes;
 
+import h3d.Vector;
 import haxe.Timer;
 import js.lib.Set;
 import h2d.Layers;
@@ -14,12 +15,12 @@ import h2d.Bitmap;
 import h2d.Text;
 import h2d.Object;
 
-typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>, orientation: Int}; 
+typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>, orientation: Int, charType: Int}; 
 
 class BoardManager implements ComponentManager {
 	var boardRoot: Layers;
 	private var users: Map<Int, UserInfo>;
-	private var charRoots: Array<Object>;
+	private var charRoots: Array<Layers>;
 	private var mutationsSeen: Set<Int>;
 	private var numUsers: Int;
 
@@ -27,7 +28,7 @@ class BoardManager implements ComponentManager {
 	public function new() {
 		this.boardRoot = new Layers();
 		this.users = new IntMap<UserInfo>();
-		this.charRoots = [for (_ in 0...4) new Object()];
+		this.charRoots = [for (_ in 0...4) new Layers()];
 		this.mutationsSeen = new Set<Int>();
 		this.numUsers = 0;
 	}
@@ -126,23 +127,57 @@ class BoardManager implements ComponentManager {
 	}
 
 	public function addCharacter(userId: Int, username: String, x: Int, y: Int, dir: Int, charType: Int) {
-		var baseSprites = [for (root in charRoots) new Object(root)];
+		var baseSprites = [];
+		for (root in charRoots) {
+			var sprite = new Object();
+			root.add(sprite, 0);
+			baseSprites.push(sprite);
+		}
 		for (sprite in baseSprites) {
 			sprite.x = x * 120;
 			sprite.y = y * 120;
 		}
 		var sprites = [for (sprite in baseSprites) sprite => charInfoToAnim(charType, dir, sprite)];
+		for (sprite in baseSprites) {
+			var nameBox = new Text(Res.font.dirga.toFont(), sprite);
+			nameBox.color = new Vector(0, 0 , 0);
+			nameBox.text = username;
+			nameBox.x = -60;
+			nameBox.y = -(60 + nameBox.textHeight);
+		}
 		this.users.set(userId, {
 			username: username,
 			program: [],
 			sprites: sprites,
-			orientation: dir
+			orientation: dir,
+			charType: charType
 		});
+
+		for (charRoot in charRoots) charRoot.ysort(0);
 		numUsers = Lambda.count(users);
 	}
 
 	private function charInfoToAnim(charType: Int, rotation: Int, parent: Object): Anim {
-		var spriteSheet = Res.art.green.g_front_stand.toTile().gridFlatten(240);
+		var animTile = Res.art.green.front_stand.toTile();
+		switch [charType, rotation] {
+			case [0, 0] | [0, 1]: animTile = Res.art.red.side_stand.toTile();
+			case [0, 2]: animTile = Res.art.red.front_stand.toTile();
+			case [0, 3]: animTile = Res.art.red.back_stand.toTile();
+			case [1, 0] | [1, 1]: animTile = Res.art.green.side_stand.toTile();
+			case [1, 2]: animTile = Res.art.green.front_stand.toTile();
+			case [1, 3]: animTile = Res.art.green.back_stand.toTile();
+			case [2, 0] | [2, 1]: animTile = Res.art.blue.side_stand.toTile();
+			case [2, 2]: animTile = Res.art.blue.front_stand.toTile();
+			case [2, 3]: animTile = Res.art.blue.back_stand.toTile();
+			default:
+		}
+
+		var spriteSheet = animTile.gridFlatten(240);
+
+		if (rotation == 1) {
+			for (sprite in spriteSheet) sprite.flipX();
+		}
+
 		var ret = new Anim(spriteSheet, parent);
 		ret.y = -120;
 		ret.x = -60;
@@ -162,16 +197,7 @@ class BoardManager implements ComponentManager {
 			var sprites = user.sprites;
 			for (sprite in sprites) {
 				sprite.loop = false;
-				sprite.play(actionData.anim);
-			}
-
-			for (baseSprite in sprites.keys()) {
-				switch (user.orientation) {
-					case 0: baseSprite.x += 120;
-					case 1: baseSprite.x -= 120;
-					case 2: baseSprite.y += 120;
-					case 3: baseSprite.y -= 120;
-				}
+				sprite.play(actionData.anim[user.charType]);
 			}
 		}
 		
