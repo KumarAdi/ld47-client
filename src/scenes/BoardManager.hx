@@ -119,6 +119,7 @@ class BoardManager implements ComponentManager {
 			this.users.get(userId).program.insert(cardLocation, cardType);
 		}
 		if (mutationsSeen.size == this.numUsers) {
+			trace('received all mutations');
 			this.mutationsSeen = new Set<Int>();
 			this.playAnimations(ExecutionEngine.run(this.users));
 		}

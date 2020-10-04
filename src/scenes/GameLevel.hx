@@ -31,7 +31,7 @@ class GameLevel implements Level {
 		this.scene = new Scene();
 		scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
 
-		this.ws = new WebSocket("ws://34.82.20.81:8080/game/");
+		this.ws = new WebSocket("wss://echo.websocket.org/");
 
 		this.boardManager = new BoardManager();
 		scene.addChild(this.boardManager.build());
@@ -73,6 +73,31 @@ class GameLevel implements Level {
 			subtext.y = nameEntry.y + nameEntry.textHeight + 10;
 			subtext.text = "Press Enter to submit";
 
+			for (i in 0...10) {
+				ws.send(Json.stringify({
+					type: "PlayerJoin",
+					user_id: i,
+					username: "A",
+					x: Std.int(Math.random() * Config.boardWidth / 120),
+					y: Std.int(Math.random() * Config.boardWidth / 120),
+					start_orientation: 0,
+					character_type: 0
+				}));
+			}
+
+			ws.send(Json.stringify({
+				type: "CardOptions",
+				card_options: [0, 0, 0]
+			}));
+
+			for (i in 0...10) {
+				ws.send(Json.stringify({
+					type: "Mutation",
+					user_id: i,
+					card_type: 0,
+					card_location: 0,
+				}));
+			}
 		};
 
 		this.ws.onmessage = function(message) {
