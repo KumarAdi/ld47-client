@@ -60628,7 +60628,7 @@ scenes_GameLevel.prototype = {
 		var splashText = new h2d_Text(font,splash);
 		splashText.set_text("Connecting...");
 		this.ws.onopen = function() {
-			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 57, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 52, className : "scenes.GameLevel", methodName : "init"});
 			splashText.set_text("Enter your username:");
 			var nameEntry = new h2d_TextInput(font,splash);
 			nameEntry.canEdit = true;
@@ -60647,9 +60647,14 @@ scenes_GameLevel.prototype = {
 			subtext.posChanged = true;
 			subtext.y = v1;
 			subtext.set_text("Press Enter to submit");
+			var _g = 0;
+			while(_g < 10) {
+				var i = _g++;
+				_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : "A", x : Math.random() * Config.boardWidth / 120 | 0, y : Math.random() * Config.boardWidth / 120 | 0, start_orientation : 0, character_type : 0}));
+			}
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 82, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 89, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
 			case "CardChoices":
@@ -60671,11 +60676,6 @@ scenes_GameLevel.prototype = {
 			default:
 			}
 		};
-		var _g = 0;
-		while(_g < 10) {
-			var i = _g++;
-			this.boardManager.addCharacter(i,"A",Math.random() * Config.boardWidth / 120 | 0,Math.random() * Config.boardWidth / 120 | 0,0,0);
-		}
 	}
 	,update: function(dt) {
 		this.boardManager.update(dt);
