@@ -27,13 +27,14 @@ class BoardManager implements ComponentManager {
 	public function build():Object {
 		var tileImage = hxd.Res.art.tile.toTile();
 
+		var subBoards = [for (i in 0...4) new Object(boardRoot)];
+
 		for (x in 0...2) {
 			for (y in 0...2) {
-				var subBoard = new Object(boardRoot);
+				var subBoard = subBoards[2*x + y];
 				subBoard.setPosition(Config.boardWidth * x, Config.boardHeight * y);
 
 				var tileRoot = new Object(subBoard);
-				subBoard.addChild(charRoots[2*x + y]);
 
 				for (i in 0...Std.int(Config.boardWidth / tileImage.width)) {
 					for (j in 0...Std.int(Config.boardHeight / tileImage.height)) {
@@ -48,6 +49,10 @@ class BoardManager implements ComponentManager {
 					}
 				}
 			}
+		}
+
+		for (i in 0...4) {
+			subBoards[i].addChild(charRoots[i]);
 		}
 
 		var boardSize = boardRoot.getBounds();
