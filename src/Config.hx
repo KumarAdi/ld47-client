@@ -1,11 +1,17 @@
 import haxe.Json;
-import hxd.Res;
 
 typedef CardData = {
     var name: String;
-    var desc: String;
     var img: String;
+    var disorient: Bool;
+    var dmg: Int;
     var action: Array<Int>;
+}
+
+typedef ActionData = {
+    var moveDist: Int;
+    var rotation: Int;
+    var anim: String;
 }
 
 class Config {
@@ -17,7 +23,12 @@ class Config {
     
     public static final cardList: Array<CardData> = 
     [
-        {name: "Move 1", desc: "Move one space forward", img: "Res.art.tile", action: [0,1,0]},
-        {name: "Move 2", desc: "Move two spaces forward", img: "Res.art.tile", action: [0,2,0]}
+        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [1]},
+        {name: "Discharge (disorient)", img: "discharge", disorient: true, dmg: 5, action: [5,6,13]}
+    ];
+
+    public static final actionList: Array<ActionData> =
+    [
+        {moveDist: 1, rotation: 0, anim: "move"}
     ];
 }
