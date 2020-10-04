@@ -1,5 +1,6 @@
 package scenes;
 
+import h3d.Vector;
 import haxe.Timer;
 import js.lib.Set;
 import h2d.Layers;
@@ -132,6 +133,13 @@ class BoardManager implements ComponentManager {
 			sprite.y = y * 120;
 		}
 		var sprites = [for (sprite in baseSprites) sprite => charInfoToAnim(charType, dir, sprite)];
+		for (sprite in baseSprites) {
+			var nameBox = new Text(Res.font.dirga.toFont(), sprite);
+			nameBox.color = new Vector(0, 0 , 0);
+			nameBox.text = username;
+			nameBox.x = -60;
+			nameBox.y = -(60 + nameBox.textHeight);
+		}
 		this.users.set(userId, {
 			username: username,
 			program: [],
@@ -158,6 +166,11 @@ class BoardManager implements ComponentManager {
 		}
 
 		var spriteSheet = animTile.gridFlatten(240);
+
+		if (rotation == 1) {
+			for (sprite in spriteSheet) sprite.flipX();
+		}
+
 		var ret = new Anim(spriteSheet, parent);
 		ret.y = -120;
 		ret.x = -60;
@@ -178,15 +191,6 @@ class BoardManager implements ComponentManager {
 			for (sprite in sprites) {
 				sprite.loop = false;
 				sprite.play(actionData.anim[user.charType]);
-			}
-
-			for (baseSprite in sprites.keys()) {
-				switch (user.orientation) {
-					case 0: baseSprite.x += 120;
-					case 1: baseSprite.x -= 120;
-					case 2: baseSprite.y += 120;
-					case 3: baseSprite.y -= 120;
-				}
 			}
 		}
 		

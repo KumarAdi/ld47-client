@@ -60562,7 +60562,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 122, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 123, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -60594,6 +60594,20 @@ scenes_BoardManager.prototype = {
 			_g4.set(sprite1,this.charInfoToAnim(charType,dir,sprite1));
 		}
 		var sprites = _g4;
+		var _g6 = 0;
+		while(_g6 < baseSprites.length) {
+			var sprite2 = baseSprites[_g6];
+			++_g6;
+			var this1 = hxd_Res.get_loader();
+			var nameBox = new h2d_Text(this1.loadCache("font/dirga.fnt",hxd_res_BitmapFont).toFont(),sprite2);
+			nameBox.color = new h3d_Vector(0,0,0);
+			nameBox.set_text(username);
+			nameBox.posChanged = true;
+			nameBox.x = -60;
+			var v = -(60 + nameBox.get_textHeight());
+			nameBox.posChanged = true;
+			nameBox.y = v;
+		}
 		this.users.h[userId] = { username : username, program : [], sprites : sprites, orientation : dir, charType : charType};
 		this.numUsers = Lambda.count(this.users);
 	}
@@ -60665,6 +60679,14 @@ scenes_BoardManager.prototype = {
 		default:
 		}
 		var spriteSheet = animTile.gridFlatten(240);
+		if(rotation == 1) {
+			var _g = 0;
+			while(_g < spriteSheet.length) {
+				var sprite = spriteSheet[_g];
+				++_g;
+				sprite.flipX();
+			}
+		}
 		var ret = new h2d_Anim(spriteSheet,null,parent);
 		ret.posChanged = true;
 		ret.y = -120;
@@ -60691,32 +60713,6 @@ scenes_BoardManager.prototype = {
 				var sprite1 = sprite.next();
 				sprite1.loop = false;
 				sprite1.play(actionData.anim[user.charType]);
-			}
-			var baseSprite = sprites.keys();
-			while(baseSprite.hasNext()) {
-				var baseSprite1 = baseSprite.next();
-				switch(user.orientation) {
-				case 0:
-					var _g1 = baseSprite1;
-					_g1.posChanged = true;
-					_g1.x += 120;
-					break;
-				case 1:
-					var _g2 = baseSprite1;
-					_g2.posChanged = true;
-					_g2.x -= 120;
-					break;
-				case 2:
-					var _g3 = baseSprite1;
-					_g3.posChanged = true;
-					_g3.y += 120;
-					break;
-				case 3:
-					var _g4 = baseSprite1;
-					_g4.posChanged = true;
-					_g4.y -= 120;
-					break;
-				}
 			}
 		}
 		if(tic < animations.length - 1) {
@@ -60812,7 +60808,7 @@ scenes_GameLevel.prototype = {
 			var _g = 0;
 			while(_g < 10) {
 				var i = _g++;
-				_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : "A", x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, character_type : i % 3}));
+				_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : "AAAAAAAAAAAAAA", x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, character_type : i % 3}));
 			}
 			_gthis.ws.send(JSON.stringify({ type : "CardOptions", card_options : [0,0,0]}));
 			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 0, card_type : 0, card_location : 0}));
