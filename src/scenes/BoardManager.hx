@@ -1,5 +1,6 @@
 package scenes;
 
+import h2d.Layers;
 import hxd.Res;
 import h2d.Anim;
 import haxe.ds.IntMap;
@@ -14,12 +15,12 @@ import h2d.Object;
 typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>}; 
 
 class BoardManager implements ComponentManager {
-	var boardRoot: Object;
+	var boardRoot: Layers;
 	private var users: Map<Int, UserInfo>;
 	private var charRoots: Array<Object>;
 
 	public function new() {
-		this.boardRoot = new Object();
+		this.boardRoot = new Layers();
 		this.users = new IntMap<UserInfo>();
 		this.charRoots = [for (_ in 0...4) new Object()];
 	}
@@ -27,14 +28,18 @@ class BoardManager implements ComponentManager {
 	public function build():Object {
 		var tileImage = hxd.Res.art.tile.toTile();
 
-		var subBoards = [for (i in 0...4) new Object(boardRoot)];
+		var subBoards = [for (i in 0...4) new Layers()];
+		for (subBoard in subBoards) {
+			boardRoot.add(subBoard, 0);
+		}
 
 		for (x in 0...2) {
 			for (y in 0...2) {
 				var subBoard = subBoards[2*x + y];
 				subBoard.setPosition(Config.boardWidth * x, Config.boardHeight * y);
 
-				var tileRoot = new Object(subBoard);
+				var tileRoot = new Object();
+				subBoard.add(tileRoot, 0);
 
 				for (i in 0...Std.int(Config.boardWidth / tileImage.width)) {
 					for (j in 0...Std.int(Config.boardHeight / tileImage.height)) {
@@ -51,8 +56,10 @@ class BoardManager implements ComponentManager {
 			}
 		}
 
+		boardRoot.ysort(0);
+
 		for (i in 0...4) {
-			subBoards[i].addChild(charRoots[i]);
+			subBoards[i].add(charRoots[i], 1);
 		}
 
 		var boardSize = boardRoot.getBounds();
