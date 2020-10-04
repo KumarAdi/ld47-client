@@ -10,6 +10,14 @@ function $extend(from, fields) {
 var Config = function() { };
 $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
+Config.genActionList = function() {
+	if(Config.actionList == null) {
+		var this1 = hxd_Res.get_loader();
+		var this2 = this1;
+		Config.actionList = [{ moveDist : 1, rotation : 0, anim : this2.loadCache("art/green/g_side_walk.png",hxd_res_Image).toTile().gridFlatten(240)}];
+	}
+	return Config.actionList;
+};
 var EReg = function(r,opt) {
 	this.r = new RegExp(r,opt.split("u").join(""));
 };
@@ -37567,6 +37575,14 @@ haxe_ds_ObjectMap.prototype = {
 		}
 		return HxOverrides.iter(a);
 	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref[i.__id__];
+		}};
+	}
 	,__class__: haxe_ds_ObjectMap
 };
 var haxe_ds__$StringMap_StringMapIterator = function(map,keys) {
@@ -60541,7 +60557,7 @@ scenes_BoardManager.prototype = {
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
 			this.mutationsSeen = new Set();
-			scenes_ExecutionEngine.run(this.users);
+			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
 	}
 	,addCharacter: function(userId,username,x,y,dir,charType) {
@@ -60571,7 +60587,7 @@ scenes_BoardManager.prototype = {
 			_g4.set(sprite1,this.charInfoToAnim(charType,dir,sprite1));
 		}
 		var sprites = _g4;
-		this.users.h[userId] = { username : username, program : [], sprites : sprites};
+		this.users.h[userId] = { username : username, program : [], sprites : sprites, orientation : dir};
 		this.numUsers = Lambda.count(this.users);
 	}
 	,charInfoToAnim: function(charType,rotation,parent) {
@@ -60585,6 +60601,59 @@ scenes_BoardManager.prototype = {
 		ret.x = -60;
 		return ret;
 	}
+	,playAnimations: function(animations) {
+		this.playTic(animations,0);
+	}
+	,playTic: function(animations,tic) {
+		var _gthis = this;
+		var actionList = Config.genActionList();
+		var steps = animations[tic];
+		var _g = 0;
+		while(_g < steps.length) {
+			var step = steps[_g];
+			++_g;
+			var actionData = actionList[step.action];
+			var user = this.users.h[step.userId];
+			var sprites = user.sprites;
+			var sprite = sprites.iterator();
+			while(sprite.hasNext()) {
+				var sprite1 = sprite.next();
+				sprite1.loop = false;
+				sprite1.play(actionData.anim);
+			}
+			var baseSprite = sprites.keys();
+			while(baseSprite.hasNext()) {
+				var baseSprite1 = baseSprite.next();
+				switch(user.orientation) {
+				case 0:
+					var _g1 = baseSprite1;
+					_g1.posChanged = true;
+					_g1.x += 120;
+					break;
+				case 1:
+					var _g2 = baseSprite1;
+					_g2.posChanged = true;
+					_g2.x -= 120;
+					break;
+				case 2:
+					var _g3 = baseSprite1;
+					_g3.posChanged = true;
+					_g3.y += 120;
+					break;
+				case 3:
+					var _g4 = baseSprite1;
+					_g4.posChanged = true;
+					_g4.y -= 120;
+					break;
+				}
+			}
+		}
+		if(tic < animations.length - 1) {
+			haxe_Timer.delay(function() {
+				_gthis.playTic(animations,tic + 1);
+			},1000);
+		}
+	}
 	,update: function(dt) {
 	}
 	,__class__: scenes_BoardManager
@@ -60593,7 +60662,30 @@ var scenes_ExecutionEngine = function() { };
 $hxClasses["scenes.ExecutionEngine"] = scenes_ExecutionEngine;
 scenes_ExecutionEngine.__name__ = "scenes.ExecutionEngine";
 scenes_ExecutionEngine.run = function(users) {
-	return [];
+	var ret = [];
+	var userId = users.keys();
+	while(userId.hasNext()) {
+		var userId1 = userId.next();
+		var user = users.h[userId1];
+		var actionCount = 0;
+		var _g = 0;
+		var _g1 = user.program;
+		while(_g < _g1.length) {
+			var card = _g1[_g];
+			++_g;
+			var cardInfo = Config.cardList[card];
+			var _g2 = 0;
+			var _g11 = cardInfo.action;
+			while(_g2 < _g11.length) {
+				var action = _g11[_g2];
+				++_g2;
+				while(actionCount >= ret.length) ret.push([]);
+				ret[actionCount].push({ userId : userId1, action : action});
+				++actionCount;
+			}
+		}
+	}
+	return ret;
 };
 var scenes_Level = function() { };
 $hxClasses["scenes.Level"] = scenes_Level;
@@ -60874,7 +60966,6 @@ Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
 Config.cardList = [{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Discharge (disorient)", img : "discharge", disorient : true, dmg : 5, action : [0,0,0]}];
-Config.actionList = [{ moveDist : 1, rotation : 0, anim : "move"}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
