@@ -1,15 +1,39 @@
 <!DOCTYPE>
 <html>
+
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>LD47 Game</title>
     <style>
-        body { margin:0;padding:0;background-color:black; }
-        canvas#webgl { width:100%;height:100%; } 
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            text-align:center;
+        }
     </style>
 </head>
+
 <body>
     <canvas id="webgl"></canvas>
-    <script type="text/javascript" src="game.js"></script>
+
+    <script>
+        window.onload = function() {
+            var body = document.body;
+            var scaleFactor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            var canvas = document.getElementById("webgl");
+            var width = `${scaleFactor * 1920}`;
+            var height = `${scaleFactor * 1080}`;
+            canvas.width = Math.floor(width);
+            canvas.height = Math.floor(height);
+            console.log(window.innerWidth, window.innerHeight);
+            console.log(width, height);
+
+            var script = document.createElement('script');
+            script.src = "game.js"
+            body.appendChild(script);
+        }
+    </script>
 </body>
+
 </html>

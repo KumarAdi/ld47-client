@@ -60554,11 +60554,12 @@ scenes_Level.prototype = {
 var scenes_GameLevel = function() {
 	this.scene = new h2d_Scene();
 	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
+	this.ws = new WebSocket("wss://echo.websocket.org/");
 	this.boardManager = new scenes_BoardManager();
 	this.scene.addChild(this.boardManager.build());
-	this.uiManager = new scenes_UIManager();
+	this.uiManager = new scenes_UIManager(this.ws);
 	this.scene.addChild(this.uiManager.build());
-	this.ws = new WebSocket("wss://echo.websocket.org/");
+	this.uiManager.showCardChoices([1,0,1]);
 };
 $hxClasses["scenes.GameLevel"] = scenes_GameLevel;
 scenes_GameLevel.__name__ = "scenes.GameLevel";
@@ -60576,7 +60577,7 @@ scenes_GameLevel.prototype = {
 		var splashText = new h2d_Text(font,splash);
 		splashText.set_text("Connecting...");
 		this.ws.onopen = function() {
-			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 54, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 56, className : "scenes.GameLevel", methodName : "init"});
 			splashText.set_text("Enter your username:");
 			var nameEntry = new h2d_TextInput(font,splash);
 			nameEntry.canEdit = true;
@@ -60597,7 +60598,7 @@ scenes_GameLevel.prototype = {
 			subtext.set_text("Press Enter to submit");
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 79, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 81, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
 			case "CardChoices":
@@ -60658,7 +60659,8 @@ scenes_Menu.prototype = {
 	}
 	,__class__: scenes_Menu
 };
-var scenes_UIManager = function() {
+var scenes_UIManager = function(ws) {
+	this.ws = ws;
 	this.uiMama = new h2d_Object();
 	var tempTile = h2d_Tile.fromColor(Config.uiColor,Config.boardWidth,280);
 	this.programBox = new h2d_Bitmap(tempTile,this.uiMama);
@@ -60688,12 +60690,19 @@ var scenes_UIManager = function() {
 	programBoxTitle.x = 45;
 	programBoxTitle.posChanged = true;
 	programBoxTitle.y = 45;
+	this.programArea = new h2d_Object(this.programBox);
+	var _this2 = this.programArea;
+	var _this3 = programBoxTitle.getBounds();
+	_this2.posChanged = true;
+	_this2.x = _this3.xMax - _this3.xMin + 50;
+	this.program = [];
 };
 $hxClasses["scenes.UIManager"] = scenes_UIManager;
 scenes_UIManager.__name__ = "scenes.UIManager";
 scenes_UIManager.__interfaces__ = [scenes_ComponentManager];
 scenes_UIManager.prototype = {
 	showCardChoices: function(choices) {
+		var _gthis = this;
 		var i = 0;
 		var _this = this.cardBox.getBounds();
 		var optionSpacing = (_this.yMax - _this.yMin - 200) / choices.length;
@@ -60705,20 +60714,68 @@ scenes_UIManager.prototype = {
 			var tileSize = Math.floor(3 * optionSpacing / 4);
 			var tilePadding = Math.floor(tileSize / 3);
 			var cardTile = h2d_Tile.fromColor(Config.uiSecondary,tileSize,tileSize);
-			var cardIcon = new h2d_Bitmap(cardTile,this.cardBox);
-			cardIcon.posChanged = true;
-			cardIcon.x = tilePadding;
-			cardIcon.posChanged = true;
-			cardIcon.y = optionHeight;
+			var cardIcon = [new h2d_Bitmap(cardTile,this.cardBox)];
+			cardIcon[0].posChanged = true;
+			cardIcon[0].x = tilePadding;
+			cardIcon[0].posChanged = true;
+			cardIcon[0].y = optionHeight;
 			var cardName = new h2d_Text(this.dirgaFont,this.cardBox);
-			var cardIcon1 = cardIcon.x;
-			var _this1 = cardIcon.getBounds();
+			var cardIcon1 = cardIcon[0].x;
+			var _this1 = cardIcon[0].getBounds();
 			cardName.posChanged = true;
 			cardName.x = cardIcon1 + (_this1.xMax - _this1.xMin) + tilePadding;
 			cardName.posChanged = true;
 			cardName.y = optionHeight + tilePadding;
 			cardName.set_text(Config.cardList[choice].name);
 			++i;
+			var programAreaWidth = [this.programBox.tile.width - this.programArea.x];
+			var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth[0] / (this.program.length + 1)) - 20;
+			var singleCardSizeBasedOnHeight = this.programBox.tile.height - 80;
+			var singleCardSize = [Math.floor(Math.min(singleCardSizeBasedOnHeight,singleCardSizeBasedOnWidth))];
+			var cardListen = [new h2d_Interactive(cardIcon[0].tile.width,cardIcon[0].tile.height,cardIcon[0])];
+			cardListen[0].onPush = (function(cardListen1,singleCardSize1,programAreaWidth1,cardIcon2) {
+				return function(e) {
+					if(e.button != 0) {
+						e.cancel = true;
+						return;
+					}
+					var x = e.relX;
+					var y = e.relY;
+					var tmp = (function(singleCardSize2,programAreaWidth2,cardIcon3) {
+						return function(e1) {
+							var _g1 = cardIcon3[0];
+							var v = _g1.x + (e1.relX - x);
+							_g1.posChanged = true;
+							_g1.x = v;
+							var _g2 = cardIcon3[0];
+							var v1 = _g2.y + (e1.relY - y);
+							_g2.posChanged = true;
+							_g2.y = v1;
+							if(cardIcon3[0].y > _gthis.programBox.y) {
+								var insertCardSmall = h2d_Tile.fromColor(Config.uiSecondary,2,2);
+								var insertCardNormal = h2d_Tile.fromColor(Config.uiSecondary,singleCardSize2[0],singleCardSize2[0]);
+								var insertCardAnimation = new h2d_Anim([insertCardSmall,insertCardNormal],15,_gthis.programArea);
+								insertCardAnimation.loop = false;
+								if(cardIcon3[0].x < _gthis.program[0].x) {
+									insertCardAnimation.posChanged = true;
+									insertCardAnimation.x = programAreaWidth2[0] + 10;
+									insertCardAnimation.posChanged = true;
+									insertCardAnimation.y = 40;
+								}
+							}
+						};
+					})(singleCardSize1,programAreaWidth1,cardIcon2);
+					cardListen1[0].startDrag(tmp);
+				};
+			})(cardListen,singleCardSize,programAreaWidth,cardIcon);
+			cardListen[0].onRelease = (function(cardListen2) {
+				return function(e2) {
+					if(e2.button != 0) {
+						return;
+					}
+					cardListen2[0].stopDrag();
+				};
+			})(cardListen);
 		}
 	}
 	,build: function() {
