@@ -35,8 +35,6 @@ class GameLevel implements Level {
 
 		this.uiManager = new UIManager(ws);
         scene.addChild(this.uiManager.build());
-        
-		uiManager.showCardChoices([1,0,1]);
 	}
 
 	public function init() {
@@ -82,16 +80,17 @@ class GameLevel implements Level {
 					this.gameID = data.game_id;
 					this.charType = data.character_type;
 					this.userName = data.username;
-					this.pk = data.private_key;
+                    this.pk = data.private_key;
+                    uiManager.receiveGameInfo(this.userID, this.pk);
 				case "PlayerJoin":
 					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
 				case "CardChoices":
-					uiManager.showCardChoices(data.card_choices);
+					uiManager.showCardChoices(data.turn_id, data.card_choices);
 				case "Mutation":
 					boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
 				default:
 			}
-		};
+        };
 
 		for (i in 0... 10) {
 			boardManager.addCharacter(i, "A", Std.int(Math.random() * Config.boardWidth / 120), Std.int(Math.random() * Config.boardWidth / 120), 0, 0);
