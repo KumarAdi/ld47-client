@@ -7,20 +7,18 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
+var AnimType = $hxEnums["AnimType"] = { __ename__ : true, __constructs__ : ["Stand","Walk","Flex"]
+	,Stand: {_hx_index:0,__enum__:"AnimType",toString:$estr}
+	,Walk: {_hx_index:1,__enum__:"AnimType",toString:$estr}
+	,Flex: {_hx_index:2,__enum__:"AnimType",toString:$estr}
+};
+AnimType.__empty_constructs__ = [AnimType.Stand,AnimType.Walk,AnimType.Flex];
 var Config = function() { };
 $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
 Config.genActionList = function() {
 	if(Config.actionList == null) {
-		var this1 = hxd_Res.get_loader();
-		var this2 = this1;
-		var tmp = this2.loadCache("art/red/side_walk.png",hxd_res_Image).toTile().gridFlatten(240);
-		var this3 = hxd_Res.get_loader();
-		var this4 = this3;
-		var tmp1 = this4.loadCache("art/green/side_walk.png",hxd_res_Image).toTile().gridFlatten(240);
-		var this5 = hxd_Res.get_loader();
-		var this6 = this5;
-		Config.actionList = [{ moveDist : 1, rotation : 0, anim : [tmp,tmp1,this6.loadCache("art/blue/side_walk.png",hxd_res_Image).toTile().gridFlatten(240)]}];
+		Config.actionList = [{ moveDist : 1, rotation : 0, anim : AnimType.Walk}];
 	}
 	return Config.actionList;
 };
@@ -3856,7 +3854,7 @@ format_tools_BitsInput.prototype = {
 		}
 		var k1 = this.i.readByte();
 		if(this.nbits >= 24) {
-			if(n > 31) {
+			if(n >= 31) {
 				throw new js__$Boot_HaxeError("Bits error");
 			}
 			var c1 = 8 + this.nbits - n;
@@ -3964,50 +3962,11 @@ format_wav_Reader.prototype = {
 			throw new js__$Boot_HaxeError("expected data subchunk");
 		}
 		var datalen = this.i.readInt32();
-		var data;
-		try {
-			data = this.i.read(datalen);
-		} catch( e ) {
-			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
-			if(((e1) instanceof haxe_io_Eof)) {
-				var e2 = e1;
-				throw new js__$Boot_HaxeError("Invalid chunk data length");
-			} else {
-				throw e;
-			}
+		var data = this.i.readAll();
+		if(data.length > datalen) {
+			data = data.sub(0,datalen);
 		}
-		var cuePoints = [];
-		try {
-			while(true) {
-				var nextChunk1 = this.i.readString(4);
-				if(nextChunk1 == "cue ") {
-					this.i.readInt32();
-					var nbCuePoints = this.i.readInt32();
-					var _g1 = 0;
-					var _g2 = nbCuePoints;
-					while(_g1 < _g2) {
-						var _ = _g1++;
-						var cueId = this.i.readInt32();
-						this.i.readInt32();
-						this.i.readString(4);
-						this.i.readInt32();
-						this.i.readInt32();
-						var cueSampleOffset = this.i.readInt32();
-						cuePoints.push({ id : cueId, sampleOffset : cueSampleOffset});
-					}
-				} else {
-					this.i.read(this.i.readInt32());
-				}
-			}
-		} catch( e3 ) {
-			var e4 = ((e3) instanceof js__$Boot_HaxeError) ? e3.val : e3;
-			if(((e4) instanceof haxe_io_Eof)) {
-				var e5 = e4;
-			} else {
-				throw e3;
-			}
-		}
-		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data, cuePoints : cuePoints};
+		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data};
 	}
 	,__class__: format_wav_Reader
 };
@@ -36834,6 +36793,12 @@ haxe_io_Bytes.prototype = {
 			this.b[pos++] = value;
 		}
 	}
+	,sub: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) {
+			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		}
+		return new haxe_io_Bytes(this.b.buffer.slice(pos + this.b.byteOffset,pos + this.b.byteOffset + len));
+	}
 	,getFloat: function(pos) {
 		if(this.data == null) {
 			this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -37862,6 +37827,30 @@ haxe_io_Input.prototype = {
 	,set_bigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
+	}
+	,readAll: function(bufsize) {
+		if(bufsize == null) {
+			bufsize = 16384;
+		}
+		var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
+		var total = new haxe_io_BytesBuffer();
+		try {
+			while(true) {
+				var len = this.readBytes(buf,0,bufsize);
+				if(len == 0) {
+					throw new js__$Boot_HaxeError(haxe_io_Error.Blocked);
+				}
+				total.addBytes(buf,0,len);
+			}
+		} catch( e ) {
+			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
+			if(((e1) instanceof haxe_io_Eof)) {
+				var e2 = e1;
+			} else {
+				throw e;
+			}
+		}
+		return total.getBytes();
 	}
 	,readFullBytes: function(s,pos,len) {
 		while(len > 0) {
@@ -60331,6 +60320,15 @@ js_html__$CanvasElement_CanvasUtil.getContextWebGL = function(canvas,attribs) {
 	}
 	return null;
 };
+var js_lib__$ArrayBuffer_ArrayBufferCompat = function() { };
+$hxClasses["js.lib._ArrayBuffer.ArrayBufferCompat"] = js_lib__$ArrayBuffer_ArrayBufferCompat;
+js_lib__$ArrayBuffer_ArrayBufferCompat.__name__ = "js.lib._ArrayBuffer.ArrayBufferCompat";
+js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
+	var u = new Uint8Array(this,begin,end == null ? null : end - begin);
+	var resultArray = new Uint8Array(u.byteLength);
+	resultArray.set(u);
+	return resultArray.buffer;
+};
 var scenes_ComponentManager = function() { };
 $hxClasses["scenes.ComponentManager"] = scenes_ComponentManager;
 scenes_ComponentManager.__name__ = "scenes.ComponentManager";
@@ -60562,7 +60560,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 123, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 125, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -60592,18 +60590,26 @@ scenes_BoardManager.prototype = {
 		while(_g4 < baseSprites.length) {
 			var sprite2 = baseSprites[_g4];
 			++_g4;
-			_g3.set(sprite2,this.charInfoToAnim(charType,dir,sprite2));
+			_g3.set(sprite2,new h2d_Anim(this.charInfoToTiles(charType,dir,AnimType.Stand),null,sprite2));
 		}
 		var sprites = _g3;
+		var sprite3 = sprites.iterator();
+		while(sprite3.hasNext()) {
+			var sprite4 = sprite3.next();
+			sprite4.posChanged = true;
+			sprite4.x = -60;
+			sprite4.posChanged = true;
+			sprite4.y = -120;
+		}
 		var _g5 = 0;
 		while(_g5 < baseSprites.length) {
-			var sprite3 = baseSprites[_g5];
+			var sprite5 = baseSprites[_g5];
 			++_g5;
 			var this1 = hxd_Res.get_loader();
-			var nameBox = new h2d_Text(this1.loadCache("font/pixel.fnt",hxd_res_BitmapFont).toFont(),sprite3);
+			var nameBox = new h2d_Text(this1.loadCache("font/pixel.fnt",hxd_res_BitmapFont).toFont(),sprite5);
 			nameBox.color = new h3d_Vector(0,0,0);
 			nameBox.set_text(username);
-			var _this = sprite3.getBounds();
+			var _this = sprite5.getBounds();
 			var v = (_this.xMax - _this.xMin) / 3 - nameBox.calcTextWidth(username) / 2;
 			nameBox.posChanged = true;
 			nameBox.x = v;
@@ -60622,73 +60628,123 @@ scenes_BoardManager.prototype = {
 		}
 		this.numUsers = Lambda.count(this.users);
 	}
-	,charInfoToAnim: function(charType,rotation,parent) {
+	,charInfoToTiles: function(charType,rotation,type) {
 		var this1 = hxd_Res.get_loader();
 		var this2 = this1;
-		var animTile = this2.loadCache("art/green/front_stand.png",hxd_res_Image).toTile();
-		switch(charType) {
-		case 0:
-			switch(rotation) {
-			case 0:case 1:
-				var this3 = hxd_Res.get_loader();
-				var this4 = this3;
-				animTile = this4.loadCache("art/red/side_stand.png",hxd_res_Image).toTile();
-				break;
-			case 2:
-				var this5 = hxd_Res.get_loader();
-				var this6 = this5;
-				animTile = this6.loadCache("art/red/front_stand.png",hxd_res_Image).toTile();
-				break;
-			case 3:
-				var this7 = hxd_Res.get_loader();
-				var this8 = this7;
-				animTile = this8.loadCache("art/red/back_stand.png",hxd_res_Image).toTile();
-				break;
-			default:
-			}
-			break;
+		var tileArr = this2.loadCache("art/red/side_stand.png",hxd_res_Image).toTile();
+		var this3 = hxd_Res.get_loader();
+		var this4 = this3;
+		var tileArr1 = this4.loadCache("art/red/side_stand.png",hxd_res_Image).toTile();
+		var this5 = hxd_Res.get_loader();
+		var this6 = this5;
+		var tileArr2 = this6.loadCache("art/red/front_stand.png",hxd_res_Image).toTile();
+		var this7 = hxd_Res.get_loader();
+		var this8 = this7;
+		var tileArr3 = [tileArr,tileArr1,tileArr2,this8.loadCache("art/red/back_stand.png",hxd_res_Image).toTile()];
+		var this9 = hxd_Res.get_loader();
+		var this10 = this9;
+		var tileArr4 = this10.loadCache("art/green/side_stand.png",hxd_res_Image).toTile();
+		var this11 = hxd_Res.get_loader();
+		var this12 = this11;
+		var tileArr5 = this12.loadCache("art/green/side_stand.png",hxd_res_Image).toTile();
+		var this13 = hxd_Res.get_loader();
+		var this14 = this13;
+		var tileArr6 = this14.loadCache("art/green/front_stand.png",hxd_res_Image).toTile();
+		var this15 = hxd_Res.get_loader();
+		var this16 = this15;
+		var tileArr7 = [tileArr4,tileArr5,tileArr6,this16.loadCache("art/green/back_stand.png",hxd_res_Image).toTile()];
+		var this17 = hxd_Res.get_loader();
+		var this18 = this17;
+		var tileArr8 = this18.loadCache("art/blue/side_stand.png",hxd_res_Image).toTile();
+		var this19 = hxd_Res.get_loader();
+		var this20 = this19;
+		var tileArr9 = this20.loadCache("art/blue/side_stand.png",hxd_res_Image).toTile();
+		var this21 = hxd_Res.get_loader();
+		var this22 = this21;
+		var tileArr10 = this22.loadCache("art/blue/front_stand.png",hxd_res_Image).toTile();
+		var this23 = hxd_Res.get_loader();
+		var this24 = this23;
+		var tileArr11 = [tileArr3,tileArr7,[tileArr8,tileArr9,tileArr10,this24.loadCache("art/blue/back_stand.png",hxd_res_Image).toTile()]];
+		switch(type._hx_index) {
 		case 1:
-			switch(rotation) {
-			case 0:case 1:
-				var this9 = hxd_Res.get_loader();
-				var this10 = this9;
-				animTile = this10.loadCache("art/green/side_stand.png",hxd_res_Image).toTile();
-				break;
-			case 2:
-				var this11 = hxd_Res.get_loader();
-				var this12 = this11;
-				animTile = this12.loadCache("art/green/front_stand.png",hxd_res_Image).toTile();
-				break;
-			case 3:
-				var this13 = hxd_Res.get_loader();
-				var this14 = this13;
-				animTile = this14.loadCache("art/green/back_stand.png",hxd_res_Image).toTile();
-				break;
-			default:
-			}
+			var this25 = hxd_Res.get_loader();
+			var this26 = this25;
+			var tileArr12 = this26.loadCache("art/red/side_walk.png",hxd_res_Image).toTile();
+			var this27 = hxd_Res.get_loader();
+			var this28 = this27;
+			var tileArr13 = this28.loadCache("art/red/side_walk.png",hxd_res_Image).toTile();
+			var this29 = hxd_Res.get_loader();
+			var this30 = this29;
+			var tileArr14 = this30.loadCache("art/red/front_walk.png",hxd_res_Image).toTile();
+			var this31 = hxd_Res.get_loader();
+			var this32 = this31;
+			var tileArr15 = [tileArr12,tileArr13,tileArr14,this32.loadCache("art/red/back_walk.png",hxd_res_Image).toTile()];
+			var this33 = hxd_Res.get_loader();
+			var this34 = this33;
+			var tileArr16 = this34.loadCache("art/green/side_walk.png",hxd_res_Image).toTile();
+			var this35 = hxd_Res.get_loader();
+			var this36 = this35;
+			var tileArr17 = this36.loadCache("art/green/side_walk.png",hxd_res_Image).toTile();
+			var this37 = hxd_Res.get_loader();
+			var this38 = this37;
+			var tileArr18 = this38.loadCache("art/green/front_walk.png",hxd_res_Image).toTile();
+			var this39 = hxd_Res.get_loader();
+			var this40 = this39;
+			var tileArr19 = [tileArr16,tileArr17,tileArr18,this40.loadCache("art/green/back_walk.png",hxd_res_Image).toTile()];
+			var this41 = hxd_Res.get_loader();
+			var this42 = this41;
+			var tileArr20 = this42.loadCache("art/blue/side_walk.png",hxd_res_Image).toTile();
+			var this43 = hxd_Res.get_loader();
+			var this44 = this43;
+			var tileArr21 = this44.loadCache("art/blue/side_walk.png",hxd_res_Image).toTile();
+			var this45 = hxd_Res.get_loader();
+			var this46 = this45;
+			var tileArr22 = this46.loadCache("art/blue/front_walk.png",hxd_res_Image).toTile();
+			var this47 = hxd_Res.get_loader();
+			var this48 = this47;
+			tileArr11 = [tileArr15,tileArr19,[tileArr20,tileArr21,tileArr22,this48.loadCache("art/blue/back_walk.png",hxd_res_Image).toTile()]];
 			break;
 		case 2:
-			switch(rotation) {
-			case 0:case 1:
-				var this15 = hxd_Res.get_loader();
-				var this16 = this15;
-				animTile = this16.loadCache("art/blue/side_stand.png",hxd_res_Image).toTile();
-				break;
-			case 2:
-				var this17 = hxd_Res.get_loader();
-				var this18 = this17;
-				animTile = this18.loadCache("art/blue/front_stand.png",hxd_res_Image).toTile();
-				break;
-			case 3:
-				var this19 = hxd_Res.get_loader();
-				var this20 = this19;
-				animTile = this20.loadCache("art/blue/back_stand.png",hxd_res_Image).toTile();
-				break;
-			default:
-			}
+			var this49 = hxd_Res.get_loader();
+			var this50 = this49;
+			var tileArr23 = this50.loadCache("art/red/side_flex.png",hxd_res_Image).toTile();
+			var this51 = hxd_Res.get_loader();
+			var this52 = this51;
+			var tileArr24 = this52.loadCache("art/red/side_flex.png",hxd_res_Image).toTile();
+			var this53 = hxd_Res.get_loader();
+			var this54 = this53;
+			var tileArr25 = this54.loadCache("art/red/front_flex.png",hxd_res_Image).toTile();
+			var this55 = hxd_Res.get_loader();
+			var this56 = this55;
+			var tileArr26 = [tileArr23,tileArr24,tileArr25,this56.loadCache("art/red/back_flex.png",hxd_res_Image).toTile()];
+			var this57 = hxd_Res.get_loader();
+			var this58 = this57;
+			var tileArr27 = this58.loadCache("art/green/side_flex.png",hxd_res_Image).toTile();
+			var this59 = hxd_Res.get_loader();
+			var this60 = this59;
+			var tileArr28 = this60.loadCache("art/green/side_flex.png",hxd_res_Image).toTile();
+			var this61 = hxd_Res.get_loader();
+			var this62 = this61;
+			var tileArr29 = this62.loadCache("art/green/front_flex.png",hxd_res_Image).toTile();
+			var this63 = hxd_Res.get_loader();
+			var this64 = this63;
+			var tileArr30 = [tileArr27,tileArr28,tileArr29,this64.loadCache("art/green/back_flex.png",hxd_res_Image).toTile()];
+			var this65 = hxd_Res.get_loader();
+			var this66 = this65;
+			var tileArr31 = this66.loadCache("art/blue/side_flex.png",hxd_res_Image).toTile();
+			var this67 = hxd_Res.get_loader();
+			var this68 = this67;
+			var tileArr32 = this68.loadCache("art/blue/side_flex.png",hxd_res_Image).toTile();
+			var this69 = hxd_Res.get_loader();
+			var this70 = this69;
+			var tileArr33 = this70.loadCache("art/blue/front_flex.png",hxd_res_Image).toTile();
+			var this71 = hxd_Res.get_loader();
+			var this72 = this71;
+			tileArr11 = [tileArr26,tileArr30,[tileArr31,tileArr32,tileArr33,this72.loadCache("art/blue/back_flex.png",hxd_res_Image).toTile()]];
 			break;
 		default:
 		}
+		var animTile = tileArr11[charType][rotation];
 		var spriteSheet = animTile.gridFlatten(240);
 		if(rotation == 1) {
 			var _g = 0;
@@ -60698,12 +60754,7 @@ scenes_BoardManager.prototype = {
 				sprite.flipX();
 			}
 		}
-		var ret = new h2d_Anim(spriteSheet,null,parent);
-		ret.posChanged = true;
-		ret.y = -120;
-		ret.posChanged = true;
-		ret.x = -60;
-		return ret;
+		return spriteSheet;
 	}
 	,playAnimations: function(animations) {
 		this.playTic(animations,0);
@@ -60717,13 +60768,21 @@ scenes_BoardManager.prototype = {
 			var step = steps[_g];
 			++_g;
 			var actionData = actionList[step.action];
-			var user = this.users.h[step.userId];
-			var sprites = user.sprites;
+			var user = [this.users.h[step.userId]];
+			var sprites = user[0].sprites;
 			var sprite = sprites.iterator();
 			while(sprite.hasNext()) {
 				var sprite1 = sprite.next();
-				sprite1.loop = false;
-				sprite1.play(actionData.anim[user.charType]);
+				var sprite2 = [sprite1];
+				sprite2[0].loop = false;
+				var tmp = this.charInfoToTiles(user[0].charType,user[0].orientation,actionData.anim);
+				sprite2[0].play(tmp);
+				sprite2[0].onAnimEnd = (function(sprite3,user1) {
+					return function() {
+						var tmp1 = _gthis.charInfoToTiles(user1[0].charType,user1[0].orientation,AnimType.Stand);
+						sprite3[0].play(tmp1);
+					};
+				})(sprite2,user);
 			}
 		}
 		if(tic < animations.length - 1) {
@@ -61069,6 +61128,9 @@ js_Boot.__toStr = ({ }).toString;
 Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function() {
 	return String(this.val);
 }});
+if(ArrayBuffer.prototype.slice == null) {
+	ArrayBuffer.prototype.slice = js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
+}
 Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
