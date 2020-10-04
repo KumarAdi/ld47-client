@@ -23,8 +23,8 @@ class Config {
     
     public static final cardList: Array<CardData> = 
     [
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [1]},
-        {name: "Discharge (disorient)", img: "discharge", disorient: true, dmg: 5, action: [5,6,13]}
+        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
+        {name: "Discharge (disorient)", img: "discharge", disorient: true, dmg: 5, action: [0,0,0]}
     ];
 
     public static final actionList: Array<ActionData> =
