@@ -82,34 +82,39 @@ class UIManager implements ComponentManager{
             var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
 
             var cardListen = new h2d.Interactive(cardIcon.tile.width, cardIcon.tile.height, cardIcon);
-            cardListen.onPush = function(e:Event) {
-                if (e.button != Key.MOUSE_LEFT) {
-                    e.cancel = true;
-                    return;
-                }
-                var x = e.relX;
-                var y = e.relY;
-                cardListen.startDrag(function(e:Event) {
-                    cardIcon.x += (e.relX - x);
-                    cardIcon.y += (e.relY - y);
-                    if (cardIcon.y > programBox.y) {
-                        var insertCardSmall = h2d.Tile.fromColor(Config.uiSecondary, 2, 2);
-                        var insertCardNormal = h2d.Tile.fromColor(Config.uiSecondary, singleCardSize, singleCardSize);
-                        var insertCardAnimation = new h2d.Anim([insertCardSmall, insertCardNormal], 15, programArea);
-                        insertCardAnimation.loop = false;
-                        if (cardIcon.x < program[0].x) {
-                            insertCardAnimation.x = programAreaWidth + 10;
-                            insertCardAnimation.y = 40;
-                        }
-                    }
-                });
-            };
-            cardListen.onRelease = function(e:Event) {
-                if (e.button != Key.MOUSE_LEFT) {
-                    return;
-                }
-                cardListen.stopDrag();
-            };
+            
+
+
+            // ---- CARD DRAG UI, To be continued -----
+
+            // cardListen.onPush = function(e:Event) {
+            //     if (e.button != Key.MOUSE_LEFT) {
+            //         e.cancel = true;
+            //         return;
+            //     }
+            //     var x = e.relX;
+            //     var y = e.relY;
+            //     cardListen.startDrag(function(e:Event) {
+            //         cardIcon.x += (e.relX - x);
+            //         cardIcon.y += (e.relY - y);
+            //         if (cardIcon.y > programBox.y) {
+            //             var insertCardSmall = h2d.Tile.fromColor(Config.uiSecondary, 2, 2);
+            //             var insertCardNormal = h2d.Tile.fromColor(Config.uiSecondary, singleCardSize, singleCardSize);
+            //             var insertCardAnimation = new h2d.Anim([insertCardSmall, insertCardNormal], 15, programArea);
+            //             insertCardAnimation.loop = false;
+            //             if (cardIcon.x < program[0].x) {
+            //                 insertCardAnimation.x = programAreaWidth + 10;
+            //                 insertCardAnimation.y = 40;
+            //             }
+            //         }
+            //     });
+            // };
+            // cardListen.onRelease = function(e:Event) {
+            //     if (e.button != Key.MOUSE_LEFT) {
+            //         return;
+            //     }
+            //     cardListen.stopDrag();
+            // };
         }
     }
 
