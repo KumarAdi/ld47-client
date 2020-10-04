@@ -60298,7 +60298,7 @@ scenes_ComponentManager.prototype = {
 	__class__: scenes_ComponentManager
 };
 var scenes_BoardManager = function() {
-	this.boardRoot = new h2d_Object();
+	this.boardRoot = new h2d_Layers();
 	this.users = new haxe_ds_IntMap();
 	var _g = [];
 	_g.push(new h2d_Object());
@@ -60316,25 +60316,32 @@ scenes_BoardManager.prototype = {
 		var this1 = hxd_Res.get_loader();
 		var tileImage = this1.loadCache("art/tile.png",hxd_res_Image).toTile();
 		var _g = [];
-		_g.push(new h2d_Object(this.boardRoot));
-		_g.push(new h2d_Object(this.boardRoot));
-		_g.push(new h2d_Object(this.boardRoot));
-		_g.push(new h2d_Object(this.boardRoot));
+		_g.push(new h2d_Layers());
+		_g.push(new h2d_Layers());
+		_g.push(new h2d_Layers());
+		_g.push(new h2d_Layers());
 		var subBoards = _g;
-		var subBoard = subBoards[0];
-		subBoard.posChanged = true;
-		subBoard.x = Config.boardWidth * 0;
-		subBoard.posChanged = true;
-		subBoard.y = Config.boardHeight * 0;
-		var tileRoot = new h2d_Object(subBoard);
 		var _g1 = 0;
-		var _g2 = Config.boardWidth / tileImage.width | 0;
-		while(_g1 < _g2) {
-			var i = _g1++;
-			var _g11 = 0;
-			var _g21 = Config.boardHeight / tileImage.height | 0;
-			while(_g11 < _g21) {
-				var j = _g11++;
+		while(_g1 < subBoards.length) {
+			var subBoard = subBoards[_g1];
+			++_g1;
+			this.boardRoot.addChildAt(subBoard,0);
+		}
+		var subBoard1 = subBoards[0];
+		subBoard1.posChanged = true;
+		subBoard1.x = Config.boardWidth * 0;
+		subBoard1.posChanged = true;
+		subBoard1.y = Config.boardHeight * 0;
+		var tileRoot = new h2d_Object();
+		subBoard1.addChildAt(tileRoot,0);
+		var _g2 = 0;
+		var _g3 = Config.boardWidth / tileImage.width | 0;
+		while(_g2 < _g3) {
+			var i = _g2++;
+			var _g21 = 0;
+			var _g31 = Config.boardHeight / tileImage.height | 0;
+			while(_g21 < _g31) {
+				var j = _g21++;
 				var tileSprite = new h2d_Bitmap(tileImage,tileRoot);
 				tileSprite.posChanged = true;
 				tileSprite.x = i * tileImage.width;
@@ -60344,28 +60351,29 @@ scenes_BoardManager.prototype = {
 				var coord = new h2d_Text(font,tileSprite);
 				coord.set_textColor(0);
 				coord.set_text("" + i + ", " + j);
-				var _g3 = coord;
-				_g3.posChanged = true;
-				_g3.scaleX *= 2;
 				var _g4 = coord;
 				_g4.posChanged = true;
-				_g4.scaleY *= 2;
+				_g4.scaleX *= 2;
+				var _g5 = coord;
+				_g5.posChanged = true;
+				_g5.scaleY *= 2;
 			}
 		}
-		var subBoard1 = subBoards[1];
-		subBoard1.posChanged = true;
-		subBoard1.x = Config.boardWidth * 0;
-		subBoard1.posChanged = true;
-		subBoard1.y = Config.boardHeight;
-		var tileRoot1 = new h2d_Object(subBoard1);
-		var _g12 = 0;
-		var _g22 = Config.boardWidth / tileImage.width | 0;
-		while(_g12 < _g22) {
-			var i1 = _g12++;
-			var _g13 = 0;
-			var _g23 = Config.boardHeight / tileImage.height | 0;
-			while(_g13 < _g23) {
-				var j1 = _g13++;
+		var subBoard2 = subBoards[1];
+		subBoard2.posChanged = true;
+		subBoard2.x = Config.boardWidth * 0;
+		subBoard2.posChanged = true;
+		subBoard2.y = Config.boardHeight;
+		var tileRoot1 = new h2d_Object();
+		subBoard2.addChildAt(tileRoot1,0);
+		var _g22 = 0;
+		var _g32 = Config.boardWidth / tileImage.width | 0;
+		while(_g22 < _g32) {
+			var i1 = _g22++;
+			var _g23 = 0;
+			var _g33 = Config.boardHeight / tileImage.height | 0;
+			while(_g23 < _g33) {
+				var j1 = _g23++;
 				var tileSprite1 = new h2d_Bitmap(tileImage,tileRoot1);
 				tileSprite1.posChanged = true;
 				tileSprite1.x = i1 * tileImage.width;
@@ -60375,28 +60383,29 @@ scenes_BoardManager.prototype = {
 				var coord1 = new h2d_Text(font1,tileSprite1);
 				coord1.set_textColor(0);
 				coord1.set_text("" + i1 + ", " + j1);
-				var _g5 = coord1;
-				_g5.posChanged = true;
-				_g5.scaleX *= 2;
 				var _g6 = coord1;
 				_g6.posChanged = true;
-				_g6.scaleY *= 2;
+				_g6.scaleX *= 2;
+				var _g7 = coord1;
+				_g7.posChanged = true;
+				_g7.scaleY *= 2;
 			}
 		}
-		var subBoard2 = subBoards[2];
-		subBoard2.posChanged = true;
-		subBoard2.x = Config.boardWidth;
-		subBoard2.posChanged = true;
-		subBoard2.y = Config.boardHeight * 0;
-		var tileRoot2 = new h2d_Object(subBoard2);
-		var _g14 = 0;
-		var _g24 = Config.boardWidth / tileImage.width | 0;
-		while(_g14 < _g24) {
-			var i2 = _g14++;
-			var _g15 = 0;
-			var _g25 = Config.boardHeight / tileImage.height | 0;
-			while(_g15 < _g25) {
-				var j2 = _g15++;
+		var subBoard3 = subBoards[2];
+		subBoard3.posChanged = true;
+		subBoard3.x = Config.boardWidth;
+		subBoard3.posChanged = true;
+		subBoard3.y = Config.boardHeight * 0;
+		var tileRoot2 = new h2d_Object();
+		subBoard3.addChildAt(tileRoot2,0);
+		var _g24 = 0;
+		var _g34 = Config.boardWidth / tileImage.width | 0;
+		while(_g24 < _g34) {
+			var i2 = _g24++;
+			var _g25 = 0;
+			var _g35 = Config.boardHeight / tileImage.height | 0;
+			while(_g25 < _g35) {
+				var j2 = _g25++;
 				var tileSprite2 = new h2d_Bitmap(tileImage,tileRoot2);
 				tileSprite2.posChanged = true;
 				tileSprite2.x = i2 * tileImage.width;
@@ -60406,28 +60415,29 @@ scenes_BoardManager.prototype = {
 				var coord2 = new h2d_Text(font2,tileSprite2);
 				coord2.set_textColor(0);
 				coord2.set_text("" + i2 + ", " + j2);
-				var _g7 = coord2;
-				_g7.posChanged = true;
-				_g7.scaleX *= 2;
 				var _g8 = coord2;
 				_g8.posChanged = true;
-				_g8.scaleY *= 2;
+				_g8.scaleX *= 2;
+				var _g9 = coord2;
+				_g9.posChanged = true;
+				_g9.scaleY *= 2;
 			}
 		}
-		var subBoard3 = subBoards[3];
-		subBoard3.posChanged = true;
-		subBoard3.x = Config.boardWidth;
-		subBoard3.posChanged = true;
-		subBoard3.y = Config.boardHeight;
-		var tileRoot3 = new h2d_Object(subBoard3);
-		var _g16 = 0;
-		var _g26 = Config.boardWidth / tileImage.width | 0;
-		while(_g16 < _g26) {
-			var i3 = _g16++;
-			var _g17 = 0;
-			var _g27 = Config.boardHeight / tileImage.height | 0;
-			while(_g17 < _g27) {
-				var j3 = _g17++;
+		var subBoard4 = subBoards[3];
+		subBoard4.posChanged = true;
+		subBoard4.x = Config.boardWidth;
+		subBoard4.posChanged = true;
+		subBoard4.y = Config.boardHeight;
+		var tileRoot3 = new h2d_Object();
+		subBoard4.addChildAt(tileRoot3,0);
+		var _g26 = 0;
+		var _g36 = Config.boardWidth / tileImage.width | 0;
+		while(_g26 < _g36) {
+			var i3 = _g26++;
+			var _g27 = 0;
+			var _g37 = Config.boardHeight / tileImage.height | 0;
+			while(_g27 < _g37) {
+				var j3 = _g27++;
 				var tileSprite3 = new h2d_Bitmap(tileImage,tileRoot3);
 				tileSprite3.posChanged = true;
 				tileSprite3.x = i3 * tileImage.width;
@@ -60437,18 +60447,19 @@ scenes_BoardManager.prototype = {
 				var coord3 = new h2d_Text(font3,tileSprite3);
 				coord3.set_textColor(0);
 				coord3.set_text("" + i3 + ", " + j3);
-				var _g9 = coord3;
-				_g9.posChanged = true;
-				_g9.scaleX *= 2;
 				var _g10 = coord3;
 				_g10.posChanged = true;
-				_g10.scaleY *= 2;
+				_g10.scaleX *= 2;
+				var _g11 = coord3;
+				_g11.posChanged = true;
+				_g11.scaleY *= 2;
 			}
 		}
-		subBoards[0].addChild(this.charRoots[0]);
-		subBoards[1].addChild(this.charRoots[1]);
-		subBoards[2].addChild(this.charRoots[2]);
-		subBoards[3].addChild(this.charRoots[3]);
+		this.boardRoot.ysort(0);
+		subBoards[0].addChildAt(this.charRoots[0],1);
+		subBoards[1].addChildAt(this.charRoots[1],1);
+		subBoards[2].addChildAt(this.charRoots[2],1);
+		subBoards[3].addChildAt(this.charRoots[3],1);
 		var boardSize = this.boardRoot.getBounds();
 		var dragBoard = new h2d_Interactive(boardSize.xMax - boardSize.xMin,boardSize.yMax - boardSize.yMin,this.boardRoot);
 		dragBoard.enableRightButton = true;
@@ -60460,25 +60471,25 @@ scenes_BoardManager.prototype = {
 			var x = e.relX;
 			var y = e.relY;
 			dragBoard.startDrag(function(e1) {
-				var _g18 = _gthis.boardRoot;
-				var v = _g18.x + (e1.relX - x) * _gthis.boardRoot.scaleX;
-				_g18.posChanged = true;
-				_g18.x = v;
-				var _g19 = _gthis.boardRoot;
-				var v1 = _g19.y + (e1.relY - y) * _gthis.boardRoot.scaleY;
-				_g19.posChanged = true;
-				_g19.y = v1;
+				var _g28 = _gthis.boardRoot;
+				var v = _g28.x + (e1.relX - x) * _gthis.boardRoot.scaleX;
+				_g28.posChanged = true;
+				_g28.x = v;
+				var _g29 = _gthis.boardRoot;
+				var v1 = _g29.y + (e1.relY - y) * _gthis.boardRoot.scaleY;
+				_g29.posChanged = true;
+				_g29.y = v1;
 				while(_gthis.boardRoot.x < -1 * Config.boardWidth * _gthis.boardRoot.scaleX || _gthis.boardRoot.x > 0) {
-					var _g110 = _gthis.boardRoot;
-					var v2 = _g110.x - Config.boardWidth * _gthis.boardRoot.x / Math.abs(_gthis.boardRoot.x);
-					_g110.posChanged = true;
-					_g110.x = v2;
+					var _g210 = _gthis.boardRoot;
+					var v2 = _g210.x - Config.boardWidth * _gthis.boardRoot.x / Math.abs(_gthis.boardRoot.x);
+					_g210.posChanged = true;
+					_g210.x = v2;
 				}
 				while(_gthis.boardRoot.y < -1 * Config.boardHeight * _gthis.boardRoot.scaleY || _gthis.boardRoot.y > 0) {
-					var _g111 = _gthis.boardRoot;
-					var v3 = _g111.y - Config.boardHeight * _gthis.boardRoot.y / Math.abs(_gthis.boardRoot.y);
-					_g111.posChanged = true;
-					_g111.y = v3;
+					var _g211 = _gthis.boardRoot;
+					var v3 = _g211.y - Config.boardHeight * _gthis.boardRoot.y / Math.abs(_gthis.boardRoot.y);
+					_g211.posChanged = true;
+					_g211.y = v3;
 				}
 			});
 		};
