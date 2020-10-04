@@ -1,5 +1,6 @@
 package scenes;
 
+import js.lib.Set;
 import h2d.Layers;
 import hxd.Res;
 import h2d.Anim;
@@ -18,11 +19,16 @@ class BoardManager implements ComponentManager {
 	var boardRoot: Layers;
 	private var users: Map<Int, UserInfo>;
 	private var charRoots: Array<Object>;
+	private var mutationsSeen: Set<Int>;
+	private var numUsers: Int;
+
 
 	public function new() {
 		this.boardRoot = new Layers();
 		this.users = new IntMap<UserInfo>();
 		this.charRoots = [for (_ in 0...4) new Object()];
+		this.mutationsSeen = new Set<Int>();
+		this.numUsers = 0;
 	}
 
 	public function build():Object {
@@ -96,12 +102,25 @@ class BoardManager implements ComponentManager {
 		Window.getInstance().addEventTarget(function(evt:Event) {
 			switch (evt.kind) {
 				case EWheel:
-					boardRoot.setScale(Math.max(1.0, boardRoot.scaleX + evt.wheelDelta));
-				case _:
+					boardRoot.setScale(Math.max(1.0, boardRoot.scaleX - evt.wheelDelta));
+				default:
 			}
 		});
 
 		return boardRoot;
+	}
+
+	public function updateProgram(userId: Int, cardType: Int, cardLocation: Int) {
+		mutationsSeen.add(userId);
+		if (cardType == -1) {
+			this.users.get(userId).program.remove(cardLocation);
+		} else {
+			this.users.get(userId).program.insert(cardLocation, cardType);
+		}
+		if (mutationsSeen.size == this.numUsers) {
+			this.mutationsSeen = new Set<Int>();
+			ExecutionEngine.run(this.users);
+		}
 	}
 
 	public function addCharacter(userId: Int, username: String, x: Int, y: Int, dir: Int, charType: Int) {
@@ -116,6 +135,7 @@ class BoardManager implements ComponentManager {
 			program: [],
 			sprites: sprites
 		});
+		numUsers = Lambda.count(users);
 	}
 
 	private function charInfoToAnim(charType: Int, rotation: Int, parent: Object): Anim {

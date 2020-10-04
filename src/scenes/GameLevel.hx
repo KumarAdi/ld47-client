@@ -1,12 +1,8 @@
 package scenes;
 
-import haxe.ds.IntMap;
-import h2d.Anim;
-import haxe.ds.Map;
 import hxd.Key;
 import hxd.Event;
 import h2d.TextInput;
-import h2d.Font;
 import h2d.Tile;
 import h2d.Bitmap;
 import haxe.Json;
@@ -91,6 +87,8 @@ class GameLevel implements Level {
 					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
 				case "CardChoices":
 					uiManager.showCardChoices(data.card_choices);
+				case "Mutation":
+					boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
 				default:
 			}
 		};
