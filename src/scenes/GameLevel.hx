@@ -14,6 +14,9 @@ import scenes.UIManager;
 class GameLevel implements Level {
 	public var scene:Scene;
 
+	public var splash:Bitmap;
+
+
 	private var boardManager:BoardManager;
 	private var ws:WebSocket;
 	private var uiManager:UIManager;
@@ -28,7 +31,7 @@ class GameLevel implements Level {
 		this.scene = new Scene();
 		scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
 
-		this.ws = new WebSocket("wss://echo.websocket.org/");
+		this.ws = new WebSocket("ws://34.82.20.81:8080/game/");
 
 		this.boardManager = new BoardManager();
 		scene.addChild(this.boardManager.build());
@@ -38,7 +41,7 @@ class GameLevel implements Level {
 	}
 
 	public function init() {
-		var splash = new Bitmap(Tile.fromColor(0x000000, Std.int(Config.boardWidth * 2 / 3), Std.int(Config.boardHeight * 2 / 3)), scene);
+		splash = new Bitmap(Tile.fromColor(0x000000, Std.int(Config.boardWidth * 2 / 3), Std.int(Config.boardHeight * 2 / 3)), scene);
 		splash.setPosition(Config.boardWidth / 4, Config.boardHeight / 4);
 		var font = hxd.res.DefaultFont.get();
 		font.resizeTo(20);
@@ -62,7 +65,7 @@ class GameLevel implements Level {
 						username: nameEntry.text,
 						character_type: 0
 					}));
-					scene.removeChild(splash);
+					// scene.removeChild(splash);
 				}
 			}
 
@@ -70,17 +73,6 @@ class GameLevel implements Level {
 			subtext.y = nameEntry.y + nameEntry.textHeight + 10;
 			subtext.text = "Press Enter to submit";
 
-			for (i in 0...10) {
-				ws.send(Json.stringify({
-					type: "PlayerJoin",
-					user_id: i,
-					username: "A",
-					x: Std.int(Math.random() * Config.boardWidth / 120),
-					y: Std.int(Math.random() * Config.boardWidth / 120),
-					start_orientation: 0,
-					character_type: 0
-				}));
-			}
 		};
 
 		this.ws.onmessage = function(message) {
@@ -96,10 +88,19 @@ class GameLevel implements Level {
                     uiManager.receiveGameInfo(this.userID, this.pk);
 				case "PlayerJoin":
 					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
-				case "CardChoices":
-					uiManager.showCardChoices(data.turn_id, data.card_choices);
+				case "CardOptions":
+					if (splash != null){
+						trace("removing splash, setting to null");
+						scene.removeChild(splash);
+						splash = null;
+					}
+					uiManager.showCardChoices(data.turn_id, data.card_options);
 				case "Mutation":
 					boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
+				case "TillStart":
+					if (splash != null){
+						splashText.text = Std.string(data.secs);
+					}
 				default:
 			}
 		};
