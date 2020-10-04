@@ -139,11 +139,12 @@ class BoardManager implements ComponentManager {
 		}
 		var sprites = [for (sprite in baseSprites) sprite => charInfoToAnim(charType, dir, sprite)];
 		for (sprite in baseSprites) {
-			var nameBox = new Text(Res.font.dirga.toFont(), sprite);
+			var nameBox = new Text(Res.font.pixel.toFont(), sprite);
 			nameBox.color = new Vector(0, 0 , 0);
 			nameBox.text = username;
-			nameBox.x = -60;
-			nameBox.y = -(60 + nameBox.textHeight);
+			nameBox.x = (sprite.getBounds().width / 3) - (nameBox.calcTextWidth(username) / 2);
+			nameBox.y = -(45 + nameBox.textHeight);
+			nameBox.letterSpacing = 0.7;
 		}
 		this.users.set(userId, {
 			username: username,
