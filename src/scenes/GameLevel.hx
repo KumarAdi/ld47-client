@@ -69,11 +69,12 @@ class GameLevel implements Level {
 					// TEST CODE:
 					ws.send(Json.stringify({
 						type: "Player",
-						userId: 0,
-						gameId: 0,
+						id: 0,
+						game_id: 0,
 						charType: 0,
 						userName: nameEntry.text,
-                    	pk: "Hi"
+                        private_key: "Hi",
+                        is_ai: false
 					}));
 
 					for (i in 0...10) {
@@ -119,7 +120,7 @@ class GameLevel implements Level {
 					this.charType = data.character_type;
 					this.userName = data.username;
                     this.pk = data.private_key;
-                    uiManager.receiveGameInfo(this.userID, this.pk);
+                    uiManager.receiveGameInfo(this.userID, this.pk, this.gameID);
 				case "PlayerJoin":
 					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
 				case "CardOptions":
@@ -137,7 +138,9 @@ class GameLevel implements Level {
 					}
 				default:
 			}
-		};
+        };
+        
+        uiManager.drawProgram([0,1,2]);
 	}
 
 	public function update(dt:Float):Null<Level> {
