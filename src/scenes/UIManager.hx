@@ -13,6 +13,7 @@ import h2d.Interactive;
 import hxd.Key;
 import hxd.Event;
 import js.html.WebSocket;
+import haxe.Json;
 
 class UIManager implements ComponentManager{
 
@@ -24,6 +25,12 @@ class UIManager implements ComponentManager{
     private var ws: WebSocket;
     private var program: Array<Bitmap>;
     private var programArea: Object;
+    private var currentChoices: Array<Int>;
+    private var selectedChoice: Int;
+    private var choicesIcons: Array<Bitmap>;
+    private var user_id: Int;
+    private var pk: String;
+    private var turn_id: Int;
 
     public function new(ws: WebSocket) {
         this.ws = ws;
@@ -55,9 +62,21 @@ class UIManager implements ComponentManager{
         programArea.x = programBoxTitle.getBounds().width + 50;
 
         this.program = [];
+        this.currentChoices = [];
+        this.user_id = null;
+        this.pk = null;
+        this.turn_id = null;
     }
 
-    public function showCardChoices(choices: Array<Int>) {
+    public function showCardChoices(turn_id: Int, choices: Array<Int>) {
+        // if (pk == null) {
+        //     return;
+        // }
+
+        this.turn_id = turn_id;
+        this.currentChoices = choices;
+        choicesIcons = [];
+
         var i = 0;
         var optionSpacing = ((cardBox.getBounds().height - 200) / choices.length);
 
@@ -68,12 +87,12 @@ class UIManager implements ComponentManager{
             var cardTile = h2d.Tile.fromColor(Config.uiSecondary, tileSize, tileSize);
             var cardIcon = new Bitmap(cardTile, cardBox);
             cardIcon.setPosition(tilePadding, optionHeight);
+            choicesIcons.push(cardIcon);
 
             var cardName = new Text(dirgaFont, cardBox);
-            
             cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
             cardName.text = Config.cardList[choice].name;
-            i++;
+            cardName.maxWidth = cardBox.tile.width - 45;
 
             // figure out spacing
             var programAreaWidth = programBox.tile.width - programArea.x;
@@ -82,35 +101,62 @@ class UIManager implements ComponentManager{
             var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
 
             var cardListen = new h2d.Interactive(cardIcon.tile.width, cardIcon.tile.height, cardIcon);
-            cardListen.onPush = function(e:Event) {
-                if (e.button != Key.MOUSE_LEFT) {
-                    e.cancel = true;
-                    return;
-                }
-                var x = e.relX;
-                var y = e.relY;
-                cardListen.startDrag(function(e:Event) {
-                    cardIcon.x += (e.relX - x);
-                    cardIcon.y += (e.relY - y);
-                    if (cardIcon.y > programBox.y) {
-                        var insertCardSmall = h2d.Tile.fromColor(Config.uiSecondary, 2, 2);
-                        var insertCardNormal = h2d.Tile.fromColor(Config.uiSecondary, singleCardSize, singleCardSize);
-                        var insertCardAnimation = new h2d.Anim([insertCardSmall, insertCardNormal], 15, programArea);
-                        insertCardAnimation.loop = false;
-                        if (cardIcon.x < program[0].x) {
-                            insertCardAnimation.x = programAreaWidth + 10;
-                            insertCardAnimation.y = 40;
-                        }
-                    }
-                });
-            };
-            cardListen.onRelease = function(e:Event) {
-                if (e.button != Key.MOUSE_LEFT) {
-                    return;
-                }
-                cardListen.stopDrag();
-            };
+            cardListen.onClick = function(e: Event) {
+                var choiceId = choicesIcons.indexOf(cardIcon);
+                
+                trace(choiceId);
+                cardListen.parent.scaleX = 0.9;
+                cardListen.parent.scaleY = 0.9;
+
+                this.selectedChoice = choiceId;
+                ws.send(Json.stringify({
+                    type: "ChooseCard",
+                    card_number: this.selectedChoice, 
+                    location: this.program.length, // currently always add to end 
+                    user_id: this.user_id, 
+                    pk: this.pk
+                }));
+            }
+
+            i++;
+
+
+            // ---- CARD DRAG UI, To be continued -----
+
+            // cardListen.onPush = function(e:Event) {
+            //     if (e.button != Key.MOUSE_LEFT) {
+            //         e.cancel = true;
+            //         return;
+            //     }
+            //     var x = e.relX;
+            //     var y = e.relY;
+            //     cardListen.startDrag(function(e:Event) {
+            //         cardIcon.x += (e.relX - x);
+            //         cardIcon.y += (e.relY - y);
+            //         if (cardIcon.y > programBox.y) {
+            //             var insertCardSmall = h2d.Tile.fromColor(Config.uiSecondary, 2, 2);
+            //             var insertCardNormal = h2d.Tile.fromColor(Config.uiSecondary, singleCardSize, singleCardSize);
+            //             var insertCardAnimation = new h2d.Anim([insertCardSmall, insertCardNormal], 15, programArea);
+            //             insertCardAnimation.loop = false;
+            //             if (cardIcon.x < program[0].x) {
+            //                 insertCardAnimation.x = programAreaWidth + 10;
+            //                 insertCardAnimation.y = 40;
+            //             }
+            //         }
+            //     });
+            // };
+            // cardListen.onRelease = function(e:Event) {
+            //     if (e.button != Key.MOUSE_LEFT) {
+            //         return;
+            //     }
+            //     cardListen.stopDrag();
+            // };
         }
+    }
+
+    public function receiveGameInfo(user_id: Int, pk: String): Void {
+        this.user_id = user_id;
+        this.pk = pk;
     }
 
     public function build(): Object {
