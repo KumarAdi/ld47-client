@@ -4,7 +4,6 @@ import haxe.Json;
 
 typedef CardData = {
 	var name:String;
-	var img:Tile;
 	var disorient:Bool;
 	var dmg:Int;
 	var action:Array<Int>;
