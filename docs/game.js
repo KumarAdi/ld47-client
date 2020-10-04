@@ -131,6 +131,25 @@ Lambda.array = function(it) {
 	}
 	return a;
 };
+Lambda.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		var _ = $getIterator(it);
+		while(_.hasNext()) {
+			var _1 = _.next();
+			++n;
+		}
+	} else {
+		var x = $getIterator(it);
+		while(x.hasNext()) {
+			var x1 = x.next();
+			if(pred(x1)) {
+				++n;
+			}
+		}
+	}
+	return n;
+};
 var h3d_IDrawable = function() { };
 $hxClasses["h3d.IDrawable"] = h3d_IDrawable;
 h3d_IDrawable.__name__ = "h3d.IDrawable";
@@ -60306,6 +60325,8 @@ var scenes_BoardManager = function() {
 	_g.push(new h2d_Object());
 	_g.push(new h2d_Object());
 	this.charRoots = _g;
+	this.mutationsSeen = new Set();
+	this.numUsers = 0;
 };
 $hxClasses["scenes.BoardManager"] = scenes_BoardManager;
 scenes_BoardManager.__name__ = "scenes.BoardManager";
@@ -60502,7 +60523,7 @@ scenes_BoardManager.prototype = {
 		hxd_Window.getInstance().addEventTarget(function(evt) {
 			if(evt.kind._hx_index == 5) {
 				var _this = _gthis.boardRoot;
-				var v4 = Math.max(1.0,_gthis.boardRoot.scaleX + evt.wheelDelta);
+				var v4 = Math.max(1.0,_gthis.boardRoot.scaleX - evt.wheelDelta);
 				_this.posChanged = true;
 				_this.scaleX = v4;
 				_this.posChanged = true;
@@ -60510,6 +60531,18 @@ scenes_BoardManager.prototype = {
 			}
 		});
 		return this.boardRoot;
+	}
+	,updateProgram: function(userId,cardType,cardLocation) {
+		this.mutationsSeen.add(userId);
+		if(cardType == -1) {
+			HxOverrides.remove(this.users.h[userId].program,cardLocation);
+		} else {
+			this.users.h[userId].program.splice(cardLocation,0,cardType);
+		}
+		if(this.mutationsSeen.size == this.numUsers) {
+			this.mutationsSeen = new Set();
+			scenes_ExecutionEngine.run(this.users);
+		}
 	}
 	,addCharacter: function(userId,username,x,y,dir,charType) {
 		var _g = [];
@@ -60539,6 +60572,7 @@ scenes_BoardManager.prototype = {
 		}
 		var sprites = _g4;
 		this.users.h[userId] = { username : username, program : [], sprites : sprites};
+		this.numUsers = Lambda.count(this.users);
 	}
 	,charInfoToAnim: function(charType,rotation,parent) {
 		var this1 = hxd_Res.get_loader();
@@ -60554,6 +60588,12 @@ scenes_BoardManager.prototype = {
 	,update: function(dt) {
 	}
 	,__class__: scenes_BoardManager
+};
+var scenes_ExecutionEngine = function() { };
+$hxClasses["scenes.ExecutionEngine"] = scenes_ExecutionEngine;
+scenes_ExecutionEngine.__name__ = "scenes.ExecutionEngine";
+scenes_ExecutionEngine.run = function(users) {
+	return [];
 };
 var scenes_Level = function() { };
 $hxClasses["scenes.Level"] = scenes_Level;
@@ -60588,7 +60628,7 @@ scenes_GameLevel.prototype = {
 		var splashText = new h2d_Text(font,splash);
 		splashText.set_text("Connecting...");
 		this.ws.onopen = function() {
-			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 56, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 57, className : "scenes.GameLevel", methodName : "init"});
 			splashText.set_text("Enter your username:");
 			var nameEntry = new h2d_TextInput(font,splash);
 			nameEntry.canEdit = true;
@@ -60609,11 +60649,14 @@ scenes_GameLevel.prototype = {
 			subtext.set_text("Press Enter to submit");
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 81, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 82, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
 			case "CardChoices":
 				_gthis.uiManager.showCardChoices(data.card_choices);
+				break;
+			case "Mutation":
+				_gthis.boardManager.updateProgram(data.user_id,data.card_type,data.card_location);
 				break;
 			case "Player":
 				_gthis.userID = data.id;
@@ -60846,7 +60889,8 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", desc : "Move one space forward", img : "Res.art.tile", action : [0,1,0]},{ name : "Move 2", desc : "Move two spaces forward", img : "Res.art.tile", action : [0,2,0]}];
+Config.cardList = [{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Discharge (disorient)", img : "discharge", disorient : true, dmg : 5, action : [0,0,0]}];
+Config.actionList = [{ moveDist : 1, rotation : 0, anim : "move"}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
