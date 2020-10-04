@@ -14,7 +14,7 @@ import h2d.Bitmap;
 import h2d.Text;
 import h2d.Object;
 
-typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>, orientation: Int}; 
+typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>, orientation: Int, charType: Int}; 
 
 class BoardManager implements ComponentManager {
 	var boardRoot: Layers;
@@ -136,13 +136,28 @@ class BoardManager implements ComponentManager {
 			username: username,
 			program: [],
 			sprites: sprites,
-			orientation: dir
+			orientation: dir,
+			charType: charType
 		});
 		numUsers = Lambda.count(users);
 	}
 
 	private function charInfoToAnim(charType: Int, rotation: Int, parent: Object): Anim {
-		var spriteSheet = Res.art.green.g_front_stand.toTile().gridFlatten(240);
+		var animTile = Res.art.green.front_stand.toTile();
+		switch [charType, rotation] {
+			case [0, 0] | [0, 1]: animTile = Res.art.red.side_stand.toTile();
+			case [0, 2]: animTile = Res.art.red.front_stand.toTile();
+			case [0, 3]: animTile = Res.art.red.back_stand.toTile();
+			case [1, 0] | [1, 1]: animTile = Res.art.green.side_stand.toTile();
+			case [1, 2]: animTile = Res.art.green.front_stand.toTile();
+			case [1, 3]: animTile = Res.art.green.back_stand.toTile();
+			case [2, 0] | [2, 1]: animTile = Res.art.blue.side_stand.toTile();
+			case [2, 2]: animTile = Res.art.blue.front_stand.toTile();
+			case [2, 3]: animTile = Res.art.blue.back_stand.toTile();
+			default:
+		}
+
+		var spriteSheet = animTile.gridFlatten(240);
 		var ret = new Anim(spriteSheet, parent);
 		ret.y = -120;
 		ret.x = -60;
@@ -162,7 +177,7 @@ class BoardManager implements ComponentManager {
 			var sprites = user.sprites;
 			for (sprite in sprites) {
 				sprite.loop = false;
-				sprite.play(actionData.anim);
+				sprite.play(actionData.anim[user.charType]);
 			}
 
 			for (baseSprite in sprites.keys()) {

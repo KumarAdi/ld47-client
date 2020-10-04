@@ -13,7 +13,7 @@ typedef CardData = {
 typedef ActionData = {
 	var moveDist:Int;
 	var rotation:Int;
-	var anim:Array<Tile>;
+	var anim:Array<Array<Tile>>;
 }
 
 class Config {
@@ -25,67 +25,377 @@ class Config {
 
 	public static var actionList:Null<Array<ActionData>>;
 
-	public static function genActionList(): Array<ActionData> {
+	public static function genActionList():Array<ActionData> {
 		if (Config.actionList == null) {
-			Config.actionList = [{moveDist: 1, rotation: 0, anim: Res.art.green.g_side_walk.toTile().gridFlatten(240)}];
+			Config.actionList = [
+				{moveDist: 1, rotation: 0, anim: [
+					Res.art.red.side_walk.toTile().gridFlatten(240),
+					Res.art.green.side_walk.toTile().gridFlatten(240),
+					Res.art.blue.side_walk.toTile().gridFlatten(240)
+				]}
+			];
 		}
 
 		return Config.actionList;
 	}
 
-    public static final cardList: Array<CardData> =
-    [
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", img: "move1", disorient: false, dmg: 0, action: [0]},
-
-    ];
+	public static final cardList:Array<CardData> = [
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+		{
+			name: "Move 1",
+			img: "move1",
+			disorient: false,
+			dmg: 0,
+			action: [0]
+		},
+	];
 }
