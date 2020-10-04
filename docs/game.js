@@ -60697,7 +60697,7 @@ scenes_Level.prototype = {
 var scenes_GameLevel = function() {
 	this.scene = new h2d_Scene();
 	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
-	this.ws = new WebSocket("wss://echo.websocket.org/");
+	this.ws = new WebSocket("ws://34.82.20.81:8080/game/");
 	this.boardManager = new scenes_BoardManager();
 	this.scene.addChild(this.boardManager.build());
 	this.uiManager = new scenes_UIManager(this.ws);
@@ -60709,19 +60709,20 @@ scenes_GameLevel.__interfaces__ = [scenes_Level];
 scenes_GameLevel.prototype = {
 	init: function() {
 		var _gthis = this;
-		var splash = new h2d_Bitmap(h2d_Tile.fromColor(0,Config.boardWidth * 2 / 3 | 0,Config.boardHeight * 2 / 3 | 0),this.scene);
-		splash.posChanged = true;
-		splash.x = Config.boardWidth / 4;
-		splash.posChanged = true;
-		splash.y = Config.boardHeight / 4;
+		this.splash = new h2d_Bitmap(h2d_Tile.fromColor(0,Config.boardWidth * 2 / 3 | 0,Config.boardHeight * 2 / 3 | 0),this.scene);
+		var _this = this.splash;
+		_this.posChanged = true;
+		_this.x = Config.boardWidth / 4;
+		_this.posChanged = true;
+		_this.y = Config.boardHeight / 4;
 		var font = hxd_res_DefaultFont.get();
 		font.resizeTo(20);
-		var splashText = new h2d_Text(font,splash);
+		var splashText = new h2d_Text(font,this.splash);
 		splashText.set_text("Connecting...");
 		this.ws.onopen = function() {
-			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 50, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 53, className : "scenes.GameLevel", methodName : "init"});
 			splashText.set_text("Enter your username:");
-			var nameEntry = new h2d_TextInput(font,splash);
+			var nameEntry = new h2d_TextInput(font,_gthis.splash);
 			nameEntry.canEdit = true;
 			nameEntry.set_text("<Username>");
 			var v = splashText.y + splashText.get_textHeight() + 10;
@@ -60730,26 +60731,25 @@ scenes_GameLevel.prototype = {
 			nameEntry.onKeyDown = function(e) {
 				if(e.keyCode == 13) {
 					_gthis.ws.send(JSON.stringify({ type : "InitiateGame", username : nameEntry.text, character_type : 0}));
-					_gthis.scene.removeChild(splash);
 				}
 			};
-			var subtext = new h2d_Text(font,splash);
+			var subtext = new h2d_Text(font,_gthis.splash);
 			var v1 = nameEntry.y + nameEntry.get_textHeight() + 10;
 			subtext.posChanged = true;
 			subtext.y = v1;
 			subtext.set_text("Press Enter to submit");
-			var _g = 0;
-			while(_g < 10) {
-				var i = _g++;
-				_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : "A", x : Math.random() * Config.boardWidth / 120 | 0, y : Math.random() * Config.boardWidth / 120 | 0, start_orientation : 0, character_type : 0}));
-			}
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 87, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 79, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
-			case "CardChoices":
-				_gthis.uiManager.showCardChoices(data.turn_id,data.card_choices);
+			case "CardOptions":
+				if(_gthis.splash != null) {
+					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 93, className : "scenes.GameLevel", methodName : "init"});
+					_gthis.scene.removeChild(_gthis.splash);
+					_gthis.splash = null;
+				}
+				_gthis.uiManager.showCardChoices(data.turn_id,data.card_options);
 				break;
 			case "Mutation":
 				_gthis.boardManager.updateProgram(data.user_id,data.card_type,data.card_location);
@@ -60764,6 +60764,11 @@ scenes_GameLevel.prototype = {
 				break;
 			case "PlayerJoin":
 				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.character_type);
+				break;
+			case "TillStart":
+				if(_gthis.splash != null) {
+					splashText.set_text(Std.string(data.secs));
+				}
 				break;
 			default:
 			}
@@ -60965,7 +60970,7 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Discharge (disorient)", img : "discharge", disorient : true, dmg : 5, action : [0,0,0]}];
+Config.cardList = [{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", img : "move1", disorient : false, dmg : 0, action : [0]}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
