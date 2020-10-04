@@ -18,17 +18,17 @@ class GameLevel implements Level {
 	private var ws:WebSocket;
 	private var uiManager:UIManager;
 
-	private var gameID: Int;
-	private var userID: Int;
-	private var pk: String;
-	private var charType: Int;
-	private var userName: String;
+	private var gameID:Int;
+	private var userID:Int;
+	private var pk:String;
+	private var charType:Int;
+	private var userName:String;
 
 	public function new() {
 		this.scene = new Scene();
-        scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
-        
-        this.ws = new WebSocket("wss://echo.websocket.org/");
+		scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
+
+		this.ws = new WebSocket("wss://echo.websocket.org/");
 
 		this.boardManager = new BoardManager();
 		scene.addChild(this.boardManager.build());
@@ -49,13 +49,13 @@ class GameLevel implements Level {
 		this.ws.onopen = function() {
 			trace("ws open");
 			splashText.text = "Enter your username:";
-			
+
 			var nameEntry = new TextInput(font, splash);
 			nameEntry.canEdit = true;
 			nameEntry.text = "<Username>";
 			nameEntry.y = splashText.y + splashText.textHeight + 10;
 
-			nameEntry.onKeyDown = function (e: Event) {
+			nameEntry.onKeyDown = function(e:Event) {
 				if (e.keyCode == Key.ENTER) {
 					ws.send(Json.stringify({
 						type: "InitiateGame",
@@ -69,6 +69,18 @@ class GameLevel implements Level {
 			var subtext = new Text(font, splash);
 			subtext.y = nameEntry.y + nameEntry.textHeight + 10;
 			subtext.text = "Press Enter to submit";
+
+			for (i in 0...10) {
+				ws.send(Json.stringify({
+					type: "PlayerJoin",
+					user_id: i,
+					username: "A",
+					x: Std.int(Math.random() * Config.boardWidth / 120),
+					y: Std.int(Math.random() * Config.boardWidth / 120),
+					start_orientation: 0,
+					character_type: 0
+				}));
+			}
 		};
 
 		this.ws.onmessage = function(message) {
@@ -90,11 +102,7 @@ class GameLevel implements Level {
 					boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
 				default:
 			}
-        };
-
-		for (i in 0... 10) {
-			boardManager.addCharacter(i, "A", Std.int(Math.random() * Config.boardWidth / 120), Std.int(Math.random() * Config.boardWidth / 120), 0, 0);
-		}
+		};
 	}
 
 	public function update(dt:Float):Null<Level> {
