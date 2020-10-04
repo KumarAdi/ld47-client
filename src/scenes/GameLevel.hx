@@ -30,16 +30,17 @@ class GameLevel implements Level {
 
 	public function new() {
 		this.scene = new Scene();
-		scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
+        scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
+        
+        this.ws = new WebSocket("wss://echo.websocket.org/");
 
 		this.boardManager = new BoardManager();
 		scene.addChild(this.boardManager.build());
 
-		this.uiManager = new UIManager();
-		scene.addChild(this.uiManager.build());
-
-		this.ws = new WebSocket("wss://echo.websocket.org/");
-	}
+		this.uiManager = new UIManager(ws);
+        scene.addChild(this.uiManager.build());
+        
+        uiManager.showCardChoices([1,0,1]);
 
 	public function init() {
 		var splash = new Bitmap(Tile.fromColor(0x000000, Std.int(Config.boardWidth * 2 / 3), Std.int(Config.boardHeight * 2 / 3)), scene);

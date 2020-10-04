@@ -9,6 +9,10 @@ import Config;
 import h2d.Text;
 import hxd.Res;
 import h2d.Font;
+import h2d.Interactive;
+import hxd.Key;
+import hxd.Event;
+import js.html.WebSocket;
 
 class UIManager implements ComponentManager{
 
@@ -17,8 +21,13 @@ class UIManager implements ComponentManager{
     private var cardBox: Bitmap;
     private var dirgaFont: Font;
     private var stripeFont: Font;
+    private var ws: WebSocket;
+    private var program: Array<Bitmap>;
+    private var programArea: Object;
 
-    public function new() {
+    public function new(ws: WebSocket) {
+        this.ws = ws;
+
         this.uiMama = new Object();
 
         var tempTile = h2d.Tile.fromColor(Config.uiColor, Config.boardWidth, 280);
@@ -41,6 +50,11 @@ class UIManager implements ComponentManager{
         var programBoxTitle = new Text(stripeFont, programBox);
         programBoxTitle.text = "Program";
         programBoxTitle.setPosition(45,45);
+
+        this.programArea = new Object(programBox);
+        programArea.x = programBoxTitle.getBounds().width + 50;
+
+        this.program = [];
     }
 
     public function showCardChoices(choices: Array<Int>) {
@@ -56,11 +70,46 @@ class UIManager implements ComponentManager{
             cardIcon.setPosition(tilePadding, optionHeight);
 
             var cardName = new Text(dirgaFont, cardBox);
-            // set cardName.y to incremental heights in cardBox
             
             cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
             cardName.text = Config.cardList[choice].name;
             i++;
+
+            // figure out spacing
+            var programAreaWidth = programBox.tile.width - programArea.x;
+            var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (program.length + 1)) - 20; // 10px gutter
+            var singleCardSizeBasedOnHeight = programBox.tile.height - 80; // 40px gutter
+            var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
+
+            var cardListen = new h2d.Interactive(cardIcon.tile.width, cardIcon.tile.height, cardIcon);
+            cardListen.onPush = function(e:Event) {
+                if (e.button != Key.MOUSE_LEFT) {
+                    e.cancel = true;
+                    return;
+                }
+                var x = e.relX;
+                var y = e.relY;
+                cardListen.startDrag(function(e:Event) {
+                    cardIcon.x += (e.relX - x);
+                    cardIcon.y += (e.relY - y);
+                    if (cardIcon.y > programBox.y) {
+                        var insertCardSmall = h2d.Tile.fromColor(Config.uiSecondary, 2, 2);
+                        var insertCardNormal = h2d.Tile.fromColor(Config.uiSecondary, singleCardSize, singleCardSize);
+                        var insertCardAnimation = new h2d.Anim([insertCardSmall, insertCardNormal], 15, programArea);
+                        insertCardAnimation.loop = false;
+                        if (cardIcon.x < program[0].x) {
+                            insertCardAnimation.x = programAreaWidth + 10;
+                            insertCardAnimation.y = 40;
+                        }
+                    }
+                });
+            };
+            cardListen.onRelease = function(e:Event) {
+                if (e.button != Key.MOUSE_LEFT) {
+                    return;
+                }
+                cardListen.stopDrag();
+            };
         }
     }
 
