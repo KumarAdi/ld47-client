@@ -65,39 +65,48 @@ class GameLevel implements Level {
 						username: nameEntry.text,
 						character_type: 0
 					}));
-					// scene.removeChild(splash);
+
+					// TEST CODE:
+					ws.send(Json.stringify({
+						type: "Player",
+						userId: 0,
+						gameId: 0,
+						charType: 0,
+						userName: nameEntry.text,
+                    	pk: "Hi"
+					}));
+
+					for (i in 0...10) {
+						ws.send(Json.stringify({
+							type: "PlayerJoin",
+							user_id: i,
+							username: nameEntry.text,
+							x: Std.int(Math.random() * 16),
+							y: Std.int(Math.random() * 9),
+							start_orientation: 0,
+							character_type: i % 3
+						}));
+					}
+		
+					ws.send(Json.stringify({
+						type: "CardOptions",
+						card_options: [0, 0, 0]
+					}));
+		
+					for (i in 0...10) {
+						ws.send(Json.stringify({
+							type: "Mutation",
+							user_id: i,
+							card_type: 0,
+							card_location: 0,
+						}));
+					}
 				}
 			}
 
 			var subtext = new Text(font, splash);
 			subtext.y = nameEntry.y + nameEntry.textHeight + 10;
 			subtext.text = "Press Enter to submit";
-
-			for (i in 0...10) {
-				ws.send(Json.stringify({
-					type: "PlayerJoin",
-					user_id: i,
-					username: "AAAAAAAAAAAAAA",
-					x: Std.int(Math.random() * 16),
-					y: Std.int(Math.random() * 9),
-					start_orientation: 0,
-					character_type: i % 3
-				}));
-			}
-
-			ws.send(Json.stringify({
-				type: "CardOptions",
-				card_options: [0, 0, 0]
-			}));
-
-			for (i in 0...10) {
-				ws.send(Json.stringify({
-					type: "Mutation",
-					user_id: i,
-					card_type: 0,
-					card_location: 0,
-				}));
-			}
 		};
 
 		this.ws.onmessage = function(message) {
