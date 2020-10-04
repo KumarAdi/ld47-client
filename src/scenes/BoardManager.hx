@@ -1,5 +1,8 @@
 package scenes;
 
+import hxd.Res;
+import h2d.Anim;
+import haxe.ds.IntMap;
 import hxd.Event;
 import h2d.Interactive;
 import hxd.Window;
@@ -8,23 +11,34 @@ import h2d.Bitmap;
 import h2d.Text;
 import h2d.Object;
 
-class BoardManager implements ComponentManager {
-	var boardRoot:Object;
+typedef UserInfo = {username: String, program: Array<Int>, sprites: Map<Object, Anim>}; 
 
-	public function new() {}
+class BoardManager implements ComponentManager {
+	var boardRoot: Object;
+	private var users: Map<Int, UserInfo>;
+	private var charRoots: Array<Object>;
+
+	public function new() {
+		this.boardRoot = new Object();
+		this.users = new IntMap<UserInfo>();
+		this.charRoots = [for (_ in 0...4) new Object()];
+	}
 
 	public function build():Object {
-		this.boardRoot = new Object();
-
 		var tileImage = hxd.Res.art.tile.toTile();
+
+		var subBoards = [for (i in 0...4) new Object(boardRoot)];
 
 		for (x in 0...2) {
 			for (y in 0...2) {
-				var subBoard = new Object(boardRoot);
+				var subBoard = subBoards[2*x + y];
 				subBoard.setPosition(Config.boardWidth * x, Config.boardHeight * y);
+
+				var tileRoot = new Object(subBoard);
+
 				for (i in 0...Std.int(Config.boardWidth / tileImage.width)) {
 					for (j in 0...Std.int(Config.boardHeight / tileImage.height)) {
-						var tileSprite = new Bitmap(tileImage, subBoard);
+						var tileSprite = new Bitmap(tileImage, tileRoot);
 						tileSprite.setPosition(i * tileImage.width, j * tileImage.height);
 
 						var font = hxd.res.DefaultFont.get();
@@ -35,6 +49,10 @@ class BoardManager implements ComponentManager {
 					}
 				}
 			}
+		}
+
+		for (i in 0...4) {
+			subBoards[i].addChild(charRoots[i]);
 		}
 
 		var boardSize = boardRoot.getBounds();
@@ -77,6 +95,28 @@ class BoardManager implements ComponentManager {
 		});
 
 		return boardRoot;
+	}
+
+	public function addCharacter(userId: Int, username: String, x: Int, y: Int, dir: Int, charType: Int) {
+		var baseSprites = [for (root in charRoots) new Object(root)];
+		for (sprite in baseSprites) {
+			sprite.x = x * 120;
+			sprite.y = y * 120;
+		}
+		var sprites = [for (sprite in baseSprites) sprite => charInfoToAnim(charType, dir, sprite)];
+		this.users.set(userId, {
+			username: username,
+			program: [],
+			sprites: sprites
+		});
+	}
+
+	private function charInfoToAnim(charType: Int, rotation: Int, parent: Object): Anim {
+		var spriteSheet = Res.art.green.g_front_stand.toTile().gridFlatten(240);
+		var ret = new Anim(spriteSheet, parent);
+		ret.y = -120;
+		ret.x = -60;
+		return ret;
 	}
 
 	public function update(dt:Float) {}
