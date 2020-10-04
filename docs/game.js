@@ -60556,6 +60556,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 122, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -60697,7 +60698,7 @@ scenes_Level.prototype = {
 var scenes_GameLevel = function() {
 	this.scene = new h2d_Scene();
 	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
-	this.ws = new WebSocket("ws://34.82.20.81:8080/game/");
+	this.ws = new WebSocket("wss://echo.websocket.org/");
 	this.boardManager = new scenes_BoardManager();
 	this.scene.addChild(this.boardManager.build());
 	this.uiManager = new scenes_UIManager(this.ws);
@@ -60738,14 +60739,30 @@ scenes_GameLevel.prototype = {
 			subtext.posChanged = true;
 			subtext.y = v1;
 			subtext.set_text("Press Enter to submit");
+			var _g = 0;
+			while(_g < 10) {
+				var i = _g++;
+				_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : "A", x : Math.random() * Config.boardWidth / 120 | 0, y : Math.random() * Config.boardWidth / 120 | 0, start_orientation : 0, character_type : 0}));
+			}
+			_gthis.ws.send(JSON.stringify({ type : "CardOptions", card_options : [0,0,0]}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 0, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 4, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 5, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 6, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 7, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 8, card_type : 0, card_location : 0}));
+			_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 9, card_type : 0, card_location : 0}));
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 79, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 104, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
 			case "CardOptions":
 				if(_gthis.splash != null) {
-					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 93, className : "scenes.GameLevel", methodName : "init"});
+					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 118, className : "scenes.GameLevel", methodName : "init"});
 					_gthis.scene.removeChild(_gthis.splash);
 					_gthis.splash = null;
 				}
