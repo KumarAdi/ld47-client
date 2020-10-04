@@ -16,11 +16,12 @@ class UIManager implements ComponentManager{
     private var programBox: Bitmap;
     private var cardBox: Bitmap;
     private var dirgaFont: Font;
+    private var stripeFont: Font;
 
     public function new() {
         this.uiMama = new Object();
 
-        var tempTile = h2d.Tile.fromColor(Config.uiColor, Config.boardWidth, 250);
+        var tempTile = h2d.Tile.fromColor(Config.uiColor, Config.boardWidth, 280);
         this.programBox = new Bitmap(tempTile, uiMama);
         programBox.y = Config.boardHeight - tempTile.height;
 
@@ -29,18 +30,36 @@ class UIManager implements ComponentManager{
         cardBox.x = Config.boardWidth - tempTile2.width;
 
         this.dirgaFont = Res.font.dirga.toFont();
+        this.stripeFont = Res.font.stripe.toFont();
+        stripeFont.resizeTo(54);
+
+        var cardBoxTitle = new Text(stripeFont, cardBox);
+        cardBoxTitle.text = "Pick next instruction";
+        cardBoxTitle.setPosition(45, 45);
+        cardBoxTitle.maxWidth = cardBox.tile.width - 45;
+
+        var programBoxTitle = new Text(stripeFont, programBox);
+        programBoxTitle.text = "Program";
+        programBoxTitle.setPosition(45,45);
     }
 
     public function showCardChoices(choices: Array<Int>) {
         var i = 0;
-    
+        var optionSpacing = ((cardBox.getBounds().height - 200) / choices.length);
 
         for (choice in choices) {
+            var optionHeight = optionSpacing * i + 200;
+            var tileSize = Math.floor(3 * optionSpacing / 4);
+            var tilePadding = Math.floor(tileSize / 3);
+            var cardTile = h2d.Tile.fromColor(Config.uiSecondary, tileSize, tileSize);
+            var cardIcon = new Bitmap(cardTile, cardBox);
+            cardIcon.setPosition(tilePadding, optionHeight);
+
             var cardName = new Text(dirgaFont, cardBox);
             // set cardName.y to incremental heights in cardBox
-            cardName.y = (cardBox.getBounds().height / choices.length) * i + 150;
+            
+            cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
             cardName.text = Config.cardList[choice].name;
-            cardName.scale(10);
             i++;
         }
     }
