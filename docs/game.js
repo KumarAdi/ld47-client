@@ -18,7 +18,7 @@ $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
 Config.genActionList = function() {
 	if(Config.actionList == null) {
-		Config.actionList = [{ moveDist : 0, rotation : -1, anim : AnimType.Stand},{ moveDist : 0, rotation : 1, anim : AnimType.Stand},{ moveDist : 1, rotation : 0, anim : AnimType.Walk},{ moveDist : -1, rotation : 0, anim : AnimType.Walk},{ moveDist : 0, rotation : 0, anim : AnimType.Flex}];
+		Config.actionList = [{ moveDist : 0, rotation : 0, anim : AnimType.Stand},{ moveDist : 0, rotation : -1, anim : AnimType.Stand},{ moveDist : 0, rotation : 1, anim : AnimType.Stand},{ moveDist : 1, rotation : 0, anim : AnimType.Walk},{ moveDist : -1, rotation : 0, anim : AnimType.Walk},{ moveDist : 0, rotation : 0, anim : AnimType.Flex}];
 	}
 	return Config.actionList;
 };
@@ -62107,7 +62107,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 138, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 140, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62323,17 +62323,20 @@ scenes_BoardManager.prototype = {
 		var actionList = Config.genActionList();
 		var steps = animations[tic];
 		var destinations = [];
-		var _g = 0;
-		while(_g < steps.length) {
-			var step = steps[_g];
-			++_g;
-			var actionData = actionList[step.action];
-			var user = this.users.h[step.userId];
+		var userId = this.users.keys();
+		while(userId.hasNext()) {
+			var userId1 = userId.next();
+			var actionIdx = 0;
+			if(steps.h.hasOwnProperty(userId1)) {
+				actionIdx = steps.h[userId1];
+			}
+			var actionData = actionList[actionIdx];
+			var user = this.users.h[userId1];
 			user.orientation += actionData.rotation;
 			while(user.orientation < 0) user.orientation += 4;
 			user.orientation %= 4;
 			var baseSprite = user.sprites.keys().next();
-			var dest = { x : baseSprite.x | 0, y : baseSprite.y | 0};
+			var dest = new h2d_col_IPoint(baseSprite.x | 0,baseSprite.y | 0);
 			switch(user.orientation) {
 			case 0:
 				dest.x += 120 * actionData.moveDist;
@@ -62348,26 +62351,27 @@ scenes_BoardManager.prototype = {
 				dest.y -= 120 * actionData.moveDist;
 				break;
 			}
-			destinations.push({ user : step.userId, destination : dest, actionData : actionData});
+			destinations.push({ user : userId1, destination : dest, actionData : actionData});
 		}
 		var conflictingPlayers = this.findConflictingPlayers(destinations);
 		while(conflictingPlayers.size > 0) {
-			var _g1 = 0;
-			var _g2 = destinations.length;
-			while(_g1 < _g2) {
-				var i = _g1++;
-				var userId = destinations[i].user;
-				if(conflictingPlayers.has(userId)) {
-					var sprite = this.users.h[userId].sprites.keys().next();
-					destinations[i] = { user : userId, destination : { x : sprite.x | 0, y : sprite.y | 0}, actionData : destinations[i].actionData};
+			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 315, className : "scenes.BoardManager", methodName : "playTic"});
+			var _g = 0;
+			var _g1 = destinations.length;
+			while(_g < _g1) {
+				var i = _g++;
+				var userId2 = destinations[i].user;
+				if(conflictingPlayers.has(userId2)) {
+					var sprite = this.users.h[userId2].sprites.keys().next();
+					destinations[i] = { user : userId2, destination : new h2d_col_IPoint(sprite.x | 0,sprite.y | 0), actionData : destinations[i].actionData};
 				}
 			}
 			conflictingPlayers = this.findConflictingPlayers(destinations);
 		}
-		var _g11 = 0;
-		while(_g11 < destinations.length) {
-			var dest1 = destinations[_g11];
-			++_g11;
+		var _g2 = 0;
+		while(_g2 < destinations.length) {
+			var dest1 = destinations[_g2];
+			++_g2;
 			var user1 = [this.users.h[dest1.user]];
 			var sprites = user1[0].sprites;
 			var actionData1 = dest1.actionData;
@@ -62385,23 +62389,7 @@ scenes_BoardManager.prototype = {
 						sprite2[0].play(tmp1);
 					};
 				})(sprite1,user1);
-				var dest2 = { x : baseSprite1[0].x, y : baseSprite1[0].y};
-				switch(user1[0].orientation) {
-				case 0:
-					dest2.x += 120 * actionData1.moveDist;
-					break;
-				case 1:
-					dest2.y += 120 * actionData1.moveDist;
-					break;
-				case 2:
-					dest2.x -= 120 * actionData1.moveDist;
-					break;
-				case 3:
-					dest2.y -= 120 * actionData1.moveDist;
-					break;
-				}
-				haxe_Log.trace(user1[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 349, className : "scenes.BoardManager", methodName : "playTic"});
-				motion_Actuate.tween(baseSprite1[0],0.5,dest2).onUpdate((function(baseSprite2) {
+				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {
 					return function() {
 						var v = baseSprite2[0].x;
 						baseSprite2[0].posChanged = true;
@@ -62412,12 +62400,12 @@ scenes_BoardManager.prototype = {
 					};
 				})(baseSprite1)).onComplete((function(baseSprite3) {
 					return function() {
-						var _g21 = baseSprite3[0];
-						_g21.posChanged = true;
-						_g21.x %= Config.boardWidth;
-						var _g22 = baseSprite3[0];
-						_g22.posChanged = true;
-						_g22.y %= Config.boardHeight;
+						var _g3 = baseSprite3[0];
+						_g3.posChanged = true;
+						_g3.x %= Config.boardWidth;
+						var _g4 = baseSprite3[0];
+						_g4.posChanged = true;
+						_g4.y %= Config.boardHeight;
 					};
 				})(baseSprite1));
 			}
@@ -62431,17 +62419,25 @@ scenes_BoardManager.prototype = {
 		}
 	}
 	,findConflictingPlayers: function(destinations) {
-		var seen = new haxe_ds_ObjectMap();
+		var seen = new haxe_ds_StringMap();
 		var ret = new Set();
 		var _g = 0;
 		while(_g < destinations.length) {
 			var dest = destinations[_g];
 			++_g;
-			if(seen.h.__keys__[dest.destination.__id__] != null) {
-				ret.add(seen.h[dest.destination.__id__]);
+			var key = dest.destination.toString();
+			if(__map_reserved[key] != null ? seen.existsReserved(key) : seen.h.hasOwnProperty(key)) {
+				var key1 = dest.destination.toString();
+				ret.add(__map_reserved[key1] != null ? seen.getReserved(key1) : seen.h[key1]);
 				ret.add(dest.user);
 			}
-			seen.set(dest.destination,dest.user);
+			var key2 = dest.destination.toString();
+			var value = dest.user;
+			if(__map_reserved[key2] != null) {
+				seen.setReserved(key2,value);
+			} else {
+				seen.h[key2] = value;
+			}
 		}
 		return ret;
 	}
@@ -62470,8 +62466,8 @@ scenes_ExecutionEngine.run = function(users) {
 			while(_g2 < _g11.length) {
 				var action = _g11[_g2];
 				++_g2;
-				while(actionCount >= ret.length) ret.push([]);
-				ret[actionCount].push({ userId : userId1, action : action});
+				while(actionCount >= ret.length) ret.push(new haxe_ds_IntMap());
+				ret[actionCount].h[userId1] = action;
 				++actionCount;
 			}
 		}
@@ -62841,7 +62837,7 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [2]},{ name : "Move 2", disorient : false, dmg : 0, action : [2,2]},{ name : "Move 3", disorient : false, dmg : 0, action : [2,2,2]},{ name : "Reverse", disorient : false, dmg : 0, action : [3]},{ name : "Turn Left", disorient : false, dmg : 0, action : [0]},{ name : "Turn Right", disorient : false, dmg : 0, action : [1]},{ name : "U-Turn", disorient : false, dmg : 0, action : [0,0]},{ name : "Reposition", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [2,0,3,2,1,3]}];
+Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [3]},{ name : "Move 2", disorient : false, dmg : 0, action : [3,3]},{ name : "Move 3", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Reverse", disorient : false, dmg : 0, action : [4]},{ name : "Turn Left", disorient : false, dmg : 0, action : [1]},{ name : "Turn Right", disorient : false, dmg : 0, action : [2]},{ name : "U-Turn", disorient : false, dmg : 0, action : [1,1]},{ name : "Reposition", disorient : false, dmg : 0, action : [4,4,4]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [3,1,4,3,2,4]}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;

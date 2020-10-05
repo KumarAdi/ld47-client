@@ -11,8 +11,8 @@ class ExecutionEngine {
      * @param users the user info, containing updated programs for all users
      * @return Array<Array<Int>> an array of tiks, each tik is an array of actions that go off during that tic
      */
-    public static function run(users: Map<Int, UserInfo>): Array<Array<{userId: Int, action: Int}>> {
-        var ret: Array<Array<{userId: Int, action: Int}>> = [];
+    public static function run(users: Map<Int, UserInfo>): Array<Map<Int, Int>> {
+        var ret: Array<Map<Int, Int>> = [];
         for (userId in users.keys()) {
             var user = users.get(userId);
             var actionCount = 0;
@@ -22,7 +22,7 @@ class ExecutionEngine {
                     while (actionCount >= ret.length) {
                         ret.push([]);
                     }
-                    ret[actionCount].push({userId: userId, action: action});
+                    ret[actionCount].set(userId,action);
                     actionCount++;
                 }
             }
