@@ -1,5 +1,7 @@
 package scenes;
 
+import h2d.Tile;
+import Config.AnimType;
 import h3d.Vector;
 import haxe.Timer;
 import js.lib.Set;
@@ -137,7 +139,13 @@ class BoardManager implements ComponentManager {
 			sprite.x = x * 120;
 			sprite.y = y * 120;
 		}
-		var sprites = [for (sprite in baseSprites) sprite => charInfoToAnim(charType, dir, sprite)];
+		var sprites = [for (sprite in baseSprites) sprite => new Anim(charInfoToTiles(charType, dir, Stand), sprite)];
+
+		for (sprite in sprites) {
+			sprite.x = -60;
+			sprite.y = -120;
+		}
+
 		for (sprite in baseSprites) {
 			var nameBox = new Text(Res.font.pixel.toFont(), sprite);
 			nameBox.color = new Vector(0, 0 , 0);
@@ -158,31 +166,37 @@ class BoardManager implements ComponentManager {
 		numUsers = Lambda.count(users);
 	}
 
-	private function charInfoToAnim(charType: Int, rotation: Int, parent: Object): Anim {
-		var animTile = Res.art.green.front_stand.toTile();
-		switch [charType, rotation] {
-			case [0, 0] | [0, 1]: animTile = Res.art.red.side_stand.toTile();
-			case [0, 2]: animTile = Res.art.red.front_stand.toTile();
-			case [0, 3]: animTile = Res.art.red.back_stand.toTile();
-			case [1, 0] | [1, 1]: animTile = Res.art.green.side_stand.toTile();
-			case [1, 2]: animTile = Res.art.green.front_stand.toTile();
-			case [1, 3]: animTile = Res.art.green.back_stand.toTile();
-			case [2, 0] | [2, 1]: animTile = Res.art.blue.side_stand.toTile();
-			case [2, 2]: animTile = Res.art.blue.front_stand.toTile();
-			case [2, 3]: animTile = Res.art.blue.back_stand.toTile();
+	private function charInfoToTiles(charType: Int, rotation: Int, type: AnimType): Array<Tile> {
+		var tileArr = [
+			[Res.art.red.side_stand.toTile(), Res.art.red.side_stand.toTile(), Res.art.red.front_stand.toTile(), Res.art.red.back_stand.toTile()],
+			[Res.art.green.side_stand.toTile(), Res.art.green.side_stand.toTile(), Res.art.green.front_stand.toTile(), Res.art.green.back_stand.toTile()],
+			[Res.art.blue.side_stand.toTile(), Res.art.blue.side_stand.toTile(), Res.art.blue.front_stand.toTile(), Res.art.blue.back_stand.toTile()]
+		];
+
+		switch(type) {
+			case Walk:
+				tileArr = [
+					[Res.art.red.side_walk.toTile(), Res.art.red.side_walk.toTile(), Res.art.red.front_walk.toTile(), Res.art.red.back_walk.toTile()],
+					[Res.art.green.side_walk.toTile(), Res.art.green.side_walk.toTile(), Res.art.green.front_walk.toTile(), Res.art.green.back_walk.toTile()],
+					[Res.art.blue.side_walk.toTile(), Res.art.blue.side_walk.toTile(), Res.art.blue.front_walk.toTile(), Res.art.blue.back_walk.toTile()]
+				];
+			case Flex:
+				tileArr = [
+					[Res.art.red.side_flex.toTile(), Res.art.red.side_flex.toTile(), Res.art.red.front_flex.toTile(), Res.art.red.back_flex.toTile()],
+					[Res.art.green.side_flex.toTile(), Res.art.green.side_flex.toTile(), Res.art.green.front_flex.toTile(), Res.art.green.back_flex.toTile()],
+					[Res.art.blue.side_flex.toTile(), Res.art.blue.side_flex.toTile(), Res.art.blue.front_flex.toTile(), Res.art.blue.back_flex.toTile()]
+				];
 			default:
 		}
 
+		var animTile = tileArr[charType][rotation];
 		var spriteSheet = animTile.gridFlatten(240);
 
 		if (rotation == 1) {
 			for (sprite in spriteSheet) sprite.flipX();
 		}
 
-		var ret = new Anim(spriteSheet, parent);
-		ret.y = -120;
-		ret.x = -60;
-		return ret;
+		return spriteSheet;
 	}
 
 	private function playAnimations(animations: Array<Array<{userId: Int, action: Int}>>) {
@@ -198,7 +212,10 @@ class BoardManager implements ComponentManager {
 			var sprites = user.sprites;
 			for (sprite in sprites) {
 				sprite.loop = false;
-				sprite.play(actionData.anim[user.charType]);
+				sprite.play(charInfoToTiles(user.charType, user.orientation, actionData.anim));
+				sprite.onAnimEnd = function () {
+					sprite.play(charInfoToTiles(user.charType, user.orientation, Stand));
+				};
 			}
 		}
 		

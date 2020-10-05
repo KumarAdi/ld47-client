@@ -9,10 +9,16 @@ typedef CardData = {
 	var action:Array<Int>;
 }
 
+enum AnimType {
+    Stand;
+    Walk;
+    Flex;
+}
+
 typedef ActionData = {
-	var moveDist:Int;
-	var rotation:Int;
-	var anim:Array<Array<Tile>>;
+	var moveDist: Int;
+	var rotation: Int;
+	var anim: AnimType;
 }
 
 class Config {
@@ -27,11 +33,7 @@ class Config {
 	public static function genActionList():Array<ActionData> {
 		if (Config.actionList == null) {
 			Config.actionList = [
-				{moveDist: 1, rotation: 0, anim: [
-					Res.art.red.side_walk.toTile().gridFlatten(240),
-					Res.art.green.side_walk.toTile().gridFlatten(240),
-					Res.art.blue.side_walk.toTile().gridFlatten(240)
-				]}
+				{moveDist: 1, rotation: 0, anim: Walk}
 			];
 		}
 
