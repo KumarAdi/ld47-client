@@ -15,6 +15,7 @@ import hxd.Event;
 import js.html.WebSocket;
 import haxe.Json;
 import h2d.Tile;
+import h2d.Mask;
 
 class UIManager implements ComponentManager{
 
@@ -25,12 +26,13 @@ class UIManager implements ComponentManager{
     private var stripeFont: Font;
     private var ws: WebSocket;
     private var program: Array<Bitmap>;
-    private var programArea: Object;
+    private var programArea: Mask;
     private var currentChoices: Array<Int>;
     private var selectedChoice: Int;
     private var choicesIcons: Array<Bitmap>;
     private var user_id: Int;
     private var pk: String;
+    private var game_id: Int;
     private var turn_id: Int;
 
     public function new(ws: WebSocket) {
@@ -59,13 +61,19 @@ class UIManager implements ComponentManager{
         programBoxTitle.text = "Program";
         programBoxTitle.setPosition(45,45);
 
-        this.programArea = new Object(programBox);
+        var loopTile = Res.art.loop.toTile();
+        var loopBg = new Bitmap(loopTile, programBox);
+        loopBg.x = programBoxTitle.getBounds().width + 170;
+        loopBg.y = 80;
+
+        this.programArea = new Mask(Math.floor(programBox.tile.width - programBoxTitle.getBounds().width), Math.floor(programBox.tile.height), programBox);
         programArea.x = programBoxTitle.getBounds().width + 50;
 
         this.program = [];
         this.currentChoices = [];
         this.user_id = null;
         this.pk = null;
+        this.game_id = null;
         this.turn_id = null;
     }
 
@@ -77,6 +85,7 @@ class UIManager implements ComponentManager{
         this.turn_id = turn_id;
         this.currentChoices = choices;
         choicesIcons = [];
+        this.selectedChoice = null;
 
         var i = 0;
         var optionSpacing = ((cardBox.getBounds().height - 200) / choices.length);
@@ -95,19 +104,15 @@ class UIManager implements ComponentManager{
             cardName.text = Config.cardList[choice].name;
             cardName.maxWidth = cardBox.tile.width - 45;
 
-            // figure out spacing
-            var programAreaWidth = programBox.tile.width - programArea.x;
-            var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (program.length + 1)) - 20; // 10px gutter
-            var singleCardSizeBasedOnHeight = programBox.tile.height - 80; // 40px gutter
-            var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
-
             var cardListen = new h2d.Interactive(cardIcon.tile.width, cardIcon.tile.height, cardIcon);
             cardListen.onClick = function(e: Event) {
                 var choiceId = choicesIcons.indexOf(cardIcon);
-                
-                trace(choiceId);
-                cardListen.parent.scaleX = 0.9;
-                cardListen.parent.scaleY = 0.9;
+
+                // if (choiceId != selectedChoice) {
+                //     if (selectedChoice != null) {
+                //         choicesIcons[selectedChoice].
+                //     }
+                // }
 
                 this.selectedChoice = choiceId;
                 ws.send(Json.stringify({
@@ -115,7 +120,8 @@ class UIManager implements ComponentManager{
                     card_number: this.selectedChoice, 
                     location: this.program.length, // currently always add to end 
                     user_id: this.user_id, 
-                    pk: this.pk
+                    pk: this.pk,
+                    game_id: this.game_id
                 }));
             }
 
@@ -164,9 +170,28 @@ class UIManager implements ComponentManager{
         return cardImg.toTile();
     }
 
-    public function receiveGameInfo(user_id: Int, pk: String): Void {
+    public function drawProgram(newProg: Array<Int>): Void{
+        programArea.removeChildren();
+
+        // figure out spacing
+        var programAreaWidth = programBox.tile.width - programArea.x;
+        var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (program.length + 1)) - 20; // 10px gutter
+        var singleCardSizeBasedOnHeight = programBox.tile.height - 40; // 20px gutter
+        var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
+
+        var i = 0;
+        for (prog in newProg) {
+            var progTile = this.getCardImage(Config.cardList[prog].name);
+            var progIcon = new Bitmap(progTile, programArea);
+            progIcon.setPosition((programArea.width / 2) - ((singleCardSize * newProg.length) / 2) + singleCardSize * i + ((singleCardSize - progTile.width) / 2), ((programBox.tile.height - singleCardSize) / 2) + ((singleCardSize - progTile.height) / 2) - 15);
+            i++;
+        }
+    }
+
+    public function receiveGameInfo(user_id: Int, pk: String, game_id: Int): Void {
         this.user_id = user_id;
         this.pk = pk;
+        this.game_id = game_id;
     }
 
     public function build(): Object {
