@@ -10,6 +10,7 @@ import js.html.WebSocket;
 import h2d.Scene;
 import h2d.Text;
 import scenes.UIManager;
+import hxd.Res;
 
 class GameLevel implements Level {
 	public var scene:Scene;
@@ -41,22 +42,24 @@ class GameLevel implements Level {
 	}
 
 	public function init() {
-		splash = new Bitmap(Tile.fromColor(0x000000, Std.int(Config.boardWidth * 2 / 3), Std.int(Config.boardHeight * 2 / 3)), scene);
-		splash.setPosition(Config.boardWidth / 4, Config.boardHeight / 4);
-		var font = hxd.res.DefaultFont.get();
-		font.resizeTo(20);
+		splash = new Bitmap(Tile.fromColor(Config.uiColor, Config.boardWidth, Config.boardHeight), scene);
+		var font = Res.font.dirga.toFont();
 		var splashText = new Text(font, splash);
-
-		splashText.text = "Connecting...";
+        splashText.text = "Connecting...";
+        splashText.setPosition((splash.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (splash.tile.height / 2) - 10);
 
 		this.ws.onopen = function() {
 			trace("ws open");
-			splashText.text = "Enter your username:";
+            splashText.text = "Type your username:";
+            splashText.setPosition((splash.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (splash.tile.height / 2) - 40);
 
-			var nameEntry = new TextInput(font, splash);
+            var entryBg = new Bitmap(Tile.fromColor(Config.uiSecondary, Math.floor(splash.tile.width), 45), splash);
+            entryBg.y = splashText.y + splashText.textHeight + 23;
+            var nameEntry = new TextInput(font, splash);
 			nameEntry.canEdit = true;
-			nameEntry.text = "<Username>";
-			nameEntry.y = splashText.y + splashText.textHeight + 10;
+            nameEntry.text = "<Click to edit>";
+            nameEntry.x = (splash.tile.width / 2) - 150;
+            nameEntry.y = splashText.y + splashText.textHeight + 25;
 
 			nameEntry.onKeyDown = function(e:Event) {
 				if (e.keyCode == Key.ENTER) {
@@ -105,9 +108,10 @@ class GameLevel implements Level {
 				}
 			}
 
-			var subtext = new Text(font, splash);
-			subtext.y = nameEntry.y + nameEntry.textHeight + 10;
-			subtext.text = "Press Enter to submit";
+            var subtext = new Text(font, splash);
+			subtext.y = nameEntry.y + nameEntry.textHeight + 20;
+            subtext.text = "Press Enter to submit";
+            subtext.x = (splash.tile.width / 2) - (subtext.calcTextWidth(subtext.text) / 2);
 		};
 
 		this.ws.onmessage = function(message) {
