@@ -1,5 +1,7 @@
 package scenes;
 
+import haxe.ds.HashMap;
+import h2d.col.IPoint;
 import haxe.Json;
 import js.html.WebSocket;
 import motion.Actuate;
@@ -269,17 +271,21 @@ class BoardManager implements ComponentManager {
 		return spriteSheet;
 	}
 
-	private function playAnimations(animations:Array<Array<{userId:Int, action:Int}>>) {
+	private function playAnimations(animations:Array<Map<Int, Int>>) {
 		playTic(animations, 0);
 	}
 
-	private function playTic(animations:Array<Array<{userId:Int, action:Int}>>, tic:Int):Void {
+	private function playTic(animations:Array<Map<Int, Int>>, tic:Int):Void {
 		var actionList = Config.genActionList();
 		var steps = animations[tic];
 		var destinations = [];
-		for (step in steps) {
-			var actionData = actionList[step.action];
-			var user = users.get(step.userId);
+		for (userId in users.keys()) {
+			var actionIdx = 0;
+			if (steps.exists(userId)) {
+				actionIdx = steps.get(userId);
+			}
+			var actionData = actionList[actionIdx];
+			var user = users.get(userId);
 
 			user.orientation += actionData.rotation;
 			while (user.orientation < 0) {
@@ -289,7 +295,7 @@ class BoardManager implements ComponentManager {
 
 			var baseSprite = user.sprites.keys().next();
 
-			var dest = {x: Std.int(baseSprite.x), y: Std.int(baseSprite.y)};
+			var dest = new IPoint(Std.int(baseSprite.x), Std.int(baseSprite.y));
 			switch (user.orientation) {
 				case 0:
 					dest.x += 120 * actionData.moveDist;
@@ -300,22 +306,20 @@ class BoardManager implements ComponentManager {
 				case 3:
 					dest.y -= 120 * actionData.moveDist;
 			}
-			destinations.push({user: step.userId, destination: dest, actionData: actionData});
+			destinations.push({user: userId, destination: dest, actionData: actionData});
 		}
 
 		var conflictingPlayers = findConflictingPlayers(destinations);
 
 		while (conflictingPlayers.size > 0) {
+			trace('${conflictingPlayers.size} conflicting players');
 			for (i in 0...destinations.length) {
 				var userId = destinations[i].user;
 				if (conflictingPlayers.has(userId)) {
 					var sprite = users.get(userId).sprites.keys().next();
 					destinations[i] = {
 						user: userId,
-						destination: {
-							x: Std.int(sprite.x),
-							y: Std.int(sprite.y),
-						},
+						destination: new IPoint(Std.int(sprite.x), Std.int(sprite.y)),
 						actionData: destinations[i].actionData
 					};
 				}
@@ -335,19 +339,7 @@ class BoardManager implements ComponentManager {
 				sprite.onAnimEnd = function() {
 					sprite.play(charInfoToTiles(user.charType, user.orientation, Stand));
 				};
-				var dest = {x: baseSprite.x, y: baseSprite.y};
-				switch (user.orientation) {
-					case 0:
-						dest.x += 120 * actionData.moveDist;
-					case 1:
-						dest.y += 120 * actionData.moveDist;
-					case 2:
-						dest.x -= 120 * actionData.moveDist;
-					case 3:
-						dest.y -= 120 * actionData.moveDist;
-				}
-				trace(user.orientation);
-				Actuate.tween(baseSprite, 0.5, dest).onUpdate(function() {
+				Actuate.tween(baseSprite, 0.5, dest.destination).onUpdate(function() {
 					baseSprite.x = baseSprite.x;
 					baseSprite.y = baseSprite.y;
 				}).onComplete(function() {
@@ -371,15 +363,15 @@ class BoardManager implements ComponentManager {
 		}
 	}
 
-	private function findConflictingPlayers(destinations: Array<{user:Int, destination:{x:Int, y:Int}, actionData: Dynamic}>) {
-		var seen = new Map<{x:Int, y:Int}, Int>();
+	private function findConflictingPlayers(destinations:Array<{user:Int, destination:IPoint, actionData:Dynamic}>) {
+		var seen = new Map<String, Int>();
 		var ret = new Set<Int>();
 		for (dest in destinations) {
-			if (seen.exists(dest.destination)) {
-				ret.add(seen.get(dest.destination));
+			if (seen.exists(dest.destination.toString())) {
+				ret.add(seen.get(dest.destination.toString()));
 				ret.add(dest.user);
 			}
-			seen.set(dest.destination, dest.user);
+			seen.set(dest.destination.toString(), dest.user);
 		}
 		return ret;
 	}
