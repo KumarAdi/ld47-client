@@ -35,6 +35,7 @@ class BoardManager implements ComponentManager {
 	private var pk:String;
 	private var gameID:Int;
 	private var ws:WebSocket;
+	public var turnId: Int;
 
 	public function new(ws:WebSocket) {
 		this.boardRoot = new Layers();

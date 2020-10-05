@@ -129,7 +129,8 @@ class UIManager implements ComponentManager{
                     location: this.program.length, // currently always add to end 
                     user_id: this.user_id, 
                     pk: this.pk,
-                    game_id: this.game_id
+                    game_id: this.game_id,
+                    turn_id: this.turn_id
                 }));
                 choiceLocked = true;
                 

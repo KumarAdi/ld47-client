@@ -62115,7 +62115,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 134, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 135, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62377,7 +62377,7 @@ scenes_BoardManager.prototype = {
 		}
 		var conflictingPlayers = this.findConflictingPlayers(destinations);
 		while(conflictingPlayers.size > 0) {
-			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 317, className : "scenes.BoardManager", methodName : "playTic"});
+			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 318, className : "scenes.BoardManager", methodName : "playTic"});
 			var _g = 0;
 			var _g1 = destinations.length;
 			while(_g < _g1) {
@@ -62453,7 +62453,7 @@ scenes_BoardManager.prototype = {
 					++_g31;
 					_g21.push({ x : eff.x, y : eff.y});
 				}
-				haxe_Log.trace(_g21,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 375, className : "scenes.BoardManager", methodName : "playTic"});
+				haxe_Log.trace(_g21,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 376, className : "scenes.BoardManager", methodName : "playTic"});
 				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {
 					return function() {
 						var v = baseSprite2[0].x;
@@ -62549,7 +62549,7 @@ scenes_Level.prototype = {
 var scenes_GameLevel = function() {
 	this.scene = new h2d_Scene();
 	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
-	this.ws = new WebSocket("wss://echo.websocket.org/");
+	this.ws = new WebSocket("wss://ld47recoilapi.page/");
 	this.boardManager = new scenes_BoardManager(this.ws);
 	this.scene.addChild(this.boardManager.build());
 	this.uiManager = new scenes_UIManager(this.ws);
@@ -62596,27 +62596,6 @@ scenes_GameLevel.prototype = {
 			nameEntry.onKeyDown = function(e) {
 				if(e.keyCode == 13) {
 					_gthis.ws.send(JSON.stringify({ type : "InitiateGame", username : nameEntry.text, character_type : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Player", id : 0, game_id : 0, charType : 0, userName : nameEntry.text, private_key : "Hi", is_ai : false}));
-					var _g = 0;
-					while(_g < 10) {
-						var i = _g++;
-						_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : nameEntry.text, x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, char_type : i % 3}));
-					}
-					var _gthis1 = _gthis.ws;
-					var _g2 = [];
-					_g2.push(Math.random() * Config.cardList.length | 0);
-					_g2.push(Math.random() * Config.cardList.length | 0);
-					_g2.push(Math.random() * Config.cardList.length | 0);
-					_gthis1.send(JSON.stringify({ type : "CardOptions", card_options : _g2}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 4, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 5, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 6, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 7, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 8, card_type : Config.cardList.length - 1, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 9, card_type : Config.cardList.length - 1, card_location : 0}));
 				}
 			};
 			var subtext = new h2d_Text(font,_gthis.splash);
@@ -62638,10 +62617,8 @@ scenes_GameLevel.prototype = {
 					_gthis.scene.removeChild(_gthis.splash);
 					_gthis.splash = null;
 				}
+				_gthis.boardManager.turnId = data.turn_id;
 				_gthis.uiManager.showCardChoices(data.turn_id,data.card_options);
-				break;
-			case "ChooseCard":
-				_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : data.user_id, card_type : data.card_number, card_location : data.location}));
 				break;
 			case "Mutation":
 				var newProg = _gthis.boardManager.updateProgram(data.user_id,data.card_type,data.card_location);
@@ -62803,7 +62780,7 @@ scenes_UIManager.prototype = {
 					var choiceId = _gthis.choicesIcons.indexOf(cardIcon2[0]);
 					_gthis.selectedChoice = choice1[0];
 					_gthis.selectedChoiceIndex = choiceId;
-					_gthis.ws.send(JSON.stringify({ type : "ChooseCard", card_number : _gthis.selectedChoice, location : _gthis.program.length, user_id : _gthis.user_id, pk : _gthis.pk, game_id : _gthis.game_id}));
+					_gthis.ws.send(JSON.stringify({ type : "ChooseCard", card_number : _gthis.selectedChoice, location : _gthis.program.length, user_id : _gthis.user_id, pk : _gthis.pk, game_id : _gthis.game_id, turn_id : _gthis.turn_id}));
 					_gthis.choiceLocked = true;
 					haxe_Timer.delay((function() {
 						return function() {

@@ -32,7 +32,7 @@ class GameLevel implements Level {
 		this.scene = new Scene();
 		scene.scaleMode = LetterBox(Config.boardWidth, Config.boardHeight);
 
-		this.ws = new WebSocket("wss://echo.websocket.org/");
+		this.ws = new WebSocket("wss://ld47recoilapi.page/");
 
 		this.boardManager = new BoardManager(ws);
 		scene.addChild(this.boardManager.build());
@@ -70,41 +70,41 @@ class GameLevel implements Level {
 					}));
 
 					// TEST CODE
-					ws.send(Json.stringify({
-						type: "Player",
-						id: 0,
-						game_id: 0,
-						charType: 0,
-						userName: nameEntry.text,
-                        private_key: "Hi",
-                        is_ai: false
-					}));
+					// ws.send(Json.stringify({
+					// 	type: "Player",
+					// 	id: 0,
+					// 	game_id: 0,
+					// 	charType: 0,
+					// 	userName: nameEntry.text,
+                    //     private_key: "Hi",
+                    //     is_ai: false
+					// }));
 
-					for (i in 0...10) {
-						ws.send(Json.stringify({
-							type: "PlayerJoin",
-							user_id: i,
-							username: nameEntry.text,
-							x: Std.int(Math.random() * 16),
-							y: Std.int(Math.random() * 9),
-							start_orientation: 0,
-							char_type: i % 3
-						}));
-					}
+					// for (i in 0...10) {
+					// 	ws.send(Json.stringify({
+					// 		type: "PlayerJoin",
+					// 		user_id: i,
+					// 		username: nameEntry.text,
+					// 		x: Std.int(Math.random() * 16),
+					// 		y: Std.int(Math.random() * 9),
+					// 		start_orientation: 0,
+					// 		char_type: i % 3
+					// 	}));
+					// }
 		
-					ws.send(Json.stringify({
-						type: "CardOptions",
-						card_options: [for (i in 0...3) Std.int(Math.random() * Config.cardList.length)]
-					}));
+					// ws.send(Json.stringify({
+					// 	type: "CardOptions",
+					// 	card_options: [for (i in 0...3) Std.int(Math.random() * Config.cardList.length)]
+					// }));
 		
-					for (i in 1...10) {
-						ws.send(Json.stringify({
-							type: "Mutation",
-							user_id: i,
-							card_type: Config.cardList.length - 1,
-							card_location: 0,
-						}));
-					}
+					// for (i in 1...10) {
+					// 	ws.send(Json.stringify({
+					// 		type: "Mutation",
+					// 		user_id: i,
+					// 		card_type: Config.cardList.length - 1,
+					// 		card_location: 0,
+					// 	}));
+					// }
 				}
 			}
 
@@ -134,6 +134,7 @@ class GameLevel implements Level {
 						scene.removeChild(splash);
 						splash = null;
 					}
+					boardManager.turnId = data.turn_id;
 					uiManager.showCardChoices(data.turn_id, data.card_options);
 				case "Mutation":
 					var newProg = boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
@@ -144,13 +145,13 @@ class GameLevel implements Level {
 					if (splash != null){
 						splashText.text = Std.string(data.secs);
 					}
-				case "ChooseCard": // TEST CODE
-					ws.send(Json.stringify({
-						type: "Mutation",
-						user_id: data.user_id,
-						card_type: data.card_number,
-						card_location: data.location,
-					}));
+				// case "ChooseCard": // TEST CODE
+				// 	ws.send(Json.stringify({
+				// 		type: "Mutation",
+				// 		user_id: data.user_id,
+				// 		card_type: data.card_number,
+				// 		card_location: data.location,
+				// 	}));
 				default:
 			}
         };
