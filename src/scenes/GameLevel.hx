@@ -82,7 +82,7 @@ class GameLevel implements Level {
 					nameEntry.remove();
 					splashText.text = "";
                     splashText.color = new Vector(0, 0, 0);
-                    splashText.x = Config.boardWidth / 2 - 50;
+                    splashText.x = Config.boardWidth / 2 - 80;
 					splashText.y = 600;
 
 					var tuts = [Res.tut.tut1.toTile(), Res.tut.tut2.toTile(), Res.tut.tut3.toTile(), Res.tut.tut4.toTile(), Res.tut.tut5.toTile()].iterator();

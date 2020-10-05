@@ -182,7 +182,14 @@ class BoardManager implements ComponentManager {
 			healthText: []
 		});
 
-		displayHealth(userId);
+		var font = Res.font.pixel.toFont();
+		var userInfo = users.get(userId);
+		for (sprite in sprites) {
+			var hpText = new Text(font, sprite);
+			hpText.text = "HP: " + userInfo.health;
+			hpText.setPosition(-10, 40);
+			userInfo.healthText.push(hpText);
+		}
 
 		for (charRoot in charRoots)
 			charRoot.ysort(0);
@@ -453,14 +460,9 @@ class BoardManager implements ComponentManager {
 	}
 
 	private function displayHealth(userId:Int) {
-		var font = Res.font.pixel.toFont();
 		var userInfo = this.users.get(userId);
-		userInfo.healthText = [];
-		for (key in userInfo.sprites.keys()) {
-			var hpText = new Text(font, key);
-			hpText.text = "HP: " + userInfo.health;
-			hpText.setPosition(30, 40);
-			userInfo.healthText.push(hpText);
+		for (i in 0...4) {
+			userInfo.healthText[i].text = "HP: " + userInfo.health;
 		}
 	}
 
