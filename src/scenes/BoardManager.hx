@@ -39,7 +39,7 @@ class BoardManager implements ComponentManager {
 	public var turnId:Int;
 
 	private var locIndex:Map<String, Int>;
-	private var deadUsers:Int;
+	private var amDead: Bool;
 
 	public function new(ws:WebSocket) {
 		this.boardRoot = new Layers();
@@ -429,6 +429,10 @@ class BoardManager implements ComponentManager {
 		}
 		this.numUsers--;
 
+		if (userId == this.myUserId) {
+			amDead = true;
+		}
+
 		if (this.numUsers <= 1) {
 			var goScreen = new Bitmap(Res.art.Title.toTile());
 			var font = Res.font.dirga.toFont();
@@ -436,7 +440,7 @@ class BoardManager implements ComponentManager {
 			splashText.setPosition((goScreen.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (2 * goScreen.tile.height / 3));
 			splashText.text = "Game Over!";
 
-			if (this.users.exists(this.myUserId)) {
+			if (!amDead) {
 				splashText.text = "You Win!";
 			} else {
 				splashText.text = "You Died!";
