@@ -174,8 +174,7 @@ class UIManager implements ComponentManager{
         programArea.removeChildren();
 
         // figure out spacing
-        var programAreaWidth = programBox.tile.width - programArea.x;
-        var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (program.length + 1)) - 20; // 10px gutter
+        var singleCardSizeBasedOnWidth = Math.floor(programArea.width / (newProg.length + 1)) - 20; // 10px gutter
         var singleCardSizeBasedOnHeight = programBox.tile.height - 40; // 20px gutter
         var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
 
@@ -183,6 +182,10 @@ class UIManager implements ComponentManager{
         for (prog in newProg) {
             var progTile = this.getCardImage(Config.cardList[prog].name);
             var progIcon = new Bitmap(progTile, programArea);
+            if (singleCardSize < progTile.width) {
+                progIcon.scaleX = singleCardSize / progTile.width;
+                progIcon.scaleY = singleCardSize / progTile.height;
+            }
             progIcon.setPosition((programArea.width / 2) - ((singleCardSize * newProg.length) / 2) + singleCardSize * i + ((singleCardSize - progTile.width) / 2), ((programBox.tile.height - singleCardSize) / 2) + ((singleCardSize - progTile.height) / 2) - 15);
             i++;
         }
