@@ -178,7 +178,7 @@ class BoardManager implements ComponentManager {
 			sprites: sprites,
 			orientation: dir,
 			charType: charType,
-			health: 3,
+			health: 20,
 			healthText: []
 		});
 
