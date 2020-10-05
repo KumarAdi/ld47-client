@@ -108,9 +108,9 @@ class UIManager implements ComponentManager{
             choicesIcons.push(cardIcon);
 
             var cardName = new Text(dirgaFont, cardBox);
-            cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
+            cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding - 20, optionHeight + tilePadding - 5);
             cardName.text = Config.cardList[choice].name;
-            cardName.maxWidth = cardBox.tile.width - 45;
+            cardName.maxWidth = 200;
 
             toDeletes.push({name: cardName, icon: cardIcon});
 
