@@ -1,5 +1,6 @@
 package scenes;
 
+import h3d.Vector;
 import h2d.Interactive;
 import hxd.Key;
 import hxd.Event;
@@ -79,7 +80,9 @@ class GameLevel implements Level {
 
 					subtext.remove();
 					nameEntry.remove();
-					splashText.remove();
+					splashText.text = "";
+					splashText.color = new Vector(0, 0, 0);
+					splashText.y = 100;
 
 					var tuts = [Res.tut.tut1.toTile()].iterator();
 
@@ -105,8 +108,6 @@ class GameLevel implements Level {
 							}
 						}
 					}
-
-					
 
 
 					// TEST CODE
