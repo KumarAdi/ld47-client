@@ -64,6 +64,8 @@ class GameLevel implements Level {
             nameEntry.text = "<Click to edit>";
             nameEntry.x = (splash.tile.width / 2) - 150;
 			nameEntry.y = splashText.y + splashText.textHeight + 25;
+
+			Res.audio.ld47loop2.play(true);
 			
 			var alreadySent = false;
 
