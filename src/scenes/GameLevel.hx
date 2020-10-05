@@ -88,7 +88,7 @@ class GameLevel implements Level {
 							x: Std.int(Math.random() * 16),
 							y: Std.int(Math.random() * 9),
 							start_orientation: 0,
-							character_type: i % 3
+							char_type: i % 3
 						}));
 					}
 		
@@ -101,7 +101,7 @@ class GameLevel implements Level {
 						ws.send(Json.stringify({
 							type: "Mutation",
 							user_id: i,
-							card_type: Std.int(Math.random() * Config.cardList.length),
+							card_type: Config.cardList.length - 1,
 							card_location: 0,
 						}));
 					}
@@ -127,7 +127,7 @@ class GameLevel implements Level {
 					uiManager.receiveGameInfo(this.userID, this.pk, this.gameID);
 					boardManager.registerMyUser(this.userID, this.pk, this.gameID);
 				case "PlayerJoin":
-					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
+					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.char_type);
 				case "CardOptions":
 					if (splash != null){
 						trace("removing splash, setting to null");

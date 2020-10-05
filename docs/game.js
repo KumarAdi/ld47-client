@@ -13,15 +13,16 @@ var AnimType = $hxEnums["AnimType"] = { __ename__ : true, __constructs__ : ["Sta
 	,Flex: {_hx_index:2,__enum__:"AnimType",toString:$estr}
 };
 AnimType.__empty_constructs__ = [AnimType.Stand,AnimType.Walk,AnimType.Flex];
+var MarkerType = $hxEnums["MarkerType"] = { __ename__ : true, __constructs__ : ["Slash"]
+	,Slash: {_hx_index:0,__enum__:"MarkerType",toString:$estr}
+};
+MarkerType.__empty_constructs__ = [MarkerType.Slash];
 var Config = function() { };
 $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
 Config.genActionList = function() {
-	var this1 = hxd_Res.get_loader();
-	var this2 = this1;
-	var slash = this2.loadCache("art/markers/slash.png",hxd_res_Image).toTile().gridFlatten(240);
 	if(Config.actionList == null) {
-		Config.actionList = [{ moveDist : 0, rotation : 0, anim : AnimType.Stand, markers : []},{ moveDist : 0, rotation : -1, anim : AnimType.Stand, markers : []},{ moveDist : 0, rotation : 1, anim : AnimType.Stand, markers : []},{ moveDist : 1, rotation : 0, anim : AnimType.Walk, markers : []},{ moveDist : -1, rotation : 0, anim : AnimType.Walk, markers : []},{ moveDist : 0, rotation : 0, anim : AnimType.Flex, markers : [{ marker : slash, x : 1, y : 0}]}];
+		Config.actionList = [{ moveDist : 0, rotation : 0, anim : AnimType.Stand, markers : []},{ moveDist : 0, rotation : -1, anim : AnimType.Stand, markers : []},{ moveDist : 0, rotation : 1, anim : AnimType.Stand, markers : []},{ moveDist : 1, rotation : 0, anim : AnimType.Walk, markers : []},{ moveDist : -1, rotation : 0, anim : AnimType.Walk, markers : []},{ moveDist : 0, rotation : 0, anim : AnimType.Flex, markers : [{ marker : MarkerType.Slash, x : 1, y : 0},{ marker : MarkerType.Slash, x : -1, y : 0},{ marker : MarkerType.Slash, x : 0, y : 1},{ marker : MarkerType.Slash, x : 0, y : -1}]}];
 	}
 	return Config.actionList;
 };
@@ -62114,7 +62115,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 133, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 134, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62322,6 +62323,19 @@ scenes_BoardManager.prototype = {
 		}
 		return spriteSheet;
 	}
+	,markerTypeToTiles: function(markerType) {
+		var _g = [];
+		var _g1 = 0;
+		var this1 = hxd_Res.get_loader();
+		var this2 = this1;
+		var _g2 = this2.loadCache("art/markers/slash.png",hxd_res_Image).toTile().gridFlatten(240);
+		while(_g1 < _g2.length) {
+			var sprite = _g2[_g1];
+			++_g1;
+			_g.push(sprite.center());
+		}
+		return _g;
+	}
 	,playAnimations: function(animations) {
 		this.playTic(animations,0);
 	}
@@ -62330,6 +62344,7 @@ scenes_BoardManager.prototype = {
 		var actionList = Config.genActionList();
 		var steps = animations[tic];
 		var destinations = [];
+		var effects = [];
 		var userId = this.users.keys();
 		while(userId.hasNext()) {
 			var userId1 = userId.next();
@@ -62362,7 +62377,7 @@ scenes_BoardManager.prototype = {
 		}
 		var conflictingPlayers = this.findConflictingPlayers(destinations);
 		while(conflictingPlayers.size > 0) {
-			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 308, className : "scenes.BoardManager", methodName : "playTic"});
+			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 317, className : "scenes.BoardManager", methodName : "playTic"});
 			var _g = 0;
 			var _g1 = destinations.length;
 			while(_g < _g1) {
@@ -62396,6 +62411,49 @@ scenes_BoardManager.prototype = {
 						sprite2[0].play(tmp1);
 					};
 				})(sprite1,user1);
+				var _g3 = 0;
+				var _g11 = actionData1.markers;
+				while(_g3 < _g11.length) {
+					var marker = _g11[_g3];
+					++_g3;
+					var tiles = this.markerTypeToTiles(marker.marker);
+					var effect = [new h2d_Anim(tiles,null,baseSprite1[0])];
+					effect[0].posChanged = true;
+					effect[0].y = 120;
+					effect[0].loop = false;
+					effect[0].onAnimEnd = (function(effect1) {
+						return function() {
+							if(effect1[0] != null && effect1[0].parent != null) {
+								effect1[0].parent.removeChild(effect1[0]);
+							}
+						};
+					})(effect);
+					effects.push(effect[0]);
+					var markerPos_x = marker.x;
+					var markerPos_y = marker.y;
+					if(user1[0].orientation % 2 != 0) {
+						var tmp2 = markerPos_x;
+						markerPos_x = markerPos_y;
+						markerPos_y = tmp2;
+					}
+					if(user1[0].orientation % 3 != 0) {
+						markerPos_x *= -1;
+					}
+					var _g4 = effect[0];
+					_g4.posChanged = true;
+					_g4.x += markerPos_x * 120;
+					var _g5 = effect[0];
+					_g5.posChanged = true;
+					_g5.y += markerPos_y * 120;
+				}
+				var _g21 = [];
+				var _g31 = 0;
+				while(_g31 < effects.length) {
+					var eff = effects[_g31];
+					++_g31;
+					_g21.push({ x : eff.x, y : eff.y});
+				}
+				haxe_Log.trace(_g21,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 375, className : "scenes.BoardManager", methodName : "playTic"});
 				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {
 					return function() {
 						var v = baseSprite2[0].x;
@@ -62407,12 +62465,12 @@ scenes_BoardManager.prototype = {
 					};
 				})(baseSprite1)).onComplete((function(baseSprite3) {
 					return function() {
-						var _g3 = baseSprite3[0];
-						_g3.posChanged = true;
-						_g3.x %= Config.boardWidth;
-						var _g4 = baseSprite3[0];
-						_g4.posChanged = true;
-						_g4.y %= Config.boardHeight;
+						var _g41 = baseSprite3[0];
+						_g41.posChanged = true;
+						_g41.x %= Config.boardWidth;
+						var _g42 = baseSprite3[0];
+						_g42.posChanged = true;
+						_g42.y %= Config.boardHeight;
 					};
 				})(baseSprite1));
 			}
@@ -62542,7 +62600,7 @@ scenes_GameLevel.prototype = {
 					var _g = 0;
 					while(_g < 10) {
 						var i = _g++;
-						_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : nameEntry.text, x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, character_type : i % 3}));
+						_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : nameEntry.text, x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, char_type : i % 3}));
 					}
 					var _gthis1 = _gthis.ws;
 					var _g2 = [];
@@ -62550,15 +62608,15 @@ scenes_GameLevel.prototype = {
 					_g2.push(Math.random() * Config.cardList.length | 0);
 					_g2.push(Math.random() * Config.cardList.length | 0);
 					_gthis1.send(JSON.stringify({ type : "CardOptions", card_options : _g2}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 4, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 5, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 6, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 7, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 8, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 9, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 4, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 5, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 6, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 7, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 8, card_type : Config.cardList.length - 1, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 9, card_type : Config.cardList.length - 1, card_location : 0}));
 				}
 			};
 			var subtext = new h2d_Text(font,_gthis.splash);
@@ -62601,7 +62659,7 @@ scenes_GameLevel.prototype = {
 				_gthis.boardManager.registerMyUser(_gthis.userID,_gthis.pk,_gthis.gameID);
 				break;
 			case "PlayerJoin":
-				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.character_type);
+				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.char_type);
 				break;
 			case "TillStart":
 				if(_gthis.splash != null) {
@@ -62944,7 +63002,7 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [3]},{ name : "Move 2", disorient : false, dmg : 0, action : [3,3]},{ name : "Move 3", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Reverse", disorient : false, dmg : 0, action : [4]},{ name : "Turn Left", disorient : false, dmg : 0, action : [1]},{ name : "Turn Right", disorient : false, dmg : 0, action : [2]},{ name : "U-Turn", disorient : false, dmg : 0, action : [1,1]},{ name : "Reposition", disorient : false, dmg : 0, action : [4,4,4]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [3,1,4,3,2,4]}];
+Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [3]},{ name : "Move 2", disorient : false, dmg : 0, action : [3,3]},{ name : "Move 3", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Reverse", disorient : false, dmg : 0, action : [4]},{ name : "Turn Left", disorient : false, dmg : 0, action : [1]},{ name : "Turn Right", disorient : false, dmg : 0, action : [2]},{ name : "U-Turn", disorient : false, dmg : 0, action : [1,1]},{ name : "Reposition", disorient : false, dmg : 0, action : [4,4,4]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [3,1,4,3,2,4]},{ name : "Slash", disorient : false, dmg : 1, action : [5]}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;

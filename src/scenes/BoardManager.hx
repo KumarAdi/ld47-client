@@ -1,5 +1,6 @@
 package scenes;
 
+import Config.MarkerType;
 import haxe.ds.HashMap;
 import h2d.col.IPoint;
 import haxe.Json;
@@ -27,7 +28,7 @@ typedef UserInfo = {username:String, program:Array<Int>, sprites:Map<Object, Ani
 class BoardManager implements ComponentManager {
 	var boardRoot:Layers;
 	private var users:Map<Int, UserInfo>;
-	private var charRoots:Array<Layers>;
+	private var charRoots: Array<Layers>;
 	private var mutationsSeen:Set<Int>;
 	private var numUsers:Int;
 	private var myUserId:Int;
@@ -264,6 +265,13 @@ class BoardManager implements ComponentManager {
 		return spriteSheet;
 	}
 
+	private function markerTypeToTiles(markerType: MarkerType) {
+		switch (markerType) {
+			case Slash:
+				return [for (sprite in Res.art.markers.slash.toTile().gridFlatten(240)) sprite.center()];
+		}
+	}
+
 	private function playAnimations(animations:Array<Map<Int, Int>>) {
 		playTic(animations, 0);
 	}
@@ -272,6 +280,7 @@ class BoardManager implements ComponentManager {
 		var actionList = Config.genActionList();
 		var steps = animations[tic];
 		var destinations = [];
+		var effects = [];
 		for (userId in users.keys()) {
 			var actionIdx = 0;
 			if (steps.exists(userId)) {
@@ -332,6 +341,39 @@ class BoardManager implements ComponentManager {
 				sprite.onAnimEnd = function() {
 					sprite.play(charInfoToTiles(user.charType, user.orientation, Stand));
 				};
+
+				for (marker in actionData.markers) {
+					var tiles = this.markerTypeToTiles(marker.marker);
+					var effect = new Anim(tiles, baseSprite);
+					effect.y = 120;
+					effect.loop = false;
+					effect.onAnimEnd = function () {
+						effect.remove();
+					}
+					effects.push(effect);
+
+					var markerPos = {
+						x: marker.x,
+						y: marker.y
+					};
+
+					if (user.orientation % 2 != 0) { // facing vertical
+						var tmp = markerPos.x;
+						markerPos.x = markerPos.y;
+						markerPos.y = tmp;
+					}
+
+					if (user.orientation % 3 != 0) { //horizontal flip
+						markerPos.x *= -1;
+					}
+
+					effect.x += markerPos.x * 120;
+					effect.y += markerPos.y * 120;
+					// effect.rotate(Math.atan2(markerPos.y, markerPos.x) + (Math.PI / 2));
+				}
+
+				trace([for (eff in effects) {x: eff.x, y: eff.y}]);
+
 				Actuate.tween(baseSprite, 0.5, dest.destination).onUpdate(function() {
 					baseSprite.x = baseSprite.x;
 					baseSprite.y = baseSprite.y;
