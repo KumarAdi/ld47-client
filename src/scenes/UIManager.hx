@@ -63,7 +63,7 @@ class UIManager implements ComponentManager{
 
         var programBoxTitle = new Text(stripeFont, programBox);
         programBoxTitle.text = "Program";
-        programBoxTitle.setPosition(45,45);
+        programBoxTitle.setPosition(45,25);
 
         var loopTile = Res.art.loop.toTile();
         var loopBg = new Bitmap(loopTile, programBox);
@@ -215,7 +215,7 @@ class UIManager implements ComponentManager{
                 progIcon.scaleX = singleCardSize / progTile.width;
                 progIcon.scaleY = singleCardSize / progTile.height;
             }
-            progIcon.setPosition((programArea.width / 2) - ((singleCardSize * newProg.length) / 2) + singleCardSize * i + ((singleCardSize - progTile.width) / 2), ((programBox.tile.height - singleCardSize) / 2) + ((singleCardSize - progTile.height) / 2) - 15);
+            progIcon.setPosition((programArea.width / 2) - ((singleCardSize * newProg.length) / 2) + singleCardSize * i + ((singleCardSize - progTile.width) / 2), ((programBox.tile.height - singleCardSize) / 2) + ((singleCardSize - progTile.height) / 2) - 35);
             i++;
         }
     }

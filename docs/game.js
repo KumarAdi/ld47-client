@@ -3888,7 +3888,7 @@ format_tools_BitsInput.prototype = {
 		}
 		var k1 = this.i.readByte();
 		if(this.nbits >= 24) {
-			if(n >= 31) {
+			if(n > 31) {
 				throw new js__$Boot_HaxeError("Bits error");
 			}
 			var c1 = 8 + this.nbits - n;
@@ -3996,11 +3996,50 @@ format_wav_Reader.prototype = {
 			throw new js__$Boot_HaxeError("expected data subchunk");
 		}
 		var datalen = this.i.readInt32();
-		var data = this.i.readAll();
-		if(data.length > datalen) {
-			data = data.sub(0,datalen);
+		var data;
+		try {
+			data = this.i.read(datalen);
+		} catch( e ) {
+			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
+			if(((e1) instanceof haxe_io_Eof)) {
+				var e2 = e1;
+				throw new js__$Boot_HaxeError("Invalid chunk data length");
+			} else {
+				throw e;
+			}
 		}
-		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data};
+		var cuePoints = [];
+		try {
+			while(true) {
+				var nextChunk1 = this.i.readString(4);
+				if(nextChunk1 == "cue ") {
+					this.i.readInt32();
+					var nbCuePoints = this.i.readInt32();
+					var _g1 = 0;
+					var _g2 = nbCuePoints;
+					while(_g1 < _g2) {
+						var _ = _g1++;
+						var cueId = this.i.readInt32();
+						this.i.readInt32();
+						this.i.readString(4);
+						this.i.readInt32();
+						this.i.readInt32();
+						var cueSampleOffset = this.i.readInt32();
+						cuePoints.push({ id : cueId, sampleOffset : cueSampleOffset});
+					}
+				} else {
+					this.i.read(this.i.readInt32());
+				}
+			}
+		} catch( e3 ) {
+			var e4 = ((e3) instanceof js__$Boot_HaxeError) ? e3.val : e3;
+			if(((e4) instanceof haxe_io_Eof)) {
+				var e5 = e4;
+			} else {
+				throw e3;
+			}
+		}
+		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data, cuePoints : cuePoints};
 	}
 	,__class__: format_wav_Reader
 };
@@ -36889,12 +36928,6 @@ haxe_io_Bytes.prototype = {
 			this.b[pos++] = value;
 		}
 	}
-	,sub: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		}
-		return new haxe_io_Bytes(this.b.buffer.slice(pos + this.b.byteOffset,pos + this.b.byteOffset + len));
-	}
 	,getFloat: function(pos) {
 		if(this.data == null) {
 			this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -37947,30 +37980,6 @@ haxe_io_Input.prototype = {
 	,set_bigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
-	}
-	,readAll: function(bufsize) {
-		if(bufsize == null) {
-			bufsize = 16384;
-		}
-		var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
-		var total = new haxe_io_BytesBuffer();
-		try {
-			while(true) {
-				var len = this.readBytes(buf,0,bufsize);
-				if(len == 0) {
-					throw new js__$Boot_HaxeError(haxe_io_Error.Blocked);
-				}
-				total.addBytes(buf,0,len);
-			}
-		} catch( e ) {
-			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
-			if(((e1) instanceof haxe_io_Eof)) {
-				var e2 = e1;
-			} else {
-				throw e;
-			}
-		}
-		return total.getBytes();
 	}
 	,readFullBytes: function(s,pos,len) {
 		while(len > 0) {
@@ -60484,15 +60493,6 @@ js_html__$CanvasElement_CanvasUtil.getContextWebGL = function(canvas,attribs) {
 	}
 	return null;
 };
-var js_lib__$ArrayBuffer_ArrayBufferCompat = function() { };
-$hxClasses["js.lib._ArrayBuffer.ArrayBufferCompat"] = js_lib__$ArrayBuffer_ArrayBufferCompat;
-js_lib__$ArrayBuffer_ArrayBufferCompat.__name__ = "js.lib._ArrayBuffer.ArrayBufferCompat";
-js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
-	var u = new Uint8Array(this,begin,end == null ? null : end - begin);
-	var resultArray = new Uint8Array(u.byteLength);
-	resultArray.set(u);
-	return resultArray.buffer;
-};
 var motion_actuators_IGenericActuator = function() { };
 $hxClasses["motion.actuators.IGenericActuator"] = motion_actuators_IGenericActuator;
 motion_actuators_IGenericActuator.__name__ = "motion.actuators.IGenericActuator";
@@ -62671,7 +62671,7 @@ var scenes_UIManager = function(ws) {
 	programBoxTitle.posChanged = true;
 	programBoxTitle.x = 45;
 	programBoxTitle.posChanged = true;
-	programBoxTitle.y = 45;
+	programBoxTitle.y = 25;
 	var this3 = hxd_Res.get_loader();
 	var loopTile = this3.loadCache("art/loop.png",hxd_res_Image).toTile();
 	var loopBg = new h2d_Bitmap(loopTile,this.programBox);
@@ -62825,7 +62825,7 @@ scenes_UIManager.prototype = {
 			progIcon.posChanged = true;
 			progIcon.x = this.programArea.width / 2 - singleCardSize * newProg.length / 2 + singleCardSize * i + (singleCardSize - progTile.width) / 2;
 			progIcon.posChanged = true;
-			progIcon.y = (this.programBox.tile.height - singleCardSize) / 2 + (singleCardSize - progTile.height) / 2 - 15;
+			progIcon.y = (this.programBox.tile.height - singleCardSize) / 2 + (singleCardSize - progTile.height) / 2 - 35;
 			++i;
 		}
 	}
@@ -62930,9 +62930,6 @@ js_Boot.__toStr = ({ }).toString;
 Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function() {
 	return String(this.val);
 }});
-if(ArrayBuffer.prototype.slice == null) {
-	ArrayBuffer.prototype.slice = js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
-}
 Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
