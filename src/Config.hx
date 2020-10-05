@@ -18,7 +18,8 @@ enum AnimType {
 typedef ActionData = {
 	var moveDist: Int;
 	var rotation: Int;
-	var anim: AnimType;
+    var anim: AnimType;
+    var markers: Array<{marker: Array<Tile>, x: Int, y: Int}>;
 }
 
 class Config {
@@ -30,15 +31,21 @@ class Config {
 
     public static var actionList:Null<Array<ActionData>>;
 
+
 	public static function genActionList():Array<ActionData> {
+        var slash = Res.art.markers.slash.toTile().gridFlatten(240);
 		if (Config.actionList == null) {
 			Config.actionList = [
-                {moveDist: 0, rotation: 0, anim: Stand},
-                {moveDist: 0, rotation: -1, anim: Stand},
-                {moveDist: 0, rotation: 1, anim: Stand},
-                {moveDist: 1, rotation: 0, anim: Walk},
-                {moveDist: -1, rotation: 0, anim: Walk},
-                {moveDist: 0, rotation: 0, anim: Flex},
+                {moveDist: 0, rotation: 0, anim: Stand, markers: []},
+                {moveDist: 0, rotation: -1, anim: Stand, markers: []},
+                {moveDist: 0, rotation: 1, anim: Stand, markers: []},
+                {moveDist: 1, rotation: 0, anim: Walk, markers: []},
+                {moveDist: -1, rotation: 0, anim: Walk, markers: []},
+                {moveDist: 0, rotation: 0, anim: Flex, markers: [{
+                    marker: slash,
+                    x: 1,
+                    y: 0
+                }]},
 			];
 		}
 

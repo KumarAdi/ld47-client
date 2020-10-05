@@ -264,9 +264,6 @@ class UIManager implements ComponentManager{
         }
     }
 
-    public function update(dt: Float): Void {
-
-        
-    }
+    public function update(dt: Float): Void {}
 
 }

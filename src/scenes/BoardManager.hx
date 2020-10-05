@@ -47,18 +47,15 @@ class BoardManager implements ComponentManager {
 	public function build():Object {
 		var tileImage = hxd.Res.art.tile.toTile();
 
-		var subBoards = [for (i in 0...4) new Layers()];
-		for (subBoard in subBoards) {
-			boardRoot.add(subBoard, 0);
-		}
-
 		for (x in 0...2) {
 			for (y in 0...2) {
-				var subBoard = subBoards[2 * x + y];
-				subBoard.setPosition(Config.boardWidth * x, Config.boardHeight * y);
+				var charRoot = charRoots[2 * x + y];
+				charRoot.setPosition(Config.boardWidth * x, Config.boardHeight * y);
+				boardRoot.add(charRoot, 1);
 
-				var tileRoot = new Object();
-				subBoard.add(tileRoot, 0);
+				var tileRoot = new Object(boardRoot);
+				tileRoot.setPosition(Config.boardWidth * x, Config.boardHeight * y);
+				boardRoot.add(tileRoot, 0);
 
 				for (i in 0...Std.int(Config.boardWidth / tileImage.width)) {
 					for (j in 0...Std.int(Config.boardHeight / tileImage.height)) {
@@ -76,10 +73,6 @@ class BoardManager implements ComponentManager {
 		}
 
 		boardRoot.ysort(0);
-
-		for (i in 0...4) {
-			subBoards[i].add(charRoots[i], 1);
-		}
 
 		var boardSize = boardRoot.getBounds();
 		var dragBoard = new Interactive(boardSize.width, boardSize.height, boardRoot);
