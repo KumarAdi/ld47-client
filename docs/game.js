@@ -62449,26 +62449,25 @@ scenes_BoardManager.prototype = {
 					_g5.y += markerPos.y;
 					markerPos.x += baseSprite1[0].x | 0;
 					markerPos.y += baseSprite1[0].y | 0;
+					var this1 = this.locIndex;
+					var key = markerPos.toString();
+					var _this = this1;
+					var hitId = __map_reserved[key] != null ? _this.getReserved(key) : _this.h[key];
 					var tmp3;
 					if(firstBoard) {
-						var this1 = this.locIndex;
-						var key = markerPos.toString();
-						var _this = this1;
-						tmp3 = __map_reserved[key] != null ? _this.existsReserved(key) : _this.h.hasOwnProperty(key);
+						var this2 = this.locIndex;
+						var key1 = markerPos.toString();
+						var _this1 = this2;
+						tmp3 = __map_reserved[key1] != null ? _this1.existsReserved(key1) : _this1.h.hasOwnProperty(key1);
 					} else {
 						tmp3 = false;
 					}
 					if(tmp3) {
-						var this2 = this.users;
-						var this3 = this.locIndex;
-						var key1 = markerPos.toString();
-						var _this1 = this3;
-						var key2 = __map_reserved[key1] != null ? _this1.getReserved(key1) : _this1.h[key1];
-						this2.h[key2].health -= actionData1.dmg;
-						var this4 = this.locIndex;
-						var key3 = markerPos.toString();
-						var _this2 = this4;
-						haxe_Log.trace("player Hit " + (__map_reserved[key3] != null ? _this2.getReserved(key3) : _this2.h[key3]),{ fileName : "src/scenes/BoardManager.hx", lineNumber : 382, className : "scenes.BoardManager", methodName : "playTic"});
+						this.users.h[hitId].health -= actionData1.dmg;
+						if(this.users.h[hitId].health <= 0) {
+							this.ws.send(JSON.stringify({ type : "PollPlayerDied", self_id : this.myUserId, other_id : hitId, pk : this.pk, game_id : this.gameID, turn_id : this.turnId}));
+						}
+						haxe_Log.trace("player Hit " + hitId,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 394, className : "scenes.BoardManager", methodName : "playTic"});
 					}
 				}
 				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {

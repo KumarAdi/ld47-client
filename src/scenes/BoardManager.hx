@@ -377,9 +377,21 @@ class BoardManager implements ComponentManager {
 					markerPos.x += Std.int(baseSprite.x);
 					markerPos.y += Std.int(baseSprite.y);
 
+					var hitId = this.locIndex.get(markerPos.toString());
+
 					if (firstBoard && this.locIndex.exists(markerPos.toString())) {
-						this.users.get(this.locIndex.get(markerPos.toString())).health -= actionData.dmg;
-						trace("player Hit " + this.locIndex.get(markerPos.toString()));
+						this.users.get(hitId).health -= actionData.dmg;
+						if (this.users.get(hitId).health <= 0) {
+							this.ws.send(Json.stringify({
+								type: "PollPlayerDied",
+								self_id: this.myUserId,
+								other_id: hitId,
+								pk: this.pk,
+								game_id: this.gameID,
+								turn_id: this.turnId
+							}));
+						}
+						trace("player Hit " + hitId);
 					}
 				}
 
