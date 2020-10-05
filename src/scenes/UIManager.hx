@@ -16,6 +16,7 @@ import js.html.WebSocket;
 import haxe.Json;
 import h2d.Tile;
 import h2d.Mask;
+import haxe.Timer;
 
 class UIManager implements ComponentManager{
 
@@ -35,6 +36,7 @@ class UIManager implements ComponentManager{
     private var pk: String;
     private var game_id: Int;
     private var turn_id: Int;
+    private var choiceLocked: Bool;
 
     public function new(ws: WebSocket) {
         this.ws = ws;
@@ -83,10 +85,13 @@ class UIManager implements ComponentManager{
         //     return;
         // }
 
+        toggleUI(true);
+
         this.turn_id = turn_id;
         this.currentChoices = choices;
         choicesIcons = [];
         this.selectedChoice = null;
+        choiceLocked = false;
 
         var i = 0;
         var optionSpacing = ((cardBox.getBounds().height - 200) / choices.length);
@@ -125,6 +130,11 @@ class UIManager implements ComponentManager{
                     pk: this.pk,
                     game_id: this.game_id
                 }));
+                choiceLocked = true;
+                
+                Timer.delay(function() {
+                    this.uiMama.visible = false;
+                }, 3000);
             }
 
             i++;
@@ -217,6 +227,10 @@ class UIManager implements ComponentManager{
 
     public function build(): Object {
         return uiMama;
+    }
+
+    public function toggleUI(toggle: Bool): Void {
+        uiMama.visible = toggle;
     }
 
     public function update(dt: Float): Void {

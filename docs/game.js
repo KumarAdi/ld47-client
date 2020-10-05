@@ -62700,10 +62700,12 @@ scenes_UIManager.__interfaces__ = [scenes_ComponentManager];
 scenes_UIManager.prototype = {
 	showCardChoices: function(turn_id,choices) {
 		var _gthis = this;
+		this.toggleUI(true);
 		this.turn_id = turn_id;
 		this.currentChoices = choices;
 		this.choicesIcons = [];
 		this.selectedChoice = null;
+		this.choiceLocked = false;
 		var i = 0;
 		var _this = this.cardBox.getBounds();
 		var optionSpacing = (_this.yMax - _this.yMin - 200) / choices.length;
@@ -62737,6 +62739,13 @@ scenes_UIManager.prototype = {
 					_gthis.selectedChoice = choice1[0];
 					_gthis.selectedChoiceIndex = choiceId;
 					_gthis.ws.send(JSON.stringify({ type : "ChooseCard", card_number : _gthis.selectedChoice, location : _gthis.program.length, user_id : _gthis.user_id, pk : _gthis.pk, game_id : _gthis.game_id}));
+					_gthis.choiceLocked = true;
+					_gthis.uiMama.alpha = 0.5;
+					haxe_Timer.delay((function() {
+						return function() {
+							_gthis.uiMama.set_visible(false);
+						};
+					})(),3000);
 				};
 			})(cardIcon,choice);
 			++i;
@@ -62828,6 +62837,9 @@ scenes_UIManager.prototype = {
 	}
 	,build: function() {
 		return this.uiMama;
+	}
+	,toggleUI: function(toggle) {
+		this.uiMama.set_visible(toggle);
 	}
 	,update: function(dt) {
 	}
