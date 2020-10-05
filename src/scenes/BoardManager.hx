@@ -271,17 +271,21 @@ class BoardManager implements ComponentManager {
 		return spriteSheet;
 	}
 
-	private function playAnimations(animations:Array<Array<{userId:Int, action:Int}>>) {
+	private function playAnimations(animations:Array<Map<Int, Int>>) {
 		playTic(animations, 0);
 	}
 
-	private function playTic(animations:Array<Array<{userId:Int, action:Int}>>, tic:Int):Void {
+	private function playTic(animations:Array<Map<Int, Int>>, tic:Int):Void {
 		var actionList = Config.genActionList();
 		var steps = animations[tic];
 		var destinations = [];
-		for (step in steps) {
-			var actionData = actionList[step.action];
-			var user = users.get(step.userId);
+		for (userId in users.keys()) {
+			var actionIdx = 0;
+			if (steps.exists(userId)) {
+				actionIdx = steps.get(userId);
+			}
+			var actionData = actionList[actionIdx];
+			var user = users.get(userId);
 
 			user.orientation += actionData.rotation;
 			while (user.orientation < 0) {
@@ -302,7 +306,7 @@ class BoardManager implements ComponentManager {
 				case 3:
 					dest.y -= 120 * actionData.moveDist;
 			}
-			destinations.push({user: step.userId, destination: dest, actionData: actionData});
+			destinations.push({user: userId, destination: dest, actionData: actionData});
 		}
 
 		var conflictingPlayers = findConflictingPlayers(destinations);
