@@ -62745,6 +62745,7 @@ scenes_UIManager.prototype = {
 		var i = 0;
 		var _this = this.cardBox.getBounds();
 		var optionSpacing = (_this.yMax - _this.yMin - 200) / choices.length;
+		var toDeletes = [];
 		var _g = 0;
 		while(_g < choices.length) {
 			var choice = [choices[_g]];
@@ -62768,6 +62769,7 @@ scenes_UIManager.prototype = {
 			cardName.y = optionHeight + tilePadding;
 			cardName.set_text(Config.cardList[choice[0]].name);
 			cardName.set_maxWidth(this.cardBox.tile.width - 45);
+			toDeletes.push({ name : cardName, icon : cardIcon[0]});
 			var cardListen = new h2d_Interactive(cardIcon[0].tile.width,cardIcon[0].tile.height,cardIcon[0]);
 			cardListen.onClick = (function(cardIcon2,choice1) {
 				return function(e) {
@@ -62778,6 +62780,19 @@ scenes_UIManager.prototype = {
 					_gthis.choiceLocked = true;
 					haxe_Timer.delay((function() {
 						return function() {
+							var _g1 = 0;
+							while(_g1 < toDeletes.length) {
+								var toDelete = toDeletes[_g1];
+								++_g1;
+								var _this2 = toDelete.name;
+								if(_this2 != null && _this2.parent != null) {
+									_this2.parent.removeChild(_this2);
+								}
+								var _this3 = toDelete.icon;
+								if(_this3 != null && _this3.parent != null) {
+									_this3.parent.removeChild(_this3);
+								}
+							}
 							_gthis.toggleUI(false);
 						};
 					})(),3000);
