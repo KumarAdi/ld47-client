@@ -38,94 +38,94 @@ class Config {
 	public static function genActionList():Array<ActionData> {
 		if (Config.actionList == null) {
 			Config.actionList = [
-				{
+				{ // 0 Nothing
 					moveDist: 0, // 0 Nothing
 					rotation: 0,
 					anim: Stand,
 					markers: [],
 					dmg: 0,
 				},
-				{
+				{ // 1 Left
 					moveDist: 0, // 1 Left
 					rotation: -1,
 					anim: Stand,
 					markers: [],
 					dmg: 0,
 				},
-				{
+				{ // 2 Right
 					moveDist: 0, // 2 Right
 					rotation: 1,
 					anim: Stand,
 					markers: [],
 					dmg: 0,
 				},
-				{
+				{ // 3 Forwards
 					moveDist: 1, // 3 Forwards
 					rotation: 0,
 					anim: Walk,
 					markers: [],
 					dmg: 0,
 				},
-				{
+				{ // 4 Backwards
 					moveDist: -1, // 4 Backwards
 					rotation: 0,
 					anim: Walk,
 					markers: [],
 					dmg: 0,
 				},
-				{
+				{ // 5 Front hit 2Dmg
 					moveDist: 0, // 5 Front hit 2Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 1,
 							y: 0
 						},
 					],
 					dmg: 2,
 				},
-				{
+				{ // 6 Front hit 5Dmg
 					moveDist: 0, // 6 Front hit 5Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 1,
 							y: 0
 						},
 					],
 					dmg: 5,
 				},
-				{
+				{ // 7 Front hit 6Dmg
 					moveDist: 0, // 7 Front hit 6Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 1,
 							y: 0
 						},
 					],
 					dmg: 6,
 				},
-				{
+				{ // 8 Front hit 10Dmg
 					moveDist: 0, // 8 Front hit 10Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 1,
 							y: 0
 						},
 					],
 					dmg: 10,
 				},
-				{
+				{ // 9 Left Axe  1Dmg
 					moveDist: 0, // 9 Left Axe  1Dmg
 					rotation: 0,
 					anim: Flex,
@@ -148,7 +148,7 @@ class Config {
 					],
 					dmg: 1,
 				},
-				{
+				{ // 10 Left Axe 3Dmg
 					moveDist: 0, // 10 Left Axe 3Dmg
 					rotation: 0,
 					anim: Flex,
@@ -171,30 +171,30 @@ class Config {
 					],
 					dmg: 3,
 				},
-				{
+				{ // 11 Left Axe 4Dmg
 					moveDist: 0, // 11 Left Axe 4Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 0,
 							y: 1
 						},
 					],
 					dmg: 4,
 				},
-				{
+				{ // 12 Left Axe 5Dmg
 					moveDist: 0, // 12 Left Axe 5Dmg
 					rotation: 0,
 					anim: Flex,
@@ -217,30 +217,30 @@ class Config {
 					],
 					dmg: 5,
 				},
-				{
+				{ // 13 Left Axe 6Dmg
 					moveDist: 0, // 13 Left Axe 6Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 0,
 							y: 1
 						},
 					],
 					dmg: 6,
 				},
-				{
+				{ // 14 Front Swipe 1Dmg
 					moveDist: 0, // 14 Front Swipe 1Dmg
 					rotation: 0,
 					anim: Flex,
@@ -263,7 +263,7 @@ class Config {
 					],
 					dmg: 1,
 				},
-				{
+				{ // 15 Front Swipe 3Dmg
 					moveDist: 0, // 15 Front Swipe 3Dmg
 					rotation: 0,
 					anim: Flex,
@@ -286,7 +286,7 @@ class Config {
 					],
 					dmg: 3,
 				},
-				{
+				{ // 16 Front Swipe 4Dmg
 					moveDist: 0, // 16 Front Swipe 4Dmg
 					rotation: 0,
 					anim: Flex,
@@ -309,7 +309,7 @@ class Config {
 					],
 					dmg: 4,
 				},
-				{
+				{ // 17 Front Swipe 5Dmg
 					moveDist: 0, // 17 Front Swipe 5Dmg
 					rotation: 0,
 					anim: Flex,
@@ -332,7 +332,7 @@ class Config {
 					],
 					dmg: 3,
 				},
-				{
+				{ // 18 Right Axe  1Dmg
 					moveDist: 0, // 18 Right Axe  1Dmg
 					rotation: 0,
 					anim: Flex,
@@ -355,7 +355,7 @@ class Config {
 					],
 					dmg: 1,
 				},
-				{
+				{ // 19 Right Axe 3Dmg
 					moveDist: 0, // 19 Right Axe 3Dmg
 					rotation: 0,
 					anim: Flex,
@@ -378,30 +378,30 @@ class Config {
 					],
 					dmg: 3,
 				},
-				{
+				{ // 20 Right Axe 4Dmg
 					moveDist: 0, // 20 Right Axe 4Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 1,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 0,
 							y: -1
 						},
 					],
 					dmg: 4,
 				},
-				{
+				{ // 21 Right Axe 5Dmg
 					moveDist: 0, // 21 Right Axe 5Dmg
 					rotation: 0,
 					anim: Flex,
@@ -424,78 +424,78 @@ class Config {
 					],
 					dmg: 5,
 				},
-				{
+				{ // 22 Right Axe 6Dmg
 					moveDist: 0, // 22 Right Axe 6Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 1,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 0,
 							y: -1
 						},
 					],
 					dmg: 6,
 				},
-				{
+				{ // 23 Stomp 1Dmg
 					moveDist: 0, // 23 Stomp 1Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 0,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -1,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 0,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: -1
 						},
 					],
 					dmg: 1,
 				},
-				{
+				{ // 24 Stomp 2Dmg
 					moveDist: 0, // 24 Stomp 2Dmg
 					rotation: 0,
 					anim: Flex,
@@ -543,929 +543,1171 @@ class Config {
 					],
 					dmg: 2,
 				},
-				{
+				{ // 25 Stomp 3Dmg
 					moveDist: 0, // 25 Stomp 3Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 0,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -1,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 0,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 1,
 							y: -1
 						},
 					],
 					dmg: 3,
 				},
-				{
+				{ // 26 Stomp 4Dmg
 					moveDist: 0, // 26 Stomp 4Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 0,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -1,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 0,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 1,
 							y: -1
 						},
 					],
 					dmg: 4,
 				},
-				{
+				{ // 27 Stomp 5Dmg
 					moveDist: 0, // 27 Stomp 5Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Music,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: 1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: 0,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: -1,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: -1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: -1,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: 0,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Music,
 							x: 1,
 							y: -1
 						},
 					],
 					dmg: 5,
 				},
-				{
+				{ // 28 Wide Stomp 1Dmg
 					moveDist: 0, // 28 Wide Stomp 1Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Electricity,
 							x: 2,
 							y: -1
 						},
 					],
 					dmg: 1,
 				},
-				{
+				{ // 29 Wide Stomp 3Dmg
 					moveDist: 0, // 28 Wide Stomp 3Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Wind,
 							x: 2,
 							y: -1
 						},
 					],
 					dmg: 3,
 				},
-				{
-					moveDist: 0, // 29 Wide Stomp 4Dmg
+				{ // 30 Wide Stomp 4Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Bubble,
 							x: 2,
 							y: -1
 						},
 					],
 					dmg: 4,
 				},
-				{
-					moveDist: 0, // 30 Wide Stomp 5Dmg
+				{ // 31 Wide Stomp 5Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 2,
 							y: -1
 						},
 					],
 					dmg: 5,
 				},
-				{
-					moveDist: 0, // 31 Wide Stomp 7Dmg
+				{ // 32 Wide Stomp 7Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Musicbig,
 							x: 2,
 							y: -1
 						},
 					],
 					dmg: 7,
 				},
-				{
+				{ // 33 Wide Stomp 9Dmg
 					moveDist: 0, // 32 Wide Stomp 9Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Slash,
+							marker: Ice,
 							x: 2,
 							y: -1
 						},
 					],
 					dmg: 9,
 				},
-				{
-					moveDist: 0, // 33 Wide Left 4Dmg
+				{ // 34 Wide Left 4Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: -2,
 							y: 0
 						},
 					],
 					dmg: 4,
 				},
-				{
-					moveDist: 0, // 34 Wide Left 5Dmg
+				{ // 35 Wide Left 5Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -2,
 							y: 0
 						},
 					],
 					dmg: 5,
 				},
-				{
-					moveDist: 0, // 35 Wide Left 8Dmg
+				{ // 36 Wide Left 8Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: -2,
 							y: 0
 						},
 					],
 					dmg: 8,
 				},
-				{
-					moveDist: 0, // 36 Wide Right 4Dmg
+				{ // 37 Wide Right 4Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Whip,
 							x: 2,
 							y: 0
 						},
 					],
 					dmg: 4,
 				},
-				{
+				{ // 38 Wide Right 5Dmg
 					moveDist: 0, // 37 Wide Right 5Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 2,
 							y: 0
 						},
 					],
 					dmg: 5,
 				},
-				{
+				{ // 39 Wide Right 8Dmg
 					moveDist: 0, // 38 Wide Right 8Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 2,
 							y: 0
 						},
 					],
 					dmg: 8,
 				},
-				{
+				{ // 40 Heavy Blade 3Dmg
 					moveDist: 0, // 39 Heavy Blade 3Dmg
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Stab,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Stab,
 							x: 2,
 							y: 0
 						},
 					],
 					dmg: 3,
 				},
-				{
-					moveDist: 0, // 40 Heavy Blade 5Dmg
+				{ // 41 Heavy Blade 5Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Stab,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Fire,
 							x: 2,
 							y: 0
 						},
 					],
 					dmg: 5,
 				},
-				{
-					moveDist: 0, // 41 Heavy Blade 20Dmg
+				{ // 42 Heavy Blade 20Dmg
+					moveDist: 0,
 					rotation: 0,
 					anim: Flex,
 					markers: [
 						{
-							marker: Slash,
+							marker: Wideslash,
 							x: 1,
 							y: 0
 						},
 						{
-							marker: Slash,
+							marker: Punch,
 							x: 2,
 							y: 0
 						},
 					],
 					dmg: 20,
+				},
+				{ // 43 Wide Stomp 4Dmg - For Electric Sweeps
+					moveDist: 0,
+					rotation: 0,
+					anim: Flex,
+					markers: [
+						{
+							marker: Electricity,
+							x: 2,
+							y: 0
+						},
+						{
+							marker: Slash,
+							x: 2,
+							y: 1
+						},
+						{
+							marker: Electricity,
+							x: 2,
+							y: 2
+						},
+						{
+							marker: Slash,
+							x: 1,
+							y: 2
+						},
+						{
+							marker: Electricity,
+							x: 0,
+							y: 2
+						},
+						{
+							marker: Slash,
+							x: -1,
+							y: 2
+						},
+						{
+							marker: Electricity,
+							x: -2,
+							y: 2
+						},
+						{
+							marker: Slash,
+							x: -2,
+							y: 1
+						},
+						{
+							marker: Electricity,
+							x: -2,
+							y: 0
+						},
+						{
+							marker: Slash,
+							x: -2,
+							y: -1
+						},
+						{
+							marker: Electricity,
+							x: -2,
+							y: -2
+						},
+						{
+							marker: Slash,
+							x: -1,
+							y: -2
+						},
+						{
+							marker: Electricity,
+							x: 0,
+							y: -2
+						},
+						{
+							marker: Slash,
+							x: 1,
+							y: -2
+						},
+						{
+							marker: Electricity,
+							x: 2,
+							y: -2
+						},
+						{
+							marker: Slash,
+							x: 2,
+							y: -1
+						},
+					],
+					dmg: 4,
+				},
+				{ // 44 Wide Stomp 5Dmg - For Dissonant Chord
+					moveDist: 0,
+					rotation: 0,
+					anim: Flex,
+					markers: [
+						{
+							marker: Musicbig,
+							x: 2,
+							y: 0
+						},
+						{
+							marker: Musicbig,
+							x: 2,
+							y: 1
+						},
+						{
+							marker: Musicbig,
+							x: 2,
+							y: 2
+						},
+						{
+							marker: Musicbig,
+							x: 1,
+							y: 2
+						},
+						{
+							marker: Musicbig,
+							x: 0,
+							y: 2
+						},
+						{
+							marker: Musicbig,
+							x: -1,
+							y: 2
+						},
+						{
+							marker: Musicbig,
+							x: -2,
+							y: 2
+						},
+						{
+							marker: Musicbig,
+							x: -2,
+							y: 1
+						},
+						{
+							marker: Musicbig,
+							x: -2,
+							y: 0
+						},
+						{
+							marker: Musicbig,
+							x: -2,
+							y: -1
+						},
+						{
+							marker: Musicbig,
+							x: -2,
+							y: -2
+						},
+						{
+							marker: Musicbig,
+							x: -1,
+							y: -2
+						},
+						{
+							marker: Musicbig,
+							x: 0,
+							y: -2
+						},
+						{
+							marker: Musicbig,
+							x: 1,
+							y: -2
+						},
+						{
+							marker: Musicbig,
+							x: 2,
+							y: -2
+						},
+						{
+							marker: Musicbig,
+							x: 2,
+							y: -1
+						},
+					],
+					dmg: 5,
+				},
+				{ // 45 Wide Left 4Dmg  - For Pyromancy
+					moveDist: 0,
+					rotation: 0,
+					anim: Flex,
+					markers: [
+						{
+							marker: Fire,
+							x: 0,
+							y: 2
+						},
+						{
+							marker: Fire,
+							x: -1,
+							y: 2
+						},
+						{
+							marker: Fire,
+							x: -2,
+							y: 2
+						},
+						{
+							marker: Fire,
+							x: -2,
+							y: 1
+						},
+						{
+							marker: Fire,
+							x: -2,
+							y: 0
+						},
+					],
+					dmg: 4,
+				},
+				{ // 46 Wide Right 4Dmg - For Pyromancy
+					moveDist: 0,
+					rotation: 0,
+					anim: Flex,
+					markers: [
+						{
+							marker: Fire,
+							x: 0,
+							y: 2
+						},
+						{
+							marker: Fire,
+							x: 1,
+							y: 2
+						},
+						{
+							marker: Fire,
+							x: 2,
+							y: 2
+						},
+						{
+							marker: Fire,
+							x: 2,
+							y: 1
+						},
+						{
+							marker: Fire,
+							x: 2,
+							y: 0
+						},
+					],
+					dmg: 4,
 				},
 			];
 		}
