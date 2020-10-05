@@ -394,7 +394,8 @@ class BoardManager implements ComponentManager {
 				type: "AnimationsDone",
 				player_id: this.myUserId,
 				pk: this.pk,
-				game_id: this.gameID
+				game_id: this.gameID,
+				turn_id: this.turnId
 			}));
 		}
 	}
