@@ -161,8 +161,11 @@ class GameLevel implements Level {
 				// 		card_location: data.location,
 				// 	}));
 				case "PlayerDied":
-					boardManager.killPlayer(data.user_id);
 					uiManager.toggleUI(false);
+					var goScreen = boardManager.killPlayer(data.user_id);
+					if (goScreen != null) {
+						scene.addChild(goScreen);
+					}
 				default:
 			}
         };

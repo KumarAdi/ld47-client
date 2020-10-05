@@ -35,9 +35,11 @@ class BoardManager implements ComponentManager {
 	private var pk:String;
 	private var gameID:Int;
 	private var ws:WebSocket;
-	public var turnId: Int;
+
+	public var turnId:Int;
+
 	private var locIndex:Map<String, Int>;
-	private var deadUsers: Int;
+	private var deadUsers:Int;
 
 	public function new(ws:WebSocket) {
 		this.boardRoot = new Layers();
@@ -421,14 +423,32 @@ class BoardManager implements ComponentManager {
 		}
 	}
 
-	public function killPlayer(userId: Int) {
+	public function killPlayer(userId:Int):Null<Object> {
 		for (sprite in this.users.get(userId).sprites) {
 			sprite.parent.remove();
 		}
 		this.numUsers--;
+
+		if (this.numUsers <= 1) {
+			var goScreen = new Bitmap(Res.art.Title.toTile());
+			var font = Res.font.dirga.toFont();
+			var splashText = new Text(font, goScreen);
+			splashText.setPosition((goScreen.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (2 * goScreen.tile.height / 3));
+			splashText.text = "Game Over!";
+
+			if (this.users.exists(this.myUserId)) {
+				splashText.text = "You Win!";
+			} else {
+				splashText.text = "You Died!";
+			}
+
+			return goScreen;
+		}
+
+		return null;
 	}
 
-	private function displayHealth(userId: Int) {
+	private function displayHealth(userId:Int) {
 		var font = Res.font.pixel.toFont();
 		var userInfo = this.users.get(userId);
 		userInfo.healthText = [];
