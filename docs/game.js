@@ -62074,9 +62074,9 @@ scenes_BoardManager.prototype = {
 		} else {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
-		haxe_Log.trace("Mutations seen: " + this.mutationsSeen.size,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 129, className : "scenes.BoardManager", methodName : "updateProgram", customParams : ["num Users: " + this.numUsers]});
+		haxe_Log.trace("Mutations seen: " + this.mutationsSeen.size,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 130, className : "scenes.BoardManager", methodName : "updateProgram", customParams : ["num Users: " + this.numUsers]});
 		if(this.mutationsSeen.size >= this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 131, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 132, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62338,7 +62338,7 @@ scenes_BoardManager.prototype = {
 		}
 		var conflictingPlayers = this.findConflictingPlayers(destinations);
 		while(conflictingPlayers.size > 0) {
-			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 315, className : "scenes.BoardManager", methodName : "playTic"});
+			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 316, className : "scenes.BoardManager", methodName : "playTic"});
 			var _g = 0;
 			var _g1 = destinations.length;
 			while(_g < _g1) {
@@ -62428,7 +62428,7 @@ scenes_BoardManager.prototype = {
 						if(this.users.h[hitId].health <= 0) {
 							this.ws.send(JSON.stringify({ type : "PollPlayerDied", self_id : this.myUserId, other_id : hitId, pk : this.pk, game_id : this.gameID, turn_id : this.turnId}));
 						}
-						haxe_Log.trace("player Hit " + hitId,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 389, className : "scenes.BoardManager", methodName : "playTic"});
+						haxe_Log.trace("player Hit " + hitId,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 390, className : "scenes.BoardManager", methodName : "playTic"});
 					}
 				}
 				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {
@@ -62470,7 +62470,7 @@ scenes_BoardManager.prototype = {
 				_this.parent.removeChild(_this);
 			}
 		}
-		this.users.remove(userId);
+		this.numUsers--;
 	}
 	,findConflictingPlayers: function(destinations) {
 		var seen = new haxe_ds_StringMap();

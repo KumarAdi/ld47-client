@@ -37,6 +37,7 @@ class BoardManager implements ComponentManager {
 	private var ws:WebSocket;
 	public var turnId: Int;
 	private var locIndex:Map<String, Int>;
+	private var deadUsers: Int;
 
 	public function new(ws:WebSocket) {
 		this.boardRoot = new Layers();
@@ -420,7 +421,7 @@ class BoardManager implements ComponentManager {
 		for (sprite in this.users.get(userId).sprites) {
 			sprite.parent.remove();
 		}
-		this.users.remove(userId);
+		this.numUsers--;
 	}
 
 	private function findConflictingPlayers(destinations:Array<{user:Int, destination:IPoint, actionData:Dynamic}>) {
