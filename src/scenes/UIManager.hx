@@ -1,5 +1,6 @@
 package scenes;
 
+import motion.Actuate;
 import h2d.TileGroup;
 import h2d.Scene;
 import h2d.Object;
@@ -133,7 +134,7 @@ class UIManager implements ComponentManager{
                 choiceLocked = true;
                 
                 Timer.delay(function() {
-                    this.uiMama.visible = false;
+                    this.toggleUI(false);
                 }, 3000);
             }
 
@@ -230,7 +231,37 @@ class UIManager implements ComponentManager{
     }
 
     public function toggleUI(toggle: Bool): Void {
-        uiMama.visible = toggle;
+        if (toggle) {
+            Actuate.tween(cardBox, 1, {
+                x: Config.boardWidth - cardBox.tile.width,
+                y: 0
+            }).onUpdate(function () {
+                cardBox.x = cardBox.x;
+                cardBox.y = cardBox.y;
+            });
+            Actuate.tween(programBox, 1, {
+                x: 0,
+                y: Config.boardHeight - programBox.tile.height
+            }).onUpdate(function () {
+                programBox.x = programBox.x;
+                programBox.y = programBox.y;
+            });
+        } else {
+            Actuate.tween(cardBox, 1, {
+                x: Config.boardWidth,
+                y: 0
+            }).onUpdate(function () {
+                cardBox.x = cardBox.x;
+                cardBox.y = cardBox.y;
+            });
+            Actuate.tween(programBox, 1, {
+                x: 0,
+                y: Config.boardHeight - 100
+            }).onUpdate(function () {
+                programBox.x = programBox.x;
+                programBox.y = programBox.y;
+            });
+        }
     }
 
     public function update(dt: Float): Void {

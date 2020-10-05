@@ -3888,7 +3888,7 @@ format_tools_BitsInput.prototype = {
 		}
 		var k1 = this.i.readByte();
 		if(this.nbits >= 24) {
-			if(n > 31) {
+			if(n >= 31) {
 				throw new js__$Boot_HaxeError("Bits error");
 			}
 			var c1 = 8 + this.nbits - n;
@@ -3996,50 +3996,11 @@ format_wav_Reader.prototype = {
 			throw new js__$Boot_HaxeError("expected data subchunk");
 		}
 		var datalen = this.i.readInt32();
-		var data;
-		try {
-			data = this.i.read(datalen);
-		} catch( e ) {
-			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
-			if(((e1) instanceof haxe_io_Eof)) {
-				var e2 = e1;
-				throw new js__$Boot_HaxeError("Invalid chunk data length");
-			} else {
-				throw e;
-			}
+		var data = this.i.readAll();
+		if(data.length > datalen) {
+			data = data.sub(0,datalen);
 		}
-		var cuePoints = [];
-		try {
-			while(true) {
-				var nextChunk1 = this.i.readString(4);
-				if(nextChunk1 == "cue ") {
-					this.i.readInt32();
-					var nbCuePoints = this.i.readInt32();
-					var _g1 = 0;
-					var _g2 = nbCuePoints;
-					while(_g1 < _g2) {
-						var _ = _g1++;
-						var cueId = this.i.readInt32();
-						this.i.readInt32();
-						this.i.readString(4);
-						this.i.readInt32();
-						this.i.readInt32();
-						var cueSampleOffset = this.i.readInt32();
-						cuePoints.push({ id : cueId, sampleOffset : cueSampleOffset});
-					}
-				} else {
-					this.i.read(this.i.readInt32());
-				}
-			}
-		} catch( e3 ) {
-			var e4 = ((e3) instanceof js__$Boot_HaxeError) ? e3.val : e3;
-			if(((e4) instanceof haxe_io_Eof)) {
-				var e5 = e4;
-			} else {
-				throw e3;
-			}
-		}
-		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data, cuePoints : cuePoints};
+		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data};
 	}
 	,__class__: format_wav_Reader
 };
@@ -36928,6 +36889,12 @@ haxe_io_Bytes.prototype = {
 			this.b[pos++] = value;
 		}
 	}
+	,sub: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) {
+			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		}
+		return new haxe_io_Bytes(this.b.buffer.slice(pos + this.b.byteOffset,pos + this.b.byteOffset + len));
+	}
 	,getFloat: function(pos) {
 		if(this.data == null) {
 			this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -37980,6 +37947,30 @@ haxe_io_Input.prototype = {
 	,set_bigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
+	}
+	,readAll: function(bufsize) {
+		if(bufsize == null) {
+			bufsize = 16384;
+		}
+		var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
+		var total = new haxe_io_BytesBuffer();
+		try {
+			while(true) {
+				var len = this.readBytes(buf,0,bufsize);
+				if(len == 0) {
+					throw new js__$Boot_HaxeError(haxe_io_Error.Blocked);
+				}
+				total.addBytes(buf,0,len);
+			}
+		} catch( e ) {
+			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
+			if(((e1) instanceof haxe_io_Eof)) {
+				var e2 = e1;
+			} else {
+				throw e;
+			}
+		}
+		return total.getBytes();
 	}
 	,readFullBytes: function(s,pos,len) {
 		while(len > 0) {
@@ -60493,6 +60484,15 @@ js_html__$CanvasElement_CanvasUtil.getContextWebGL = function(canvas,attribs) {
 	}
 	return null;
 };
+var js_lib__$ArrayBuffer_ArrayBufferCompat = function() { };
+$hxClasses["js.lib._ArrayBuffer.ArrayBufferCompat"] = js_lib__$ArrayBuffer_ArrayBufferCompat;
+js_lib__$ArrayBuffer_ArrayBufferCompat.__name__ = "js.lib._ArrayBuffer.ArrayBufferCompat";
+js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
+	var u = new Uint8Array(this,begin,end == null ? null : end - begin);
+	var resultArray = new Uint8Array(u.byteLength);
+	resultArray.set(u);
+	return resultArray.buffer;
+};
 var motion_actuators_IGenericActuator = function() { };
 $hxClasses["motion.actuators.IGenericActuator"] = motion_actuators_IGenericActuator;
 motion_actuators_IGenericActuator.__name__ = "motion.actuators.IGenericActuator";
@@ -62740,10 +62740,9 @@ scenes_UIManager.prototype = {
 					_gthis.selectedChoiceIndex = choiceId;
 					_gthis.ws.send(JSON.stringify({ type : "ChooseCard", card_number : _gthis.selectedChoice, location : _gthis.program.length, user_id : _gthis.user_id, pk : _gthis.pk, game_id : _gthis.game_id}));
 					_gthis.choiceLocked = true;
-					_gthis.uiMama.alpha = 0.5;
 					haxe_Timer.delay((function() {
 						return function() {
-							_gthis.uiMama.set_visible(false);
+							_gthis.toggleUI(false);
 						};
 					})(),3000);
 				};
@@ -62839,7 +62838,50 @@ scenes_UIManager.prototype = {
 		return this.uiMama;
 	}
 	,toggleUI: function(toggle) {
-		this.uiMama.set_visible(toggle);
+		var _gthis = this;
+		if(toggle) {
+			motion_Actuate.tween(this.cardBox,1,{ x : Config.boardWidth - this.cardBox.tile.width, y : 0}).onUpdate(function() {
+				var _this = _gthis.cardBox;
+				var v = _gthis.cardBox.x;
+				_this.posChanged = true;
+				_this.x = v;
+				var _this1 = _gthis.cardBox;
+				var v1 = _gthis.cardBox.y;
+				_this1.posChanged = true;
+				_this1.y = v1;
+			});
+			motion_Actuate.tween(this.programBox,1,{ x : 0, y : Config.boardHeight - this.programBox.tile.height}).onUpdate(function() {
+				var _this2 = _gthis.programBox;
+				var v2 = _gthis.programBox.x;
+				_this2.posChanged = true;
+				_this2.x = v2;
+				var _this3 = _gthis.programBox;
+				var v3 = _gthis.programBox.y;
+				_this3.posChanged = true;
+				_this3.y = v3;
+			});
+		} else {
+			motion_Actuate.tween(this.cardBox,1,{ x : Config.boardWidth, y : 0}).onUpdate(function() {
+				var _this4 = _gthis.cardBox;
+				var v4 = _gthis.cardBox.x;
+				_this4.posChanged = true;
+				_this4.x = v4;
+				var _this5 = _gthis.cardBox;
+				var v5 = _gthis.cardBox.y;
+				_this5.posChanged = true;
+				_this5.y = v5;
+			});
+			motion_Actuate.tween(this.programBox,1,{ x : 0, y : Config.boardHeight - 100}).onUpdate(function() {
+				var _this6 = _gthis.programBox;
+				var v6 = _gthis.programBox.x;
+				_this6.posChanged = true;
+				_this6.x = v6;
+				var _this7 = _gthis.programBox;
+				var v7 = _gthis.programBox.y;
+				_this7.posChanged = true;
+				_this7.y = v7;
+			});
+		}
 	}
 	,update: function(dt) {
 	}
@@ -62888,6 +62930,9 @@ js_Boot.__toStr = ({ }).toString;
 Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function() {
 	return String(this.val);
 }});
+if(ArrayBuffer.prototype.slice == null) {
+	ArrayBuffer.prototype.slice = js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
+}
 Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
