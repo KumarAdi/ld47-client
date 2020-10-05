@@ -62114,8 +62114,9 @@ scenes_BoardManager.prototype = {
 		} else {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
-		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 136, className : "scenes.BoardManager", methodName : "updateProgram"});
+		haxe_Log.trace("Mutations seen: " + this.mutationsSeen.size,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 135, className : "scenes.BoardManager", methodName : "updateProgram", customParams : ["num Users: " + this.numUsers]});
+		if(this.mutationsSeen.size >= this.numUsers) {
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 137, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62377,7 +62378,7 @@ scenes_BoardManager.prototype = {
 		}
 		var conflictingPlayers = this.findConflictingPlayers(destinations);
 		while(conflictingPlayers.size > 0) {
-			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 320, className : "scenes.BoardManager", methodName : "playTic"});
+			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 321, className : "scenes.BoardManager", methodName : "playTic"});
 			var _g = 0;
 			var _g1 = destinations.length;
 			while(_g < _g1) {
@@ -62467,7 +62468,7 @@ scenes_BoardManager.prototype = {
 						if(this.users.h[hitId].health <= 0) {
 							this.ws.send(JSON.stringify({ type : "PollPlayerDied", self_id : this.myUserId, other_id : hitId, pk : this.pk, game_id : this.gameID, turn_id : this.turnId}));
 						}
-						haxe_Log.trace("player Hit " + hitId,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 394, className : "scenes.BoardManager", methodName : "playTic"});
+						haxe_Log.trace("player Hit " + hitId,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 395, className : "scenes.BoardManager", methodName : "playTic"});
 					}
 				}
 				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {
@@ -62499,6 +62500,17 @@ scenes_BoardManager.prototype = {
 		} else {
 			this.ws.send(JSON.stringify({ type : "AnimationsDone", player_id : this.myUserId, pk : this.pk, game_id : this.gameID, turn_id : this.turnId}));
 		}
+	}
+	,killPlayer: function(userId) {
+		var sprite = this.users.h[userId].sprites.iterator();
+		while(sprite.hasNext()) {
+			var sprite1 = sprite.next();
+			var _this = sprite1.parent;
+			if(_this != null && _this.parent != null) {
+				_this.parent.removeChild(_this);
+			}
+		}
+		this.users.remove(userId);
 	}
 	,findConflictingPlayers: function(destinations) {
 		var seen = new haxe_ds_StringMap();
@@ -62652,6 +62664,10 @@ scenes_GameLevel.prototype = {
 				_gthis.pk = data.private_key;
 				_gthis.uiManager.receiveGameInfo(_gthis.userID,_gthis.pk,_gthis.gameID);
 				_gthis.boardManager.registerMyUser(_gthis.userID,_gthis.pk,_gthis.gameID);
+				break;
+			case "PlayerDied":
+				_gthis.boardManager.killPlayer(data.user_id);
+				_gthis.uiManager.toggleUI(false);
 				break;
 			case "PlayerJoin":
 				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.char_type);

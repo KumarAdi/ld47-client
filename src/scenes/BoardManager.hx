@@ -132,7 +132,8 @@ class BoardManager implements ComponentManager {
 		} else {
 			this.users.get(userId).program.insert(cardLocation, cardType);
 		}
-		if (mutationsSeen.size == this.numUsers) {
+		trace("Mutations seen: " + mutationsSeen.size, "num Users: " + this.numUsers);
+		if (mutationsSeen.size >= this.numUsers) {
 			trace('received all mutations');
 			this.mutationsSeen = new Set<Int>();
 			this.playAnimations(ExecutionEngine.run(this.users));
@@ -419,6 +420,13 @@ class BoardManager implements ComponentManager {
 				turn_id: this.turnId
 			}));
 		}
+	}
+
+	public function killPlayer(userId: Int) {
+		for (sprite in this.users.get(userId).sprites) {
+			sprite.parent.remove();
+		}
+		this.users.remove(userId);
 	}
 
 	private function findConflictingPlayers(destinations:Array<{user:Int, destination:IPoint, actionData:Dynamic}>) {
