@@ -84,7 +84,7 @@ class GameLevel implements Level {
 					splashText.color = new Vector(0, 0, 0);
 					splashText.y = 100;
 
-					var tuts = [Res.tut.tut1.toTile()].iterator();
+					var tuts = [Res.tut.tut1.toTile(), Res.tut.tut2.toTile(), Res.tut.tut3.toTile(), Res.tut.tut4.toTile(), Res.tut.tut5.toTile()].iterator();
 
 					entryBg.tile = tuts.next();
 
