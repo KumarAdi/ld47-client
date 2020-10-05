@@ -18,7 +18,7 @@ $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
 Config.genActionList = function() {
 	if(Config.actionList == null) {
-		Config.actionList = [{ moveDist : 1, rotation : 0, anim : AnimType.Walk},{ moveDist : 0, rotation : 1, anim : AnimType.Stand}];
+		Config.actionList = [{ moveDist : 0, rotation : -1, anim : AnimType.Stand},{ moveDist : 0, rotation : 1, anim : AnimType.Stand},{ moveDist : 1, rotation : 0, anim : AnimType.Walk},{ moveDist : -1, rotation : 0, anim : AnimType.Walk},{ moveDist : 0, rotation : 0, anim : AnimType.Flex}];
 	}
 	return Config.actionList;
 };
@@ -62461,16 +62461,16 @@ scenes_GameLevel.prototype = {
 						_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : nameEntry.text, x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, character_type : i % 3}));
 					}
 					_gthis.ws.send(JSON.stringify({ type : "CardOptions", card_options : [0,0,0]}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 0, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 4, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 5, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 6, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 7, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 8, card_type : 0, card_location : 0}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 9, card_type : 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 0, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 4, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 5, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 6, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 7, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 8, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 9, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
 				}
 			};
 			var subtext = new h2d_Text(font,_gthis.splash);
@@ -62721,7 +62721,7 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [1,0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]}];
+Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [3]},{ name : "Move 2", disorient : false, dmg : 0, action : [3,3]},{ name : "Move 3", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Reverse", disorient : false, dmg : 0, action : [4]},{ name : "Turn Left", disorient : false, dmg : 0, action : [1]},{ name : "Turn Right", disorient : false, dmg : 0, action : [2]},{ name : "U-Turn", disorient : false, dmg : 0, action : [1,1]},{ name : "Reposition", disorient : false, dmg : 0, action : [4,4,4]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [3,1,4,3,2,4]}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
