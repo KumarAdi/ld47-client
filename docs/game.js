@@ -62093,6 +62093,9 @@ scenes_BoardManager.prototype = {
 		});
 		return this.boardRoot;
 	}
+	,registerMyUser: function(userId) {
+		this.myUserId = userId;
+	}
 	,updateProgram: function(userId,cardType,cardLocation) {
 		this.mutationsSeen.add(userId);
 		if(cardType == -1) {
@@ -62101,10 +62104,14 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 126, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 131, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
+		if(userId == this.myUserId) {
+			return this.users.h[userId].program;
+		}
+		return null;
 	}
 	,addCharacter: function(userId,username,x,y,dir,charType) {
 		var baseSprites = [];
@@ -62318,7 +62325,9 @@ scenes_BoardManager.prototype = {
 			++_g;
 			var actionData = actionList[step.action];
 			var user = [this.users.h[step.userId]];
-			user[0].orientation = (user[0].orientation + actionData.rotation) % 4;
+			user[0].orientation += actionData.rotation;
+			while(user[0].orientation < 0) user[0].orientation += 4;
+			user[0].orientation %= 4;
 			var sprites = user[0].sprites;
 			var spritePair = new haxe_iterators_MapKeyValueIterator(sprites);
 			while(spritePair.hasNext()) {
@@ -62349,7 +62358,7 @@ scenes_BoardManager.prototype = {
 					dest.y -= 120 * actionData.moveDist;
 					break;
 				}
-				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 234, className : "scenes.BoardManager", methodName : "playTic"});
+				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 249, className : "scenes.BoardManager", methodName : "playTic"});
 				motion_Actuate.tween(baseSprite[0],0.5,dest).onUpdate((function(baseSprite1) {
 					return function() {
 						var v = baseSprite1[0].x;
@@ -62460,8 +62469,12 @@ scenes_GameLevel.prototype = {
 						var i = _g++;
 						_gthis.ws.send(JSON.stringify({ type : "PlayerJoin", user_id : i, username : nameEntry.text, x : Math.random() * 16 | 0, y : Math.random() * 9 | 0, start_orientation : 0, character_type : i % 3}));
 					}
-					_gthis.ws.send(JSON.stringify({ type : "CardOptions", card_options : [0,0,0]}));
-					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 0, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
+					var _gthis1 = _gthis.ws;
+					var _g2 = [];
+					_g2.push(Math.random() * Config.cardList.length | 0);
+					_g2.push(Math.random() * Config.cardList.length | 0);
+					_g2.push(Math.random() * Config.cardList.length | 0);
+					_gthis1.send(JSON.stringify({ type : "CardOptions", card_options : _g2}));
 					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 1, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
 					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 2, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
 					_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : 3, card_type : Math.random() * Config.cardList.length | 0, card_location : 0}));
@@ -62485,14 +62498,20 @@ scenes_GameLevel.prototype = {
 			switch(data.type) {
 			case "CardOptions":
 				if(_gthis.splash != null) {
-					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 128, className : "scenes.GameLevel", methodName : "init"});
+					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 129, className : "scenes.GameLevel", methodName : "init"});
 					_gthis.scene.removeChild(_gthis.splash);
 					_gthis.splash = null;
 				}
 				_gthis.uiManager.showCardChoices(data.turn_id,data.card_options);
 				break;
+			case "ChooseCard":
+				_gthis.ws.send(JSON.stringify({ type : "Mutation", user_id : data.user_id, card_type : data.card_number, card_location : data.location}));
+				break;
 			case "Mutation":
-				_gthis.boardManager.updateProgram(data.user_id,data.card_type,data.card_location);
+				var newProg = _gthis.boardManager.updateProgram(data.user_id,data.card_type,data.card_location);
+				if(newProg != null) {
+					_gthis.uiManager.drawProgram(newProg);
+				}
 				break;
 			case "Player":
 				_gthis.userID = data.id;
@@ -62501,6 +62520,7 @@ scenes_GameLevel.prototype = {
 				_gthis.userName = data.username;
 				_gthis.pk = data.private_key;
 				_gthis.uiManager.receiveGameInfo(_gthis.userID,_gthis.pk,_gthis.gameID);
+				_gthis.boardManager.registerMyUser(_gthis.userID);
 				break;
 			case "PlayerJoin":
 				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.character_type);
@@ -62743,7 +62763,7 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [3]},{ name : "Move 2", disorient : false, dmg : 0, action : [3,3]},{ name : "Move 3", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Reverse", disorient : false, dmg : 0, action : [4]},{ name : "Turn Left", disorient : false, dmg : 0, action : [1]},{ name : "Turn Right", disorient : false, dmg : 0, action : [2]},{ name : "U-Turn", disorient : false, dmg : 0, action : [1,1]},{ name : "Reposition", disorient : false, dmg : 0, action : [4,4,4]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [3,1,4,3,2,4]}];
+Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [2]},{ name : "Move 2", disorient : false, dmg : 0, action : [2,2]},{ name : "Move 3", disorient : false, dmg : 0, action : [2,2,2]},{ name : "Reverse", disorient : false, dmg : 0, action : [3]},{ name : "Turn Left", disorient : false, dmg : 0, action : [0]},{ name : "Turn Right", disorient : false, dmg : 0, action : [1]},{ name : "U-Turn", disorient : false, dmg : 0, action : [0,0]},{ name : "Reposition", disorient : false, dmg : 0, action : [3,3,3]},{ name : "Act Erratically", disorient : false, dmg : 0, action : [2,0,3,2,1,3]}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;

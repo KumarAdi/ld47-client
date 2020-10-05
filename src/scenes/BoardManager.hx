@@ -26,6 +26,7 @@ class BoardManager implements ComponentManager {
 	private var charRoots: Array<Layers>;
 	private var mutationsSeen: Set<Int>;
 	private var numUsers: Int;
+	private var myUserId: Int;
 
 
 	public function new() {
@@ -115,7 +116,11 @@ class BoardManager implements ComponentManager {
 		return boardRoot;
 	}
 
-	public function updateProgram(userId: Int, cardType: Int, cardLocation: Int) {
+	public function registerMyUser(userId: Int) {
+		this.myUserId = userId;
+	}
+
+	public function updateProgram(userId: Int, cardType: Int, cardLocation: Int): Null<Array<Int>> {
 		mutationsSeen.add(userId);
 		if (cardType == -1) {
 			this.users.get(userId).program.remove(cardLocation);
@@ -127,6 +132,12 @@ class BoardManager implements ComponentManager {
 			this.mutationsSeen = new Set<Int>();
 			this.playAnimations(ExecutionEngine.run(this.users));
 		}
+
+		if (userId == this.myUserId) {
+			return users.get(userId).program;
+		}
+
+		return null;
 	}
 
 	public function addCharacter(userId: Int, username: String, x: Int, y: Int, dir: Int, charType: Int) {
@@ -213,7 +224,11 @@ class BoardManager implements ComponentManager {
 			var actionData = actionList[step.action];
 			var user = users.get(step.userId);
 
-			user.orientation = (user.orientation + actionData.rotation) % 4;
+			user.orientation += actionData.rotation;
+			while (user.orientation < 0) {
+				user.orientation += 4;
+			}
+			user.orientation %= 4;
 
 			var sprites = user.sprites;
 			for (spritePair in sprites.keyValueIterator()) {

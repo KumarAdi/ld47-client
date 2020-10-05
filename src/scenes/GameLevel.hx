@@ -66,7 +66,7 @@ class GameLevel implements Level {
 						character_type: 0
 					}));
 
-					// TEST CODE:
+					// TEST CODE
 					ws.send(Json.stringify({
 						type: "Player",
 						id: 0,
@@ -91,10 +91,10 @@ class GameLevel implements Level {
 		
 					ws.send(Json.stringify({
 						type: "CardOptions",
-						card_options: [0, 0, 0]
+						card_options: [for (i in 0...3) Std.int(Math.random() * Config.cardList.length)]
 					}));
 		
-					for (i in 0...10) {
+					for (i in 1...10) {
 						ws.send(Json.stringify({
 							type: "Mutation",
 							user_id: i,
@@ -120,7 +120,8 @@ class GameLevel implements Level {
 					this.charType = data.character_type;
 					this.userName = data.username;
                     this.pk = data.private_key;
-                    uiManager.receiveGameInfo(this.userID, this.pk, this.gameID);
+					uiManager.receiveGameInfo(this.userID, this.pk, this.gameID);
+					boardManager.registerMyUser(this.userID);
 				case "PlayerJoin":
 					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
 				case "CardOptions":
@@ -131,11 +132,21 @@ class GameLevel implements Level {
 					}
 					uiManager.showCardChoices(data.turn_id, data.card_options);
 				case "Mutation":
-					boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
+					var newProg = boardManager.updateProgram(data.user_id, data.card_type, data.card_location);
+					if (newProg != null) {
+						uiManager.drawProgram(newProg);
+					}
 				case "TillStart":
 					if (splash != null){
 						splashText.text = Std.string(data.secs);
 					}
+				case "ChooseCard": // TEST CODE
+					ws.send(Json.stringify({
+						type: "Mutation",
+						user_id: data.user_id,
+						card_type: data.card_number,
+						card_location: data.location,
+					}));
 				default:
 			}
         };

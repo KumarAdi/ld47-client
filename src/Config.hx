@@ -45,14 +45,14 @@ class Config {
 	}
 
     public static final cardList = [
-        {name: "Move 1", disorient: false, dmg: 0, action: [3]},
-        {name: "Move 2", disorient: false, dmg: 0, action: [3, 3]},
-        {name: "Move 3", disorient: false, dmg: 0, action: [3, 3, 3]},
-        {name: "Reverse", disorient: false, dmg: 0, action: [4]},
-        {name: "Turn Left", disorient: false, dmg: 0, action: [1]},
-        {name: "Turn Right", disorient: false, dmg: 0, action: [2]},
-        {name: "U-Turn", disorient: false, dmg: 0, action: [1, 1]},
-        {name: "Reposition", disorient: false, dmg: 0, action: [4, 4, 4]},
-        {name: "Act Erratically", disorient: false, dmg: 0, action: [3, 1, 4, 3, 2, 4]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [2]},
+        {name: "Move 2", disorient: false, dmg: 0, action: [2, 2]},
+        {name: "Move 3", disorient: false, dmg: 0, action: [2, 2, 2]},
+        {name: "Reverse", disorient: false, dmg: 0, action: [3]},
+        {name: "Turn Left", disorient: false, dmg: 0, action: [0]},
+        {name: "Turn Right", disorient: false, dmg: 0, action: [1]},
+        {name: "U-Turn", disorient: false, dmg: 0, action: [0, 0]},
+        {name: "Reposition", disorient: false, dmg: 0, action: [3, 3, 3]},
+        {name: "Act Erratically", disorient: false, dmg: 0, action: [2, 0, 3, 2, 1, 3]},
     ];
 }
