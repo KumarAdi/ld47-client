@@ -22,7 +22,7 @@ $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
 Config.genActionList = function() {
 	if(Config.actionList == null) {
-		Config.actionList = [{ moveDist : 0, rotation : 0, anim : AnimType.Stand, markers : []},{ moveDist : 0, rotation : -1, anim : AnimType.Stand, markers : []},{ moveDist : 0, rotation : 1, anim : AnimType.Stand, markers : []},{ moveDist : 1, rotation : 0, anim : AnimType.Walk, markers : []},{ moveDist : -1, rotation : 0, anim : AnimType.Walk, markers : []},{ moveDist : 0, rotation : 0, anim : AnimType.Flex, markers : [{ marker : MarkerType.Slash, x : 1, y : 0},{ marker : MarkerType.Slash, x : -1, y : 0},{ marker : MarkerType.Slash, x : 0, y : 1},{ marker : MarkerType.Slash, x : 0, y : -1}]}];
+		Config.actionList = [{ moveDist : 0, rotation : 0, anim : AnimType.Stand, markers : [], dmg : 0},{ moveDist : 0, rotation : -1, anim : AnimType.Stand, markers : [], dmg : 0},{ moveDist : 0, rotation : 1, anim : AnimType.Stand, markers : [], dmg : 0},{ moveDist : 1, rotation : 0, anim : AnimType.Walk, markers : [], dmg : 0},{ moveDist : -1, rotation : 0, anim : AnimType.Walk, markers : [], dmg : 0},{ moveDist : 0, rotation : 0, anim : AnimType.Flex, markers : [{ marker : MarkerType.Slash, x : 1, y : 0},{ marker : MarkerType.Slash, x : -1, y : 0},{ marker : MarkerType.Slash, x : 0, y : 1},{ marker : MarkerType.Slash, x : 0, y : -1}], dmg : 1}];
 	}
 	return Config.actionList;
 };
@@ -62115,7 +62115,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 135, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 136, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62177,7 +62177,7 @@ scenes_BoardManager.prototype = {
 			nameBox.y = v1;
 			nameBox.set_letterSpacing(0.7);
 		}
-		this.users.h[userId] = { username : username, program : [], sprites : sprites, orientation : dir, charType : charType};
+		this.users.h[userId] = { username : username, program : [], sprites : sprites, orientation : dir, charType : charType, health : 3};
 		var _g6 = 0;
 		var _g7 = this.charRoots;
 		while(_g6 < _g7.length) {
@@ -62377,7 +62377,7 @@ scenes_BoardManager.prototype = {
 		}
 		var conflictingPlayers = this.findConflictingPlayers(destinations);
 		while(conflictingPlayers.size > 0) {
-			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 318, className : "scenes.BoardManager", methodName : "playTic"});
+			haxe_Log.trace("" + conflictingPlayers.size + " conflicting players",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 320, className : "scenes.BoardManager", methodName : "playTic"});
 			var _g = 0;
 			var _g1 = destinations.length;
 			while(_g < _g1) {
@@ -62397,6 +62397,7 @@ scenes_BoardManager.prototype = {
 			var user1 = [this.users.h[dest1.user]];
 			var sprites = user1[0].sprites;
 			var actionData1 = dest1.actionData;
+			var firstBoard = true;
 			var spritePair = new haxe_iterators_MapKeyValueIterator(sprites);
 			while(spritePair.hasNext()) {
 				var spritePair1 = spritePair.next();
@@ -62429,31 +62430,47 @@ scenes_BoardManager.prototype = {
 						};
 					})(effect);
 					effects.push(effect[0]);
-					var markerPos_x = marker.x;
-					var markerPos_y = marker.y;
+					var markerPos = new h2d_col_IPoint(marker.x,marker.y);
 					if(user1[0].orientation % 2 != 0) {
-						var tmp2 = markerPos_x;
-						markerPos_x = markerPos_y;
-						markerPos_y = tmp2;
+						var tmp2 = markerPos.x;
+						markerPos.x = markerPos.y;
+						markerPos.y = tmp2;
 					}
 					if(user1[0].orientation % 3 != 0) {
-						markerPos_x *= -1;
+						markerPos.x *= -1;
 					}
+					markerPos.x *= 120;
+					markerPos.y *= 120;
 					var _g4 = effect[0];
 					_g4.posChanged = true;
-					_g4.x += markerPos_x * 120;
+					_g4.x += markerPos.x;
 					var _g5 = effect[0];
 					_g5.posChanged = true;
-					_g5.y += markerPos_y * 120;
+					_g5.y += markerPos.y;
+					markerPos.x += baseSprite1[0].x | 0;
+					markerPos.y += baseSprite1[0].y | 0;
+					var tmp3;
+					if(firstBoard) {
+						var this1 = this.locIndex;
+						var key = markerPos.toString();
+						var _this = this1;
+						tmp3 = __map_reserved[key] != null ? _this.existsReserved(key) : _this.h.hasOwnProperty(key);
+					} else {
+						tmp3 = false;
+					}
+					if(tmp3) {
+						var this2 = this.users;
+						var this3 = this.locIndex;
+						var key1 = markerPos.toString();
+						var _this1 = this3;
+						var key2 = __map_reserved[key1] != null ? _this1.getReserved(key1) : _this1.h[key1];
+						this2.h[key2].health -= actionData1.dmg;
+						var this4 = this.locIndex;
+						var key3 = markerPos.toString();
+						var _this2 = this4;
+						haxe_Log.trace("player Hit " + (__map_reserved[key3] != null ? _this2.getReserved(key3) : _this2.h[key3]),{ fileName : "src/scenes/BoardManager.hx", lineNumber : 382, className : "scenes.BoardManager", methodName : "playTic"});
+					}
 				}
-				var _g21 = [];
-				var _g31 = 0;
-				while(_g31 < effects.length) {
-					var eff = effects[_g31];
-					++_g31;
-					_g21.push({ x : eff.x, y : eff.y});
-				}
-				haxe_Log.trace(_g21,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 376, className : "scenes.BoardManager", methodName : "playTic"});
 				motion_Actuate.tween(baseSprite1[0],0.5,dest1.destination).onUpdate((function(baseSprite2) {
 					return function() {
 						var v = baseSprite2[0].x;
@@ -62465,14 +62482,15 @@ scenes_BoardManager.prototype = {
 					};
 				})(baseSprite1)).onComplete((function(baseSprite3) {
 					return function() {
-						var _g41 = baseSprite3[0];
-						_g41.posChanged = true;
-						_g41.x %= Config.boardWidth;
-						var _g42 = baseSprite3[0];
-						_g42.posChanged = true;
-						_g42.y %= Config.boardHeight;
+						var _g21 = baseSprite3[0];
+						_g21.posChanged = true;
+						_g21.x %= Config.boardWidth;
+						var _g22 = baseSprite3[0];
+						_g22.posChanged = true;
+						_g22.y %= Config.boardHeight;
 					};
 				})(baseSprite1));
+				firstBoard = false;
 			}
 		}
 		if(tic < animations.length - 1) {
@@ -62480,7 +62498,7 @@ scenes_BoardManager.prototype = {
 				_gthis.playTic(animations,tic + 1);
 			},1000);
 		} else {
-			this.ws.send(JSON.stringify({ type : "AnimationsDone", player_id : this.myUserId, pk : this.pk, game_id : this.gameID}));
+			this.ws.send(JSON.stringify({ type : "AnimationsDone", player_id : this.myUserId, pk : this.pk, game_id : this.gameID, turn_id : this.turnId}));
 		}
 	}
 	,findConflictingPlayers: function(destinations) {
@@ -62504,6 +62522,7 @@ scenes_BoardManager.prototype = {
 				seen.h[key2] = value;
 			}
 		}
+		this.locIndex = seen;
 		return ret;
 	}
 	,update: function(dt) {

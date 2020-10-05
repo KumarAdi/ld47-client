@@ -5,7 +5,6 @@ import haxe.Json;
 typedef CardData = {
 	var name:String;
 	var disorient:Bool;
-	var dmg:Int;
 	var action:Array<Int>;
 }
 
@@ -23,7 +22,8 @@ typedef ActionData = {
 	var moveDist:Int;
 	var rotation:Int;
 	var anim:AnimType;
-	var markers:Array<{marker:MarkerType, x:Int, y:Int}>;
+    var markers:Array<{marker:MarkerType, x:Int, y:Int}>;
+    var dmg: Int;
 }
 
 class Config {
@@ -42,31 +42,36 @@ class Config {
 					moveDist: 0,
 					rotation: 0,
 					anim: Stand,
-					markers: []
+                    markers: [],
+                    dmg: 0,
 				},
 				{
 					moveDist: 0,
 					rotation: -1,
 					anim: Stand,
-					markers: []
+                    markers: [],
+                    dmg: 0,
 				},
 				{
 					moveDist: 0,
 					rotation: 1,
 					anim: Stand,
-					markers: []
+                    markers: [],
+                    dmg: 0,
 				},
 				{
 					moveDist: 1,
 					rotation: 0,
 					anim: Walk,
-					markers: []
+                    markers: [],
+                    dmg: 0,
 				},
 				{
 					moveDist: -1,
 					rotation: 0,
 					anim: Walk,
-					markers: []
+                    markers: [],
+                    dmg: 0,
 				},
 				{
 					moveDist: 0,
@@ -93,7 +98,8 @@ class Config {
 							x: 0,
 							y: -1
 						},
-					]
+                    ],
+                    dmg: 1,
 				},
 			];
 		}
