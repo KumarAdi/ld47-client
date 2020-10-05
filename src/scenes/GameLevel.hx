@@ -33,7 +33,7 @@ class GameLevel implements Level {
 
 		this.ws = new WebSocket("wss://echo.websocket.org/");
 
-		this.boardManager = new BoardManager();
+		this.boardManager = new BoardManager(ws);
 		scene.addChild(this.boardManager.build());
 
 		this.uiManager = new UIManager(ws);
@@ -121,7 +121,7 @@ class GameLevel implements Level {
 					this.userName = data.username;
                     this.pk = data.private_key;
 					uiManager.receiveGameInfo(this.userID, this.pk, this.gameID);
-					boardManager.registerMyUser(this.userID);
+					boardManager.registerMyUser(this.userID, this.pk, this.gameID);
 				case "PlayerJoin":
 					boardManager.addCharacter(data.user_id, data.username, data.x, data.y, data.start_orientation, data.character_type);
 				case "CardOptions":

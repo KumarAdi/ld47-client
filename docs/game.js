@@ -61877,7 +61877,7 @@ scenes_ComponentManager.__isInterface__ = true;
 scenes_ComponentManager.prototype = {
 	__class__: scenes_ComponentManager
 };
-var scenes_BoardManager = function() {
+var scenes_BoardManager = function(ws) {
 	this.boardRoot = new h2d_Layers();
 	this.users = new haxe_ds_IntMap();
 	var _g = [];
@@ -61888,6 +61888,7 @@ var scenes_BoardManager = function() {
 	this.charRoots = _g;
 	this.mutationsSeen = new Set();
 	this.numUsers = 0;
+	this.ws = ws;
 };
 $hxClasses["scenes.BoardManager"] = scenes_BoardManager;
 scenes_BoardManager.__name__ = "scenes.BoardManager";
@@ -62093,8 +62094,10 @@ scenes_BoardManager.prototype = {
 		});
 		return this.boardRoot;
 	}
-	,registerMyUser: function(userId) {
+	,registerMyUser: function(userId,pk,gameID) {
 		this.myUserId = userId;
+		this.pk = pk;
+		this.gameID = gameID;
 	}
 	,updateProgram: function(userId,cardType,cardLocation) {
 		this.mutationsSeen.add(userId);
@@ -62104,7 +62107,7 @@ scenes_BoardManager.prototype = {
 			this.users.h[userId].program.splice(cardLocation,0,cardType);
 		}
 		if(this.mutationsSeen.size == this.numUsers) {
-			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 131, className : "scenes.BoardManager", methodName : "updateProgram"});
+			haxe_Log.trace("received all mutations",{ fileName : "src/scenes/BoardManager.hx", lineNumber : 138, className : "scenes.BoardManager", methodName : "updateProgram"});
 			this.mutationsSeen = new Set();
 			this.playAnimations(scenes_ExecutionEngine.run(this.users));
 		}
@@ -62358,7 +62361,7 @@ scenes_BoardManager.prototype = {
 					dest.y -= 120 * actionData.moveDist;
 					break;
 				}
-				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 249, className : "scenes.BoardManager", methodName : "playTic"});
+				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 256, className : "scenes.BoardManager", methodName : "playTic"});
 				motion_Actuate.tween(baseSprite[0],0.5,dest).onUpdate((function(baseSprite1) {
 					return function() {
 						var v = baseSprite1[0].x;
@@ -62384,6 +62387,8 @@ scenes_BoardManager.prototype = {
 			haxe_Timer.delay(function() {
 				_gthis.playTic(animations,tic + 1);
 			},1000);
+		} else {
+			this.ws.send(JSON.stringify({ type : "AnimationsDone", player_id : this.myUserId, pk : this.pk, game_id : this.gameID}));
 		}
 	}
 	,update: function(dt) {
@@ -62430,7 +62435,7 @@ var scenes_GameLevel = function() {
 	this.scene = new h2d_Scene();
 	this.scene.set_scaleMode(h2d_ScaleMode.LetterBox(Config.boardWidth,Config.boardHeight));
 	this.ws = new WebSocket("wss://echo.websocket.org/");
-	this.boardManager = new scenes_BoardManager();
+	this.boardManager = new scenes_BoardManager(this.ws);
 	this.scene.addChild(this.boardManager.build());
 	this.uiManager = new scenes_UIManager(this.ws);
 	this.scene.addChild(this.uiManager.build());
@@ -62520,7 +62525,7 @@ scenes_GameLevel.prototype = {
 				_gthis.userName = data.username;
 				_gthis.pk = data.private_key;
 				_gthis.uiManager.receiveGameInfo(_gthis.userID,_gthis.pk,_gthis.gameID);
-				_gthis.boardManager.registerMyUser(_gthis.userID);
+				_gthis.boardManager.registerMyUser(_gthis.userID,_gthis.pk,_gthis.gameID);
 				break;
 			case "PlayerJoin":
 				_gthis.boardManager.addCharacter(data.user_id,data.username,data.x,data.y,data.start_orientation,data.character_type);

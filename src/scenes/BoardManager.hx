@@ -1,5 +1,7 @@
 package scenes;
 
+import haxe.Json;
+import js.html.WebSocket;
 import motion.Actuate;
 import h2d.Tile;
 import Config.AnimType;
@@ -27,14 +29,17 @@ class BoardManager implements ComponentManager {
 	private var mutationsSeen: Set<Int>;
 	private var numUsers: Int;
 	private var myUserId: Int;
+	private var pk: String;
+	private var gameID: Int;
+	private var ws: WebSocket;
 
-
-	public function new() {
+	public function new(ws: WebSocket) {
 		this.boardRoot = new Layers();
 		this.users = new IntMap<UserInfo>();
 		this.charRoots = [for (_ in 0...4) new Layers()];
 		this.mutationsSeen = new Set<Int>();
 		this.numUsers = 0;
+		this.ws = ws;
 	}
 
 	public function build():Object {
@@ -116,8 +121,10 @@ class BoardManager implements ComponentManager {
 		return boardRoot;
 	}
 
-	public function registerMyUser(userId: Int) {
+	public function registerMyUser(userId: Int, pk: String, gameID: Int) {
 		this.myUserId = userId;
+		this.pk = pk;
+		this.gameID = gameID;
 	}
 
 	public function updateProgram(userId: Int, cardType: Int, cardLocation: Int): Null<Array<Int>> {
@@ -259,6 +266,13 @@ class BoardManager implements ComponentManager {
 		
 		if (tic < animations.length - 1) {
 			Timer.delay(function() { playTic(animations, tic + 1); }, 1000);
+		} else {
+			ws.send(Json.stringify({
+				type: "AnimationsDone",
+				player_id: this.myUserId,
+				pk: this.pk,
+				game_id: this.gameID
+			}));
 		}
 	}
 
