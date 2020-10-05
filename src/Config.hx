@@ -33,7 +33,11 @@ class Config {
 	public static function genActionList():Array<ActionData> {
 		if (Config.actionList == null) {
 			Config.actionList = [
-				{moveDist: 1, rotation: 0, anim: Walk}
+                {moveDist: 0, rotation: -1, anim: Stand},
+                {moveDist: 0, rotation: 1, anim: Stand},
+                {moveDist: 1, rotation: 0, anim: Walk},
+                {moveDist: -1, rotation: 0, anim: Walk},
+                {moveDist: 0, rotation: 0, anim: Flex},
 			];
 		}
 
@@ -41,56 +45,14 @@ class Config {
 	}
 
     public static final cardList = [
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]},
-        {name: "Move 1", disorient: false, dmg: 0, action: [0]}
+        {name: "Move 1", disorient: false, dmg: 0, action: [3]},
+        {name: "Move 2", disorient: false, dmg: 0, action: [3, 3]},
+        {name: "Move 3", disorient: false, dmg: 0, action: [3, 3, 3]},
+        {name: "Reverse", disorient: false, dmg: 0, action: [4]},
+        {name: "Turn Left", disorient: false, dmg: 0, action: [1]},
+        {name: "Turn Right", disorient: false, dmg: 0, action: [2]},
+        {name: "U-Turn", disorient: false, dmg: 0, action: [1, 1]},
+        {name: "Reposition", disorient: false, dmg: 0, action: [4, 4, 4]},
+        {name: "Act Erratically", disorient: false, dmg: 0, action: [3, 1, 4, 3, 2, 4]},
     ];
 }

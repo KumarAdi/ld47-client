@@ -1,5 +1,6 @@
 package scenes;
 
+import motion.Actuate;
 import h2d.Tile;
 import Config.AnimType;
 import h3d.Vector;
@@ -142,8 +143,8 @@ class BoardManager implements ComponentManager {
 		var sprites = [for (sprite in baseSprites) sprite => new Anim(charInfoToTiles(charType, dir, Stand), sprite)];
 
 		for (sprite in sprites) {
-			sprite.x = -60;
-			sprite.y = -120;
+			sprite.x = 60;
+			sprite.y = 0;
 		}
 
 		for (sprite in baseSprites) {
@@ -168,32 +169,34 @@ class BoardManager implements ComponentManager {
 
 	private function charInfoToTiles(charType: Int, rotation: Int, type: AnimType): Array<Tile> {
 		var tileArr = [
-			[Res.art.red.side_stand.toTile(), Res.art.red.side_stand.toTile(), Res.art.red.front_stand.toTile(), Res.art.red.back_stand.toTile()],
-			[Res.art.green.side_stand.toTile(), Res.art.green.side_stand.toTile(), Res.art.green.front_stand.toTile(), Res.art.green.back_stand.toTile()],
-			[Res.art.blue.side_stand.toTile(), Res.art.blue.side_stand.toTile(), Res.art.blue.front_stand.toTile(), Res.art.blue.back_stand.toTile()]
+			[Res.art.red.side_stand.toTile(), Res.art.red.front_stand.toTile(), Res.art.red.side_stand.toTile(), Res.art.red.back_stand.toTile()],
+			[Res.art.green.side_stand.toTile(), Res.art.green.front_stand.toTile(), Res.art.green.side_stand.toTile(), Res.art.green.back_stand.toTile()],
+			[Res.art.blue.side_stand.toTile(), Res.art.blue.front_stand.toTile(), Res.art.blue.side_stand.toTile(), Res.art.blue.back_stand.toTile()]
 		];
 
 		switch(type) {
 			case Walk:
 				tileArr = [
-					[Res.art.red.side_walk.toTile(), Res.art.red.side_walk.toTile(), Res.art.red.front_walk.toTile(), Res.art.red.back_walk.toTile()],
-					[Res.art.green.side_walk.toTile(), Res.art.green.side_walk.toTile(), Res.art.green.front_walk.toTile(), Res.art.green.back_walk.toTile()],
-					[Res.art.blue.side_walk.toTile(), Res.art.blue.side_walk.toTile(), Res.art.blue.front_walk.toTile(), Res.art.blue.back_walk.toTile()]
+					[Res.art.red.side_walk.toTile(), Res.art.red.front_walk.toTile(), Res.art.red.side_walk.toTile(), Res.art.red.back_walk.toTile()],
+					[Res.art.green.side_walk.toTile(), Res.art.green.front_walk.toTile(), Res.art.green.side_walk.toTile(), Res.art.green.back_walk.toTile()],
+					[Res.art.blue.side_walk.toTile(), Res.art.blue.front_walk.toTile(), Res.art.blue.side_walk.toTile(), Res.art.blue.back_walk.toTile()]
 				];
 			case Flex:
 				tileArr = [
-					[Res.art.red.side_flex.toTile(), Res.art.red.side_flex.toTile(), Res.art.red.front_flex.toTile(), Res.art.red.back_flex.toTile()],
-					[Res.art.green.side_flex.toTile(), Res.art.green.side_flex.toTile(), Res.art.green.front_flex.toTile(), Res.art.green.back_flex.toTile()],
-					[Res.art.blue.side_flex.toTile(), Res.art.blue.side_flex.toTile(), Res.art.blue.front_flex.toTile(), Res.art.blue.back_flex.toTile()]
+					[Res.art.red.side_flex.toTile(), Res.art.red.front_flex.toTile(), Res.art.red.side_flex.toTile(), Res.art.red.back_flex.toTile()],
+					[Res.art.green.side_flex.toTile(), Res.art.green.front_flex.toTile(), Res.art.green.side_flex.toTile(), Res.art.green.back_flex.toTile()],
+					[Res.art.blue.side_flex.toTile(), Res.art.blue.front_flex.toTile(), Res.art.blue.side_flex.toTile(), Res.art.blue.back_flex.toTile()]
 				];
 			default:
 		}
 
 		var animTile = tileArr[charType][rotation];
-		var spriteSheet = animTile.gridFlatten(240);
+		var spriteSheet = [for (sprite in animTile.gridFlatten(240)) sprite.center()];
 
 		if (rotation == 1) {
-			for (sprite in spriteSheet) sprite.flipX();
+			for (sprite in spriteSheet) {
+				sprite.flipX();
+			}
 		}
 
 		return spriteSheet;
@@ -209,13 +212,33 @@ class BoardManager implements ComponentManager {
 		for (step in steps) {
 			var actionData = actionList[step.action];
 			var user = users.get(step.userId);
+
+			user.orientation = (user.orientation + actionData.rotation) % 4;
+
 			var sprites = user.sprites;
-			for (sprite in sprites) {
+			for (spritePair in sprites.keyValueIterator()) {
+				var sprite = spritePair.value;
+				var baseSprite = spritePair.key;
 				sprite.loop = false;
 				sprite.play(charInfoToTiles(user.charType, user.orientation, actionData.anim));
 				sprite.onAnimEnd = function () {
 					sprite.play(charInfoToTiles(user.charType, user.orientation, Stand));
 				};
+				var dest = {x: baseSprite.x, y: baseSprite.y};
+				switch(user.orientation) {
+					case 0: dest.x += 120 * actionData.moveDist;
+					case 1: dest.y += 120 * actionData.moveDist;
+					case 2: dest.x -= 120 * actionData.moveDist;
+					case 3: dest.y -= 120 * actionData.moveDist;
+				}
+				trace(user.orientation);
+				Actuate.tween(baseSprite, 0.5, dest).onUpdate(function(){
+					baseSprite.x = baseSprite.x;
+					baseSprite.y = baseSprite.y;
+				}).onComplete(function() {
+					baseSprite.x %= Config.boardWidth;
+					baseSprite.y %= Config.boardHeight;
+				});
 			}
 		}
 		

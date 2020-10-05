@@ -98,7 +98,7 @@ class GameLevel implements Level {
 						ws.send(Json.stringify({
 							type: "Mutation",
 							user_id: i,
-							card_type: 0,
+							card_type: Std.int(Math.random() * Config.cardList.length),
 							card_location: 0,
 						}));
 					}
