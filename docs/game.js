@@ -18,7 +18,7 @@ $hxClasses["Config"] = Config;
 Config.__name__ = "Config";
 Config.genActionList = function() {
 	if(Config.actionList == null) {
-		Config.actionList = [{ moveDist : 1, rotation : 0, anim : AnimType.Walk}];
+		Config.actionList = [{ moveDist : 1, rotation : 0, anim : AnimType.Walk},{ moveDist : 0, rotation : 1, anim : AnimType.Stand}];
 	}
 	return Config.actionList;
 };
@@ -62138,9 +62138,9 @@ scenes_BoardManager.prototype = {
 		while(sprite3.hasNext()) {
 			var sprite4 = sprite3.next();
 			sprite4.posChanged = true;
-			sprite4.x = -60;
+			sprite4.x = 60;
 			sprite4.posChanged = true;
-			sprite4.y = -120;
+			sprite4.y = 0;
 		}
 		var _g5 = 0;
 		while(_g5 < baseSprites.length) {
@@ -62286,13 +62286,21 @@ scenes_BoardManager.prototype = {
 		default:
 		}
 		var animTile = tileArr11[charType][rotation];
-		var spriteSheet = animTile.gridFlatten(240);
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = animTile.gridFlatten(240);
+		while(_g1 < _g2.length) {
+			var sprite = _g2[_g1];
+			++_g1;
+			_g.push(sprite.center());
+		}
+		var spriteSheet = _g;
 		if(rotation == 1) {
-			var _g = 0;
-			while(_g < spriteSheet.length) {
-				var sprite = spriteSheet[_g];
-				++_g;
-				sprite.flipX();
+			var _g3 = 0;
+			while(_g3 < spriteSheet.length) {
+				var sprite1 = spriteSheet[_g3];
+				++_g3;
+				sprite1.flipX();
 			}
 		}
 		return spriteSheet;
@@ -62310,6 +62318,7 @@ scenes_BoardManager.prototype = {
 			++_g;
 			var actionData = actionList[step.action];
 			var user = [this.users.h[step.userId]];
+			user[0].orientation = (user[0].orientation + actionData.rotation) % 4;
 			var sprites = user[0].sprites;
 			var spritePair = new haxe_iterators_MapKeyValueIterator(sprites);
 			while(spritePair.hasNext()) {
@@ -62340,7 +62349,7 @@ scenes_BoardManager.prototype = {
 					dest.y -= 120 * actionData.moveDist;
 					break;
 				}
-				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 229, className : "scenes.BoardManager", methodName : "playTic"});
+				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 234, className : "scenes.BoardManager", methodName : "playTic"});
 				motion_Actuate.tween(baseSprite[0],0.5,dest).onUpdate((function(baseSprite1) {
 					return function() {
 						var v = baseSprite1[0].x;
@@ -62712,7 +62721,7 @@ Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
 Config.uiSecondary = 408668;
-Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]}];
+Config.cardList = [{ name : "Move 1", disorient : false, dmg : 0, action : [0,1]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]},{ name : "Move 1", disorient : false, dmg : 0, action : [0]}];
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;

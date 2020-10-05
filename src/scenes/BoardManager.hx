@@ -143,8 +143,8 @@ class BoardManager implements ComponentManager {
 		var sprites = [for (sprite in baseSprites) sprite => new Anim(charInfoToTiles(charType, dir, Stand), sprite)];
 
 		for (sprite in sprites) {
-			sprite.x = -60;
-			sprite.y = -120;
+			sprite.x = 60;
+			sprite.y = 0;
 		}
 
 		for (sprite in baseSprites) {
@@ -191,10 +191,12 @@ class BoardManager implements ComponentManager {
 		}
 
 		var animTile = tileArr[charType][rotation];
-		var spriteSheet = animTile.gridFlatten(240);
+		var spriteSheet = [for (sprite in animTile.gridFlatten(240)) sprite.center()];
 
 		if (rotation == 1) {
-			for (sprite in spriteSheet) sprite.flipX();
+			for (sprite in spriteSheet) {
+				sprite.flipX();
+			}
 		}
 
 		return spriteSheet;
@@ -210,6 +212,9 @@ class BoardManager implements ComponentManager {
 		for (step in steps) {
 			var actionData = actionList[step.action];
 			var user = users.get(step.userId);
+
+			user.orientation = (user.orientation + actionData.rotation) % 4;
+
 			var sprites = user.sprites;
 			for (spritePair in sprites.keyValueIterator()) {
 				var sprite = spritePair.value;
