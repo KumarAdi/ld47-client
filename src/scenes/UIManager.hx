@@ -29,6 +29,7 @@ class UIManager implements ComponentManager{
     private var programArea: Mask;
     private var currentChoices: Array<Int>;
     private var selectedChoice: Int;
+    private var selectedChoiceIndex: Int;
     private var choicesIcons: Array<Bitmap>;
     private var user_id: Int;
     private var pk: String;
@@ -114,7 +115,8 @@ class UIManager implements ComponentManager{
                 //     }
                 // }
 
-                this.selectedChoice = choiceId;
+                this.selectedChoice = choice;
+                this.selectedChoiceIndex = choiceId;
                 ws.send(Json.stringify({
                     type: "ChooseCard",
                     card_number: this.selectedChoice, 
