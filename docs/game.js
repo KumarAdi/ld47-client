@@ -62322,65 +62322,104 @@ scenes_BoardManager.prototype = {
 		var _gthis = this;
 		var actionList = Config.genActionList();
 		var steps = animations[tic];
+		var destinations = [];
 		var _g = 0;
 		while(_g < steps.length) {
 			var step = steps[_g];
 			++_g;
 			var actionData = actionList[step.action];
-			var user = [this.users.h[step.userId]];
-			user[0].orientation += actionData.rotation;
-			while(user[0].orientation < 0) user[0].orientation += 4;
-			user[0].orientation %= 4;
-			var sprites = user[0].sprites;
+			var user = this.users.h[step.userId];
+			user.orientation += actionData.rotation;
+			while(user.orientation < 0) user.orientation += 4;
+			user.orientation %= 4;
+			var baseSprite = user.sprites.keys().next();
+			var dest = { x : baseSprite.x | 0, y : baseSprite.y | 0};
+			switch(user.orientation) {
+			case 0:
+				dest.x += 120 * actionData.moveDist;
+				break;
+			case 1:
+				dest.y += 120 * actionData.moveDist;
+				break;
+			case 2:
+				dest.x -= 120 * actionData.moveDist;
+				break;
+			case 3:
+				dest.y -= 120 * actionData.moveDist;
+				break;
+			}
+			destinations.push({ user : step.userId, destination : dest, actionData : actionData});
+		}
+		var conflictingPlayers = this.findConflictingPlayers(destinations);
+		while(conflictingPlayers.size > 0) {
+			var _g1 = 0;
+			var _g2 = destinations.length;
+			while(_g1 < _g2) {
+				var i = _g1++;
+				var userId = destinations[i].user;
+				if(conflictingPlayers.has(userId)) {
+					var sprite = this.users.h[userId].sprites.keys().next();
+					destinations[i] = { user : userId, destination : { x : sprite.x | 0, y : sprite.y | 0}, actionData : destinations[i].actionData};
+				}
+			}
+			conflictingPlayers = this.findConflictingPlayers(destinations);
+		}
+		var _g11 = 0;
+		while(_g11 < destinations.length) {
+			var dest1 = destinations[_g11];
+			++_g11;
+			var user1 = [this.users.h[dest1.user]];
+			var sprites = user1[0].sprites;
+			var actionData1 = dest1.actionData;
 			var spritePair = new haxe_iterators_MapKeyValueIterator(sprites);
 			while(spritePair.hasNext()) {
 				var spritePair1 = spritePair.next();
-				var sprite = [spritePair1.value];
-				var baseSprite = [spritePair1.key];
-				sprite[0].loop = false;
-				var tmp = this.charInfoToTiles(user[0].charType,user[0].orientation,actionData.anim);
-				sprite[0].play(tmp);
-				sprite[0].onAnimEnd = (function(sprite1,user1) {
+				var sprite1 = [spritePair1.value];
+				var baseSprite1 = [spritePair1.key];
+				sprite1[0].loop = false;
+				var tmp = this.charInfoToTiles(user1[0].charType,user1[0].orientation,actionData1.anim);
+				sprite1[0].play(tmp);
+				sprite1[0].onAnimEnd = (function(sprite2,user2) {
 					return function() {
-						var tmp1 = _gthis.charInfoToTiles(user1[0].charType,user1[0].orientation,AnimType.Stand);
-						sprite1[0].play(tmp1);
+						var tmp1 = _gthis.charInfoToTiles(user2[0].charType,user2[0].orientation,AnimType.Stand);
+						sprite2[0].play(tmp1);
 					};
-				})(sprite,user);
-				var dest = { x : baseSprite[0].x, y : baseSprite[0].y};
-				switch(user[0].orientation) {
+				})(sprite1,user1);
+				var dest2 = { x : baseSprite1[0].x, y : baseSprite1[0].y};
+				switch(user1[0].orientation) {
 				case 0:
-					dest.x += 120 * actionData.moveDist;
+					dest2.x += 120 * actionData1.moveDist;
 					break;
 				case 1:
-					dest.y += 120 * actionData.moveDist;
+					dest2.y += 120 * actionData1.moveDist;
 					break;
 				case 2:
-					dest.x -= 120 * actionData.moveDist;
+					dest2.x -= 120 * actionData1.moveDist;
 					break;
 				case 3:
-					dest.y -= 120 * actionData.moveDist;
+					dest2.y -= 120 * actionData1.moveDist;
 					break;
 				}
-				haxe_Log.trace(user[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 256, className : "scenes.BoardManager", methodName : "playTic"});
-				motion_Actuate.tween(baseSprite[0],0.5,dest).onUpdate((function(baseSprite1) {
+				haxe_Log.trace(user1[0].orientation,{ fileName : "src/scenes/BoardManager.hx", lineNumber : 349, className : "scenes.BoardManager", methodName : "playTic"});
+				motion_Actuate.tween(baseSprite1[0],0.5,dest2).onUpdate((function(baseSprite2) {
 					return function() {
-						var v = baseSprite1[0].x;
-						baseSprite1[0].posChanged = true;
-						baseSprite1[0].x = v;
-						var v1 = baseSprite1[0].y;
-						baseSprite1[0].posChanged = true;
-						baseSprite1[0].y = v1;
+						var v = baseSprite2[0].x;
+						baseSprite2[0].posChanged = true;
+						baseSprite2[0].x = v;
+						var v1 = baseSprite2[0].y;
+						baseSprite2[0].posChanged = true;
+						baseSprite2[0].y = v1;
 					};
-				})(baseSprite)).onComplete((function(baseSprite2) {
+				})(baseSprite1)).onComplete((function(baseSprite3) {
 					return function() {
-						var _g1 = baseSprite2[0];
-						_g1.posChanged = true;
-						_g1.x %= Config.boardWidth;
-						var _g11 = baseSprite2[0];
-						_g11.posChanged = true;
-						_g11.y %= Config.boardHeight;
+						var _g21 = baseSprite3[0];
+						_g21.posChanged = true;
+						_g21.x %= Config.boardWidth;
+						var _g22 = baseSprite3[0];
+						_g22.posChanged = true;
+						_g22.y %= Config.boardHeight;
 					};
-				})(baseSprite));
+				})(baseSprite1));
 			}
 		}
 		if(tic < animations.length - 1) {
@@ -62390,6 +62429,21 @@ scenes_BoardManager.prototype = {
 		} else {
 			this.ws.send(JSON.stringify({ type : "AnimationsDone", player_id : this.myUserId, pk : this.pk, game_id : this.gameID}));
 		}
+	}
+	,findConflictingPlayers: function(destinations) {
+		var seen = new haxe_ds_ObjectMap();
+		var ret = new Set();
+		var _g = 0;
+		while(_g < destinations.length) {
+			var dest = destinations[_g];
+			++_g;
+			if(seen.h.__keys__[dest.destination.__id__] != null) {
+				ret.add(seen.h[dest.destination.__id__]);
+				ret.add(dest.user);
+			}
+			seen.set(dest.destination,dest.user);
+		}
+		return ret;
 	}
 	,update: function(dt) {
 	}
