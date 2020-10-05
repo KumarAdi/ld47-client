@@ -23,18 +23,19 @@ import h2d.Bitmap;
 import h2d.Text;
 import h2d.Object;
 
-typedef UserInfo = {username:String, program:Array<Int>, sprites:Map<Object, Anim>, orientation:Int, charType:Int};
+typedef UserInfo = {username:String, program:Array<Int>, sprites:Map<Object, Anim>, orientation:Int, charType:Int, health:Int};
 
 class BoardManager implements ComponentManager {
 	var boardRoot:Layers;
 	private var users:Map<Int, UserInfo>;
-	private var charRoots: Array<Layers>;
+	private var charRoots:Array<Layers>;
 	private var mutationsSeen:Set<Int>;
 	private var numUsers:Int;
 	private var myUserId:Int;
 	private var pk:String;
 	private var gameID:Int;
 	private var ws:WebSocket;
+	private var locIndex:Map<String, Int>;
 
 	public function new(ws:WebSocket) {
 		this.boardRoot = new Layers();
@@ -177,7 +178,8 @@ class BoardManager implements ComponentManager {
 			program: [],
 			sprites: sprites,
 			orientation: dir,
-			charType: charType
+			charType: charType,
+			health: 3
 		});
 
 		for (charRoot in charRoots)
@@ -265,7 +267,7 @@ class BoardManager implements ComponentManager {
 		return spriteSheet;
 	}
 
-	private function markerTypeToTiles(markerType: MarkerType) {
+	private function markerTypeToTiles(markerType:MarkerType) {
 		switch (markerType) {
 			case Slash:
 				return [for (sprite in Res.art.markers.slash.toTile().gridFlatten(240)) sprite.center()];
@@ -333,6 +335,7 @@ class BoardManager implements ComponentManager {
 			var user = users.get(dest.user);
 			var sprites = user.sprites;
 			var actionData = dest.actionData;
+			var firstBoard = true;
 			for (spritePair in sprites.keyValueIterator()) {
 				var sprite = spritePair.value;
 				var baseSprite = spritePair.key;
@@ -347,15 +350,12 @@ class BoardManager implements ComponentManager {
 					var effect = new Anim(tiles, baseSprite);
 					effect.y = 120;
 					effect.loop = false;
-					effect.onAnimEnd = function () {
+					effect.onAnimEnd = function() {
 						effect.remove();
 					}
 					effects.push(effect);
 
-					var markerPos = {
-						x: marker.x,
-						y: marker.y
-					};
+					var markerPos = new IPoint(marker.x, marker.y);
 
 					if (user.orientation % 2 != 0) { // facing vertical
 						var tmp = markerPos.x;
@@ -363,16 +363,24 @@ class BoardManager implements ComponentManager {
 						markerPos.y = tmp;
 					}
 
-					if (user.orientation % 3 != 0) { //horizontal flip
+					if (user.orientation % 3 != 0) { // horizontal flip
 						markerPos.x *= -1;
 					}
 
-					effect.x += markerPos.x * 120;
-					effect.y += markerPos.y * 120;
-					// effect.rotate(Math.atan2(markerPos.y, markerPos.x) + (Math.PI / 2));
-				}
+					markerPos.x *= 120;
+					markerPos.y *= 120;
 
-				trace([for (eff in effects) {x: eff.x, y: eff.y}]);
+					effect.x += markerPos.x;
+					effect.y += markerPos.y;
+
+					markerPos.x += Std.int(baseSprite.x);
+					markerPos.y += Std.int(baseSprite.y);
+
+					if (firstBoard && this.locIndex.exists(markerPos.toString())) {
+						this.users.get(this.locIndex.get(markerPos.toString())).health -= actionData.dmg;
+						trace("player Hit " + this.locIndex.get(markerPos.toString()));
+					}
+				}
 
 				Actuate.tween(baseSprite, 0.5, dest.destination).onUpdate(function() {
 					baseSprite.x = baseSprite.x;
@@ -381,6 +389,7 @@ class BoardManager implements ComponentManager {
 					baseSprite.x %= Config.boardWidth;
 					baseSprite.y %= Config.boardHeight;
 				});
+				firstBoard = false;
 			}
 		}
 
@@ -408,6 +417,7 @@ class BoardManager implements ComponentManager {
 			}
 			seen.set(dest.destination.toString(), dest.user);
 		}
+		this.locIndex = seen;
 		return ret;
 	}
 
