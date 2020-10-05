@@ -54,7 +54,7 @@ class GameLevel implements Level {
             var entryBg = new Bitmap(Res.art.Title.toTile(), splash);
 			entryBg.y = 0;
 
-			var splashText = new Text(font, splash);
+			splashText = new Text(font, splash);
             splashText.text = "Type your username:";
             splashText.setPosition((splash.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (2 * splash.tile.height / 3));
 	
