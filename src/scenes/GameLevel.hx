@@ -151,7 +151,7 @@ class GameLevel implements Level {
 					}
 				case "TillStart":
 					if (splash != null){
-						splashText.text = Std.string(data.secs);
+						splashText.text = "Starting in: " + data.secs;
 					}
 				// case "ChooseCard": // TEST CODE
 				// 	ws.send(Json.stringify({
