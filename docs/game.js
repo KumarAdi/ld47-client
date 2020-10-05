@@ -62798,8 +62798,7 @@ scenes_UIManager.prototype = {
 	}
 	,drawProgram: function(newProg) {
 		this.programArea.removeChildren();
-		var programAreaWidth = this.programBox.tile.width - this.programArea.x;
-		var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (this.program.length + 1)) - 20;
+		var singleCardSizeBasedOnWidth = Math.floor(this.programArea.width / (newProg.length + 1)) - 20;
 		var singleCardSizeBasedOnHeight = this.programBox.tile.height - 40;
 		var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight,singleCardSizeBasedOnWidth));
 		var i = 0;
@@ -62809,6 +62808,12 @@ scenes_UIManager.prototype = {
 			++_g;
 			var progTile = this.getCardImage(Config.cardList[prog].name);
 			var progIcon = new h2d_Bitmap(progTile,this.programArea);
+			if(singleCardSize < progTile.width) {
+				progIcon.posChanged = true;
+				progIcon.scaleX = singleCardSize / progTile.width;
+				progIcon.posChanged = true;
+				progIcon.scaleY = singleCardSize / progTile.height;
+			}
 			progIcon.posChanged = true;
 			progIcon.x = this.programArea.width / 2 - singleCardSize * newProg.length / 2 + singleCardSize * i + (singleCardSize - progTile.width) / 2;
 			progIcon.posChanged = true;
