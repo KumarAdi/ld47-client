@@ -167,6 +167,22 @@ class UIManager implements ComponentManager{
         switch (cardName) {
             case "Move 1":
                 cardImg = Res.art.cards.move1;
+            case "Move 2":
+                cardImg = Res.art.cards.move2;
+            case "Move 3":
+                cardImg = Res.art.cards.move3;
+            case "Reverse":
+                cardImg = Res.art.cards.reverse;
+            case "Turn Left":
+                cardImg = Res.art.cards.turnleft;
+            case "Turn Right":
+                cardImg = Res.art.cards.turnright;
+            case "U-Turn":
+                cardImg = Res.art.cards.uturn;
+            case "Act Erratically":
+                cardImg = Res.art.cards.acterratically;
+            case "Reposition":
+                cardImg = Res.art.cards.reposition;
             default:
         }
         return cardImg.toTile();
