@@ -64,12 +64,6 @@ class BoardManager implements ComponentManager {
 					for (j in 0...Std.int(Config.boardHeight / tileImage.height)) {
 						var tileSprite = new Bitmap(tileImage, tileRoot);
 						tileSprite.setPosition(i * tileImage.width, j * tileImage.height);
-
-						var font = hxd.res.DefaultFont.get();
-						var coord = new Text(font, tileSprite);
-						coord.textColor = 0x000000;
-						coord.text = '${i}, ${j}';
-						coord.scale(2);
 					}
 				}
 			}
