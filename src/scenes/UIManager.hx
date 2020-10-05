@@ -15,6 +15,7 @@ import hxd.Event;
 import js.html.WebSocket;
 import haxe.Json;
 import h2d.Tile;
+import h2d.Mask;
 
 class UIManager implements ComponentManager{
 
@@ -25,7 +26,7 @@ class UIManager implements ComponentManager{
     private var stripeFont: Font;
     private var ws: WebSocket;
     private var program: Array<Bitmap>;
-    private var programArea: Object;
+    private var programArea: Mask;
     private var currentChoices: Array<Int>;
     private var selectedChoice: Int;
     private var choicesIcons: Array<Bitmap>;
@@ -60,7 +61,12 @@ class UIManager implements ComponentManager{
         programBoxTitle.text = "Program";
         programBoxTitle.setPosition(45,45);
 
-        this.programArea = new Object(programBox);
+        var loopTile = Res.art.loop.toTile();
+        var loopBg = new Bitmap(loopTile, programBox);
+        loopBg.x = programBoxTitle.getBounds().width + 170;
+        loopBg.y = 80;
+
+        this.programArea = new Mask(Math.floor(programBox.tile.width - programBoxTitle.getBounds().width), Math.floor(programBox.tile.height), programBox);
         programArea.x = programBoxTitle.getBounds().width + 50;
 
         this.program = [];
@@ -170,14 +176,15 @@ class UIManager implements ComponentManager{
         // figure out spacing
         var programAreaWidth = programBox.tile.width - programArea.x;
         var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (program.length + 1)) - 20; // 10px gutter
-        var singleCardSizeBasedOnHeight = programBox.tile.height - 80; // 40px gutter
+        var singleCardSizeBasedOnHeight = programBox.tile.height - 40; // 20px gutter
         var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight, singleCardSizeBasedOnWidth));
 
         var i = 0;
         for (prog in newProg) {
             var progTile = this.getCardImage(Config.cardList[prog].name);
             var progIcon = new Bitmap(progTile, programArea);
-            progIcon.setPosition(singleCardSize * i, (programBox.tile.height - singleCardSize) / 2);
+            progIcon.setPosition((programArea.width / 2) - ((singleCardSize * newProg.length) / 2) + singleCardSize * i + ((singleCardSize - progTile.width) / 2), ((programBox.tile.height - singleCardSize) / 2) + ((singleCardSize - progTile.height) / 2) - 15);
+            i++;
         }
     }
 
