@@ -50,24 +50,32 @@ class GameLevel implements Level {
 
 		this.ws.onopen = function() {
 			trace("ws open");
-            splashText.text = "Type your username:";
-            splashText.setPosition((splash.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (splash.tile.height / 2) - 40);
 
-            var entryBg = new Bitmap(Tile.fromColor(Config.uiSecondary, Math.floor(splash.tile.width), 45), splash);
-            entryBg.y = splashText.y + splashText.textHeight + 23;
+            var entryBg = new Bitmap(Res.art.Title.toTile(), splash);
+			entryBg.y = 0;
+
+			var splashText = new Text(font, splash);
+            splashText.text = "Type your username:";
+            splashText.setPosition((splash.tile.width / 2) - (splashText.calcTextWidth(splashText.text) / 2), (2 * splash.tile.height / 3));
+	
+
             var nameEntry = new TextInput(font, splash);
 			nameEntry.canEdit = true;
             nameEntry.text = "<Click to edit>";
             nameEntry.x = (splash.tile.width / 2) - 150;
-            nameEntry.y = splashText.y + splashText.textHeight + 25;
+			nameEntry.y = splashText.y + splashText.textHeight + 25;
+			
+			var alreadySent = false;
 
 			nameEntry.onKeyDown = function(e:Event) {
-				if (e.keyCode == Key.ENTER) {
+				if (!alreadySent && e.keyCode == Key.ENTER) {
 					ws.send(Json.stringify({
 						type: "InitiateGame",
 						username: nameEntry.text,
 						character_type: 0
 					}));
+
+					alreadySent = true;
 
 					// TEST CODE
 					// ws.send(Json.stringify({
