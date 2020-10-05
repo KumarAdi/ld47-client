@@ -169,23 +169,23 @@ class BoardManager implements ComponentManager {
 
 	private function charInfoToTiles(charType: Int, rotation: Int, type: AnimType): Array<Tile> {
 		var tileArr = [
-			[Res.art.red.side_stand.toTile(), Res.art.red.side_stand.toTile(), Res.art.red.front_stand.toTile(), Res.art.red.back_stand.toTile()],
-			[Res.art.green.side_stand.toTile(), Res.art.green.side_stand.toTile(), Res.art.green.front_stand.toTile(), Res.art.green.back_stand.toTile()],
-			[Res.art.blue.side_stand.toTile(), Res.art.blue.side_stand.toTile(), Res.art.blue.front_stand.toTile(), Res.art.blue.back_stand.toTile()]
+			[Res.art.red.side_stand.toTile(), Res.art.red.front_stand.toTile(), Res.art.red.side_stand.toTile(), Res.art.red.back_stand.toTile()],
+			[Res.art.green.side_stand.toTile(), Res.art.green.front_stand.toTile(), Res.art.green.side_stand.toTile(), Res.art.green.back_stand.toTile()],
+			[Res.art.blue.side_stand.toTile(), Res.art.blue.front_stand.toTile(), Res.art.blue.side_stand.toTile(), Res.art.blue.back_stand.toTile()]
 		];
 
 		switch(type) {
 			case Walk:
 				tileArr = [
-					[Res.art.red.side_walk.toTile(), Res.art.red.side_walk.toTile(), Res.art.red.front_walk.toTile(), Res.art.red.back_walk.toTile()],
-					[Res.art.green.side_walk.toTile(), Res.art.green.side_walk.toTile(), Res.art.green.front_walk.toTile(), Res.art.green.back_walk.toTile()],
-					[Res.art.blue.side_walk.toTile(), Res.art.blue.side_walk.toTile(), Res.art.blue.front_walk.toTile(), Res.art.blue.back_walk.toTile()]
+					[Res.art.red.side_walk.toTile(), Res.art.red.front_walk.toTile(), Res.art.red.side_walk.toTile(), Res.art.red.back_walk.toTile()],
+					[Res.art.green.side_walk.toTile(), Res.art.green.front_walk.toTile(), Res.art.green.side_walk.toTile(), Res.art.green.back_walk.toTile()],
+					[Res.art.blue.side_walk.toTile(), Res.art.blue.front_walk.toTile(), Res.art.blue.side_walk.toTile(), Res.art.blue.back_walk.toTile()]
 				];
 			case Flex:
 				tileArr = [
-					[Res.art.red.side_flex.toTile(), Res.art.red.side_flex.toTile(), Res.art.red.front_flex.toTile(), Res.art.red.back_flex.toTile()],
-					[Res.art.green.side_flex.toTile(), Res.art.green.side_flex.toTile(), Res.art.green.front_flex.toTile(), Res.art.green.back_flex.toTile()],
-					[Res.art.blue.side_flex.toTile(), Res.art.blue.side_flex.toTile(), Res.art.blue.front_flex.toTile(), Res.art.blue.back_flex.toTile()]
+					[Res.art.red.side_flex.toTile(), Res.art.red.front_flex.toTile(), Res.art.red.side_flex.toTile(), Res.art.red.back_flex.toTile()],
+					[Res.art.green.side_flex.toTile(), Res.art.green.front_flex.toTile(), Res.art.green.side_flex.toTile(), Res.art.green.back_flex.toTile()],
+					[Res.art.blue.side_flex.toTile(), Res.art.blue.front_flex.toTile(), Res.art.blue.side_flex.toTile(), Res.art.blue.back_flex.toTile()]
 				];
 			default:
 		}
@@ -227,8 +227,8 @@ class BoardManager implements ComponentManager {
 				var dest = {x: baseSprite.x, y: baseSprite.y};
 				switch(user.orientation) {
 					case 0: dest.x += 120 * actionData.moveDist;
-					case 1: dest.x -= 120 * actionData.moveDist;
-					case 2: dest.y += 120 * actionData.moveDist;
+					case 1: dest.y += 120 * actionData.moveDist;
+					case 2: dest.x -= 120 * actionData.moveDist;
 					case 3: dest.y -= 120 * actionData.moveDist;
 				}
 				trace(user.orientation);

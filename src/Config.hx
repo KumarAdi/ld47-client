@@ -42,7 +42,7 @@ class Config {
 	}
 
     public static final cardList = [
-        {name: "Move 1", disorient: false, dmg: 0, action: [0, 1]},
+        {name: "Move 1", disorient: false, dmg: 0, action: [1, 0]},
         {name: "Move 1", disorient: false, dmg: 0, action: [0]},
         {name: "Move 1", disorient: false, dmg: 0, action: [0]},
         {name: "Move 1", disorient: false, dmg: 0, action: [0]},
