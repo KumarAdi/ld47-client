@@ -96,6 +96,7 @@ class UIManager implements ComponentManager{
 
         var i = 0;
         var optionSpacing = ((cardBox.getBounds().height - 200) / choices.length);
+        var toDeletes = [];
 
         for (choice in choices) {
             var optionHeight = optionSpacing * i + 200;
@@ -110,6 +111,8 @@ class UIManager implements ComponentManager{
             cardName.setPosition(cardIcon.x + cardIcon.getBounds().width + tilePadding, optionHeight + tilePadding);
             cardName.text = Config.cardList[choice].name;
             cardName.maxWidth = cardBox.tile.width - 45;
+
+            toDeletes.push({name: cardName, icon: cardIcon});
 
             var cardListen = new h2d.Interactive(cardIcon.tile.width, cardIcon.tile.height, cardIcon);
             cardListen.onClick = function(e: Event) {
@@ -135,6 +138,10 @@ class UIManager implements ComponentManager{
                 choiceLocked = true;
                 
                 Timer.delay(function() {
+                    for (toDelete in toDeletes) {
+                        toDelete.name.remove();
+                        toDelete.icon.remove();
+                    }
                     this.toggleUI(false);
                 }, 3000);
             }
