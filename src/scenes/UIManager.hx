@@ -184,24 +184,43 @@ class UIManager implements ComponentManager{
     private function getCardImage(cardName: String):Tile {
         var cardImg = Res.art.cards.move1; // default case
         switch (cardName) {
-            case "Move 1":
-                cardImg = Res.art.cards.move1;
-            case "Move 2":
-                cardImg = Res.art.cards.move2;
-            case "Move 3":
-                cardImg = Res.art.cards.move3;
-            case "Reverse":
-                cardImg = Res.art.cards.reverse;
-            case "Turn Left":
-                cardImg = Res.art.cards.turnleft;
-            case "Turn Right":
-                cardImg = Res.art.cards.turnright;
-            case "U-Turn":
-                cardImg = Res.art.cards.uturn;
-            case "Act Erratically":
-                cardImg = Res.art.cards.acterratically;
-            case "Reposition":
-                cardImg = Res.art.cards.reposition;
+            case "Move 1": cardImg = Res.art.cards.move1;
+            case "Move 2": cardImg = Res.art.cards.move2;
+            case "Move 3": cardImg = Res.art.cards.move3;
+            case "Reverse": cardImg = Res.art.cards.reverse;
+            case "Turn Left": cardImg = Res.art.cards.turnleft;
+            case "Turn Right": cardImg = Res.art.cards.turnright;
+            case "U-Turn": cardImg = Res.art.cards.uturn;
+            case "Reposition": cardImg = Res.art.cards.reposition;
+            case "Punch": cardImg = Res.art.cards.punch;
+            case "Discharge": cardImg = Res.art.cards.discharge;
+            case "Charge": cardImg = Res.art.cards.charge;
+            case "Brrrrr": cardImg = Res.art.cards.brrrrr;
+            case "Slash Left": cardImg = Res.art.cards.slashleft;
+            case "Slash Right": cardImg = Res.art.cards.slashright;
+            case "Slash and Dash": cardImg = Res.art.cards.slashanddash;
+            case "Erupt": cardImg = Res.art.cards.erupt;
+            case "Pyromancy": cardImg = Res.art.cards.pyromancy;
+            case "Bonk": cardImg = Res.art.cards.bonk;
+            case "Hard Swing": cardImg = Res.art.cards.hardswing;
+            case "Forward Thrust": cardImg = Res.art.cards.forwardthrust;
+            case "Clear Area": cardImg = Res.art.cards.cleararea;
+            case "Starry Haymaker": cardImg = Res.art.cards.starryhaymaker;
+            case "Charged One-Two": cardImg = Res.art.cards.chargedonetwo;
+            case "Electric Sweeps": cardImg = Res.art.cards.electricsweeps;
+            case "Whipping Strikes": cardImg = Res.art.cards.whippingstrikes;
+            case "Chop": cardImg = Res.art.cards.chop;
+            case "Spin Attack": cardImg = Res.art.cards.spin;
+            case "Wind Circle": cardImg = Res.art.cards.windcircle;
+            case "Flaming Slash": cardImg = Res.art.cards.flamingslash;
+            case "Toxic Bubble": cardImg = Res.art.cards.toxicbubble;
+            case "Frost Shards": cardImg = Res.art.cards.frostshards;
+            case "Dissonant Chord": cardImg = Res.art.cards.dissonantchord;
+            case "Cometcall Melody": cardImg = Res.art.cards.cometfallmelody;
+            case "BRRRRRR": cardImg = Res.art.cards.BRRRRRR;
+            case "Sweep Left": cardImg = Res.art.cards.sweepleft;
+            case "Sweep Right":  cardImg = Res.art.cards.sweepright;
+            case "The Heaviest Blade": cardImg = Res.art.cards.theheaviestblade;
             default:
         }
         return cardImg.toTile();
