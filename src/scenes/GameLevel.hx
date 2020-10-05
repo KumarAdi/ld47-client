@@ -1,5 +1,6 @@
 package scenes;
 
+import h2d.Interactive;
 import hxd.Key;
 import hxd.Event;
 import h2d.TextInput;
@@ -65,19 +66,48 @@ class GameLevel implements Level {
             nameEntry.x = (splash.tile.width / 2) - 150;
 			nameEntry.y = splashText.y + splashText.textHeight + 25;
 
+			var subtext = new Text(font, splash);
+			subtext.y = nameEntry.y + nameEntry.textHeight + 20;
+            subtext.text = "Press Enter to submit";
+            subtext.x = (splash.tile.width / 2) - (subtext.calcTextWidth(subtext.text) / 2);
+
 			Res.audio.ld47loop2.play(true);
 			
-			var alreadySent = false;
 
 			nameEntry.onKeyDown = function(e:Event) {
-				if (!alreadySent && e.keyCode == Key.ENTER) {
-					ws.send(Json.stringify({
-						type: "InitiateGame",
-						username: nameEntry.text,
-						character_type: 0
-					}));
+				if (e.keyCode == Key.ENTER) {
 
-					alreadySent = true;
+					subtext.remove();
+					nameEntry.remove();
+					splashText.remove();
+
+					var tuts = [Res.tut.tut1.toTile()].iterator();
+
+					entryBg.tile = tuts.next();
+
+					var clicky = new Interactive(1920, 1080);
+					entryBg.addChild(clicky);
+					
+					var alreadySent = false;
+
+					clicky.onClick = function (e: Event) {
+						if (tuts.hasNext()) {
+							entryBg.tile = tuts.next();
+						} else {
+							if (!alreadySent) {
+								trace("InitiateGame");
+								ws.send(Json.stringify({
+									type: "InitiateGame",
+									username: nameEntry.text,
+									character_type: 0
+								}));
+								alreadySent = true;
+							}
+						}
+					}
+
+					
+
 
 					// TEST CODE
 					// ws.send(Json.stringify({
@@ -117,11 +147,6 @@ class GameLevel implements Level {
 					// }
 				}
 			}
-
-            var subtext = new Text(font, splash);
-			subtext.y = nameEntry.y + nameEntry.textHeight + 20;
-            subtext.text = "Press Enter to submit";
-            subtext.x = (splash.tile.width / 2) - (subtext.calcTextWidth(subtext.text) / 2);
 		};
 
 		this.ws.onmessage = function(message) {
