@@ -3888,7 +3888,7 @@ format_tools_BitsInput.prototype = {
 		}
 		var k1 = this.i.readByte();
 		if(this.nbits >= 24) {
-			if(n >= 31) {
+			if(n > 31) {
 				throw new js__$Boot_HaxeError("Bits error");
 			}
 			var c1 = 8 + this.nbits - n;
@@ -3996,11 +3996,50 @@ format_wav_Reader.prototype = {
 			throw new js__$Boot_HaxeError("expected data subchunk");
 		}
 		var datalen = this.i.readInt32();
-		var data = this.i.readAll();
-		if(data.length > datalen) {
-			data = data.sub(0,datalen);
+		var data;
+		try {
+			data = this.i.read(datalen);
+		} catch( e ) {
+			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
+			if(((e1) instanceof haxe_io_Eof)) {
+				var e2 = e1;
+				throw new js__$Boot_HaxeError("Invalid chunk data length");
+			} else {
+				throw e;
+			}
 		}
-		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data};
+		var cuePoints = [];
+		try {
+			while(true) {
+				var nextChunk1 = this.i.readString(4);
+				if(nextChunk1 == "cue ") {
+					this.i.readInt32();
+					var nbCuePoints = this.i.readInt32();
+					var _g1 = 0;
+					var _g2 = nbCuePoints;
+					while(_g1 < _g2) {
+						var _ = _g1++;
+						var cueId = this.i.readInt32();
+						this.i.readInt32();
+						this.i.readString(4);
+						this.i.readInt32();
+						this.i.readInt32();
+						var cueSampleOffset = this.i.readInt32();
+						cuePoints.push({ id : cueId, sampleOffset : cueSampleOffset});
+					}
+				} else {
+					this.i.read(this.i.readInt32());
+				}
+			}
+		} catch( e3 ) {
+			var e4 = ((e3) instanceof js__$Boot_HaxeError) ? e3.val : e3;
+			if(((e4) instanceof haxe_io_Eof)) {
+				var e5 = e4;
+			} else {
+				throw e3;
+			}
+		}
+		return { header : { format : format1, channels : channels, samplingRate : samplingRate, byteRate : byteRate, blockAlign : blockAlign, bitsPerSample : bitsPerSample}, data : data, cuePoints : cuePoints};
 	}
 	,__class__: format_wav_Reader
 };
@@ -36889,12 +36928,6 @@ haxe_io_Bytes.prototype = {
 			this.b[pos++] = value;
 		}
 	}
-	,sub: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		}
-		return new haxe_io_Bytes(this.b.buffer.slice(pos + this.b.byteOffset,pos + this.b.byteOffset + len));
-	}
 	,getFloat: function(pos) {
 		if(this.data == null) {
 			this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -37947,30 +37980,6 @@ haxe_io_Input.prototype = {
 	,set_bigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
-	}
-	,readAll: function(bufsize) {
-		if(bufsize == null) {
-			bufsize = 16384;
-		}
-		var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
-		var total = new haxe_io_BytesBuffer();
-		try {
-			while(true) {
-				var len = this.readBytes(buf,0,bufsize);
-				if(len == 0) {
-					throw new js__$Boot_HaxeError(haxe_io_Error.Blocked);
-				}
-				total.addBytes(buf,0,len);
-			}
-		} catch( e ) {
-			var e1 = ((e) instanceof js__$Boot_HaxeError) ? e.val : e;
-			if(((e1) instanceof haxe_io_Eof)) {
-				var e2 = e1;
-			} else {
-				throw e;
-			}
-		}
-		return total.getBytes();
 	}
 	,readFullBytes: function(s,pos,len) {
 		while(len > 0) {
@@ -60484,15 +60493,6 @@ js_html__$CanvasElement_CanvasUtil.getContextWebGL = function(canvas,attribs) {
 	}
 	return null;
 };
-var js_lib__$ArrayBuffer_ArrayBufferCompat = function() { };
-$hxClasses["js.lib._ArrayBuffer.ArrayBufferCompat"] = js_lib__$ArrayBuffer_ArrayBufferCompat;
-js_lib__$ArrayBuffer_ArrayBufferCompat.__name__ = "js.lib._ArrayBuffer.ArrayBufferCompat";
-js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
-	var u = new Uint8Array(this,begin,end == null ? null : end - begin);
-	var resultArray = new Uint8Array(u.byteLength);
-	resultArray.set(u);
-	return resultArray.buffer;
-};
 var motion_actuators_IGenericActuator = function() { };
 $hxClasses["motion.actuators.IGenericActuator"] = motion_actuators_IGenericActuator;
 motion_actuators_IGenericActuator.__name__ = "motion.actuators.IGenericActuator";
@@ -62500,25 +62500,38 @@ scenes_GameLevel.__interfaces__ = [scenes_Level];
 scenes_GameLevel.prototype = {
 	init: function() {
 		var _gthis = this;
-		this.splash = new h2d_Bitmap(h2d_Tile.fromColor(0,Config.boardWidth * 2 / 3 | 0,Config.boardHeight * 2 / 3 | 0),this.scene);
-		var _this = this.splash;
-		_this.posChanged = true;
-		_this.x = Config.boardWidth / 4;
-		_this.posChanged = true;
-		_this.y = Config.boardHeight / 4;
-		var font = hxd_res_DefaultFont.get();
-		font.resizeTo(20);
+		this.splash = new h2d_Bitmap(h2d_Tile.fromColor(Config.uiColor,Config.boardWidth,Config.boardHeight),this.scene);
+		var this1 = hxd_Res.get_loader();
+		var font = this1.loadCache("font/dirga.fnt",hxd_res_BitmapFont).toFont();
 		var splashText = new h2d_Text(font,this.splash);
 		splashText.set_text("Connecting...");
+		var x = this.splash.tile.width / 2 - splashText.calcTextWidth(splashText.text) / 2;
+		splashText.posChanged = true;
+		splashText.x = x;
+		splashText.posChanged = true;
+		splashText.y = this.splash.tile.height / 2 - 10;
 		this.ws.onopen = function() {
-			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 53, className : "scenes.GameLevel", methodName : "init"});
-			splashText.set_text("Enter your username:");
+			haxe_Log.trace("ws open",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 52, className : "scenes.GameLevel", methodName : "init"});
+			splashText.set_text("Type your username:");
+			var x1 = _gthis.splash.tile.width / 2 - splashText.calcTextWidth(splashText.text) / 2;
+			var y = _gthis.splash.tile.height / 2 - 40;
+			splashText.posChanged = true;
+			splashText.x = x1;
+			splashText.posChanged = true;
+			splashText.y = y;
+			var entryBg = new h2d_Bitmap(h2d_Tile.fromColor(Config.uiSecondary,Math.floor(_gthis.splash.tile.width),45),_gthis.splash);
+			var v = splashText.y + splashText.get_textHeight() + 23;
+			entryBg.posChanged = true;
+			entryBg.y = v;
 			var nameEntry = new h2d_TextInput(font,_gthis.splash);
 			nameEntry.canEdit = true;
-			nameEntry.set_text("<Username>");
-			var v = splashText.y + splashText.get_textHeight() + 10;
+			nameEntry.set_text("<Click to edit>");
+			var v1 = _gthis.splash.tile.width / 2 - 150;
 			nameEntry.posChanged = true;
-			nameEntry.y = v;
+			nameEntry.x = v1;
+			var v2 = splashText.y + splashText.get_textHeight() + 25;
+			nameEntry.posChanged = true;
+			nameEntry.y = v2;
 			nameEntry.onKeyDown = function(e) {
 				if(e.keyCode == 13) {
 					_gthis.ws.send(JSON.stringify({ type : "InitiateGame", username : nameEntry.text, character_type : 0}));
@@ -62546,18 +62559,21 @@ scenes_GameLevel.prototype = {
 				}
 			};
 			var subtext = new h2d_Text(font,_gthis.splash);
-			var v1 = nameEntry.y + nameEntry.get_textHeight() + 10;
+			var v3 = nameEntry.y + nameEntry.get_textHeight() + 20;
 			subtext.posChanged = true;
-			subtext.y = v1;
+			subtext.y = v3;
 			subtext.set_text("Press Enter to submit");
+			var v4 = _gthis.splash.tile.width / 2 - subtext.calcTextWidth(subtext.text) / 2;
+			subtext.posChanged = true;
+			subtext.x = v4;
 		};
 		this.ws.onmessage = function(message) {
-			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 114, className : "scenes.GameLevel", methodName : "init"});
+			haxe_Log.trace(message.data,{ fileName : "src/scenes/GameLevel.hx", lineNumber : 118, className : "scenes.GameLevel", methodName : "init"});
 			var data = JSON.parse(message.data);
 			switch(data.type) {
 			case "CardOptions":
 				if(_gthis.splash != null) {
-					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 129, className : "scenes.GameLevel", methodName : "init"});
+					haxe_Log.trace("removing splash, setting to null",{ fileName : "src/scenes/GameLevel.hx", lineNumber : 133, className : "scenes.GameLevel", methodName : "init"});
 					_gthis.scene.removeChild(_gthis.splash);
 					_gthis.splash = null;
 				}
@@ -62697,12 +62713,12 @@ scenes_UIManager.prototype = {
 		var optionSpacing = (_this.yMax - _this.yMin - 200) / choices.length;
 		var _g = 0;
 		while(_g < choices.length) {
-			var choice = choices[_g];
+			var choice = [choices[_g]];
 			++_g;
 			var optionHeight = optionSpacing * i + 200;
 			var tileSize = Math.floor(3 * optionSpacing / 4);
 			var tilePadding = Math.floor(tileSize / 3);
-			var cardTile = this.getCardImage(Config.cardList[choice].name);
+			var cardTile = this.getCardImage(Config.cardList[choice[0]].name);
 			var cardIcon = [new h2d_Bitmap(cardTile,this.cardBox)];
 			cardIcon[0].posChanged = true;
 			cardIcon[0].x = tilePadding;
@@ -62716,16 +62732,17 @@ scenes_UIManager.prototype = {
 			cardName.x = cardIcon1 + (_this1.xMax - _this1.xMin) + tilePadding;
 			cardName.posChanged = true;
 			cardName.y = optionHeight + tilePadding;
-			cardName.set_text(Config.cardList[choice].name);
+			cardName.set_text(Config.cardList[choice[0]].name);
 			cardName.set_maxWidth(this.cardBox.tile.width - 45);
 			var cardListen = new h2d_Interactive(cardIcon[0].tile.width,cardIcon[0].tile.height,cardIcon[0]);
-			cardListen.onClick = (function(cardIcon2) {
+			cardListen.onClick = (function(cardIcon2,choice1) {
 				return function(e) {
 					var choiceId = _gthis.choicesIcons.indexOf(cardIcon2[0]);
-					_gthis.selectedChoice = choiceId;
+					_gthis.selectedChoice = choice1[0];
+					_gthis.selectedChoiceIndex = choiceId;
 					_gthis.ws.send(JSON.stringify({ type : "ChooseCard", card_number : _gthis.selectedChoice, location : _gthis.program.length, user_id : _gthis.user_id, pk : _gthis.pk, game_id : _gthis.game_id}));
 				};
-			})(cardIcon);
+			})(cardIcon,choice);
 			++i;
 		}
 	}
@@ -62742,8 +62759,7 @@ scenes_UIManager.prototype = {
 	}
 	,drawProgram: function(newProg) {
 		this.programArea.removeChildren();
-		var programAreaWidth = this.programBox.tile.width - this.programArea.x;
-		var singleCardSizeBasedOnWidth = Math.floor(programAreaWidth / (this.program.length + 1)) - 20;
+		var singleCardSizeBasedOnWidth = Math.floor(this.programArea.width / (newProg.length + 1)) - 20;
 		var singleCardSizeBasedOnHeight = this.programBox.tile.height - 40;
 		var singleCardSize = Math.floor(Math.min(singleCardSizeBasedOnHeight,singleCardSizeBasedOnWidth));
 		var i = 0;
@@ -62753,6 +62769,12 @@ scenes_UIManager.prototype = {
 			++_g;
 			var progTile = this.getCardImage(Config.cardList[prog].name);
 			var progIcon = new h2d_Bitmap(progTile,this.programArea);
+			if(singleCardSize < progTile.width) {
+				progIcon.posChanged = true;
+				progIcon.scaleX = singleCardSize / progTile.width;
+				progIcon.posChanged = true;
+				progIcon.scaleY = singleCardSize / progTile.height;
+			}
 			progIcon.posChanged = true;
 			progIcon.x = this.programArea.width / 2 - singleCardSize * newProg.length / 2 + singleCardSize * i + (singleCardSize - progTile.width) / 2;
 			progIcon.posChanged = true;
@@ -62815,9 +62837,6 @@ js_Boot.__toStr = ({ }).toString;
 Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function() {
 	return String(this.val);
 }});
-if(ArrayBuffer.prototype.slice == null) {
-	ArrayBuffer.prototype.slice = js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
-}
 Config.boardWidth = 1920;
 Config.boardHeight = 1080;
 Config.uiColor = 417425;
