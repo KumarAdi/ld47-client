@@ -23,7 +23,7 @@ import h2d.Bitmap;
 import h2d.Text;
 import h2d.Object;
 
-typedef UserInfo = {username:String, program:Array<Int>, sprites:Map<Object, Anim>, orientation:Int, charType:Int, health:Int};
+typedef UserInfo = {username:String, program:Array<Int>, sprites:Map<Object, Anim>, orientation:Int, charType:Int, health:Int, healthText:Array<Text>};
 
 class BoardManager implements ComponentManager {
 	var boardRoot:Layers;
@@ -176,8 +176,11 @@ class BoardManager implements ComponentManager {
 			sprites: sprites,
 			orientation: dir,
 			charType: charType,
-			health: 3
+			health: 3,
+			healthText: []
 		});
+
+		displayHealth(userId);
 
 		for (charRoot in charRoots)
 			charRoot.ysort(0);
@@ -387,6 +390,7 @@ class BoardManager implements ComponentManager {
 								turn_id: this.turnId
 							}));
 						}
+						displayHealth(hitId);
 						trace("player Hit " + hitId);
 					}
 				}
@@ -422,6 +426,18 @@ class BoardManager implements ComponentManager {
 			sprite.parent.remove();
 		}
 		this.numUsers--;
+	}
+
+	private function displayHealth(userId: Int) {
+		var font = Res.font.pixel.toFont();
+		var userInfo = this.users.get(userId);
+		userInfo.healthText = [];
+		for (key in userInfo.sprites.keys()) {
+			var hpText = new Text(font, key);
+			hpText.text = "HP: " + userInfo.health;
+			hpText.setPosition(30, 40);
+			userInfo.healthText.push(hpText);
+		}
 	}
 
 	private function findConflictingPlayers(destinations:Array<{user:Int, destination:IPoint, actionData:Dynamic}>) {
