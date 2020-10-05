@@ -1,5 +1,6 @@
 package scenes;
 
+import motion.Actuate;
 import h2d.Tile;
 import Config.AnimType;
 import h3d.Vector;
@@ -210,12 +211,29 @@ class BoardManager implements ComponentManager {
 			var actionData = actionList[step.action];
 			var user = users.get(step.userId);
 			var sprites = user.sprites;
-			for (sprite in sprites) {
+			for (spritePair in sprites.keyValueIterator()) {
+				var sprite = spritePair.value;
+				var baseSprite = spritePair.key;
 				sprite.loop = false;
 				sprite.play(charInfoToTiles(user.charType, user.orientation, actionData.anim));
 				sprite.onAnimEnd = function () {
 					sprite.play(charInfoToTiles(user.charType, user.orientation, Stand));
 				};
+				var dest = {x: baseSprite.x, y: baseSprite.y};
+				switch(user.orientation) {
+					case 0: dest.x += 120 * actionData.moveDist;
+					case 1: dest.x -= 120 * actionData.moveDist;
+					case 2: dest.y += 120 * actionData.moveDist;
+					case 3: dest.y -= 120 * actionData.moveDist;
+				}
+				trace(user.orientation);
+				Actuate.tween(baseSprite, 0.5, dest).onUpdate(function(){
+					baseSprite.x = baseSprite.x;
+					baseSprite.y = baseSprite.y;
+				}).onComplete(function() {
+					baseSprite.x %= Config.boardWidth;
+					baseSprite.y %= Config.boardHeight;
+				});
 			}
 		}
 		
