@@ -139,8 +139,6 @@ class GameLevel implements Level {
 				default:
 			}
         };
-        
-        uiManager.drawProgram([0,1,2]);
 	}
 
 	public function update(dt:Float):Null<Level> {
