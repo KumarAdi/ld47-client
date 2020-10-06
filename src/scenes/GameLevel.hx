@@ -77,7 +77,6 @@ class GameLevel implements Level {
 
 			nameEntry.onKeyDown = function(e:Event) {
 				if (e.keyCode == Key.ENTER) {
-
 					subtext.remove();
 					nameEntry.remove();
 					splashText.text = "";
@@ -195,6 +194,13 @@ class GameLevel implements Level {
 					if (goScreen != null) {
 						scene.addChild(goScreen);
 					}
+				// case "ChooseCard": // TEST CODE
+				// 	ws.send(Json.stringify({
+				// 		type: "Mutation",
+				// 		user_id: data.user_id,
+				// 		card_type: data.card_number,
+				// 		card_location: data.location,
+				// 	}));
 				default:
 			}
         };

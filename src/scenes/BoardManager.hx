@@ -277,10 +277,22 @@ class BoardManager implements ComponentManager {
 	}
 
 	private function markerTypeToTiles(markerType:MarkerType) {
+		var tile = Res.art.markers.slash.toTile();
 		switch (markerType) {
-			case Slash:
-				return [for (sprite in Res.art.markers.slash.toTile().gridFlatten(240)) sprite.center()];
+			case Slash: tile = Res.art.markers.slash.toTile();
+			case Bubble: tile = Res.art.markers.bubble.toTile();
+			case Electricity: tile = Res.art.markers.electricity.toTile();
+			case Fire: tile = Res.art.markers.fire.toTile();
+			case Ice: tile = Res.art.markers.ice.toTile();
+			case Music: tile = Res.art.markers.music.toTile();
+			case MusicBig: tile = Res.art.markers.musicbig.toTile();
+			case Punch: tile = Res.art.markers.punch.toTile();
+			case Stab: tile = Res.art.markers.stab.toTile();
+			case Whip: tile = Res.art.markers.whip.toTile();
+			case WideSlash: tile = Res.art.markers.wideslash.toTile();
+			case Wind: tile = Res.art.markers.wind.toTile();
 		}
+		return [for (sprite in tile.gridFlatten(240)) sprite.center()];
 	}
 
 	private function playAnimations(animations:Array<Map<Int, Int>>) {

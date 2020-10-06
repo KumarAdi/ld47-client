@@ -16,6 +16,17 @@ enum AnimType {
 
 enum MarkerType {
 	Slash;
+	Bubble;
+	Electricity;
+	Fire;
+	Ice;
+	Music;
+	MusicBig;
+	Punch;
+	Stab;
+	Whip;
+	WideSlash;
+	Wind;
 }
 
 typedef ActionData = {
@@ -1045,82 +1056,82 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: -1
 						},
@@ -1254,27 +1265,27 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -2,
 							y: 0
 						},
@@ -1287,27 +1298,27 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: -2,
 							y: 0
 						},
@@ -1353,27 +1364,27 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 2,
 							y: 0
 						},
@@ -1386,27 +1397,27 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 2,
 							y: 0
 						},
@@ -1455,7 +1466,7 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Wideslash,
+							marker: WideSlash,
 							x: 1,
 							y: 0
 						},
@@ -1561,82 +1572,82 @@ class Config {
 					anim: Flex,
 					markers: [
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: 0
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: 1
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 1,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 0,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -1,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: 2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: 1
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: 0
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: -1
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -2,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: -1,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 0,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 1,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: -2
 						},
 						{
-							marker: Musicbig,
+							marker: MusicBig,
 							x: 2,
 							y: -1
 						},
@@ -1716,49 +1727,49 @@ class Config {
 	}
 
 	public static final cardList = [
-		{ // move 1
+		{ // Move 1
 			name: "Move 1",
 			disorient: false,
 			dmg: 0,
 			action: [3]
 		},
-		{ // move 2
+		{ // Move 2
 			name: "Move 2",
 			disorient: false,
 			dmg: 0,
 			action: [3, 3]
 		},
-		{ // move 3
+		{ // Move 3
 			name: "Move 3",
 			disorient: false,
 			dmg: 0,
 			action: [3, 3, 3]
 		},
-		{ // reverse
+		{ // Reverse
 			name: "Reverse",
 			disorient: false,
 			dmg: 0,
 			action: [4]
 		},
-		{ // turn left
+		{ // Turn left
 			name: "Turn Left",
 			disorient: false,
 			dmg: 0,
 			action: [1]
 		},
-		{ // turn right
+		{ // Turn right
 			name: "Turn Right",
 			disorient: false,
 			dmg: 0,
 			action: [2]
 		},
-		{ // u-turn
+		{ // U-turn
 			name: "U-Turn",
 			disorient: false,
 			dmg: 0,
 			action: [1, 1]
 		},
-		{ // reposition
+		{ // Reposition
 			name: "Reposition",
 			disorient: false,
 			dmg: 0,
@@ -1770,157 +1781,157 @@ class Config {
 			dmg: 0,
 			action: [3, 4]
 		},
-		{ // punch
+		{ // Punch|
 			name: "Punch",
 			disorient: false,
 			dmg: 2,
 			action: [5]
 		},
-		{ // discharge
+		{ // Discharge|
 			name: "Discharge",
 			disorient: false,
 			dmg: 1,
 			action: [23, 28]
 		},
-		{ // charge
+		{ // Charge|
 			name: "Charge",
 			disorient: false,
 			dmg: 2,
 			action: [3, 3, 3, 3, 6]
 		},
-		{ // Brrrrr
+		{ // Brrrrr|
 			name: "Brrrrr",
 			disorient: false,
 			dmg: 2,
 			action: [18, 14, 9, 9, 14, 18]
 		},
-		{ // Slash Left
+		{ // Slash Left|
 			name: "Slash Left",
 			disorient: false,
 			dmg: 2,
 			action: [3, 10]
 		},
-		{ // Slash Right
+		{ // Slash Right|
 			name: "Slash Right",
 			disorient: false,
 			dmg: 2,
 			action: [3, 19]
 		},
-		{ // Slash and Dash
+		{ // Slash and Dash|
 			name: "Slash and Dash",
 			disorient: false,
 			dmg: 2,
 			action: [15, 4]
 		},
-		{ // Erupt
+		{ // Erupt|
 			name: "Erupt",
 			disorient: false,
 			dmg: 2,
 			action: [31]
 		},
-		{ // Pyromancy
+		{ // Pyromancy| Switch to 20, 46, 11, 45
 			name: "Pyromancy",
 			disorient: false,
 			dmg: 2,
 			action: [20, 37, 11, 34]
 		},
-		{ // Bonk
+		{ // Bonk|
 			name: "Bonk",
 			disorient: false,
 			dmg: 2,
 			action: [6]
 		},
-		{ // Hard Swing
+		{ // Hard Swing|
 			name: "Hard Swing",
 			disorient: false,
 			dmg: 2,
 			action: [1, 7]
 		},
-		{ // Forward Thrust
+		{ // Forward Thrust|
 			name: "Forward Thrust",
 			disorient: false,
 			dmg: 2,
 			action: [3, 40]
 		},
-		{ // Clear Area
+		{ // Clear Area|
 			name: "Clear Area",
 			disorient: false,
 			dmg: 2,
 			action: [25, 29]
 		},
-		{ // Starry Haymaker
+		{ // Starry Haymaker|
 			name: "Starry Haymaker",
 			disorient: false,
 			dmg: 2,
 			action: [3, 3, 8]
 		},
-		{ // Charged One-Two
+		{ // Charged One-Two|
 			name: "Charged One-Two",
 			disorient: false,
 			dmg: 2,
 			action: [13, 22]
 		},
-		{ // Electric Sweeps
+		{ // Electric Sweeps| Switch to 43,43
 			name: "Electric Sweeps",
 			disorient: false,
 			dmg: 2,
 			action: [30, 30]
 		},
-		{ // Whipping Strikes
+		{ // Whipping Strikes|
 			name: "Whipping Strikes",
 			disorient: false,
 			dmg: 2,
 			action: [37, 34]
 		},
-		{ // Chop
+		{ // Chop|
 			name: "Chop",
 			disorient: false,
 			dmg: 2,
 			action: [16]
 		},
-		{ // Spin Attack
+		{ // Spin Attack|
 			name: "Spin Attack",
 			disorient: false,
 			dmg: 2,
 			action: [24, 24]
 		},
-		{ // Wind Circle
+		{ // Wind Circle|
 			name: "Wind Circle",
 			disorient: false,
 			dmg: 2,
 			action: [29, 29, 29, 29]
 		},
-		{ // Flaming Slash
+		{ // Flaming Slash|
 			name: "Flaming Slash",
 			disorient: false,
 			dmg: 2,
 			action: [35, 38, 41]
 		},
-		{ // Toxic Bubble
+		{ // Toxic Bubble	|
 			name: "Toxic Bubble",
 			disorient: false,
 			dmg: 2,
 			action: [26, 30, 30]
 		},
-		{ // Frost Shards
+		{ // Frost Shards |
 			name: "Frost Shards",
 			disorient: false,
 			dmg: 2,
 			action: [33]
 		},
-		{ // Dissonant Chord
+		{ // Dissonant Chord | Switch to 27, 44
 			name: "Dissonant Chord",
 			disorient: false,
 			dmg: 2,
 			action: [27, 31]
 		},
-		{ // Cometcall Melody
+		{ // Cometcall Melody |
 			name: "Cometcall Melody",
 			disorient: false,
 			dmg: 2,
 			action: [32, 32]
 		},
-		{ // BRRRRRR
+		{ // BRRRRRR |
 			name: "BRRRRRR",
 			disorient: false,
 			dmg: 2,
